@@ -32,23 +32,43 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     });
   }
 
+  function voted(article){
+    return article.vote && !article.edited;
+  }
+
   function thread(id){
     return id ? _.fmap(fetch("https://boardgamegeek.com/xmlapi2/thread?id=" + id), repos.xml, function(el){
       var subject = _.just(el, dom.sel1("subject", _), dom.text),
           articles = _.just(el, dom.sel("article", _), _.mapa(function(el){
             var id = _.just(el, dom.attr(_, "id"), parseInt),
                 username = dom.attr(el, "username"),
-                postdate = _.just(el, dom.attr(_, "postdate"), _.date),
-                body = _.just(el, dom.sel1("body", _), dom.text);
-            return {id: id, username: username, postdate: postdate, body: body};
+                postdate = _.maybe(el, dom.attr(_, "postdate"), _.blot, _.date),
+                editdate = _.maybe(el, dom.attr(_, "editdate"), _.blot, _.date),
+                body = _.just(el, dom.sel1("body", _), dom.text),
+                found = _.reFind(/^(LIKE|LOVE|LUMP)(.*\((\d+) minutes\))?/, body),
+                vote = _.nth(found, 1),
+                minutes = _.maybe(found, _.nth(_, 3), _.blot, parseInt),
+                edited = _.eq(postdate, editdate) ? null : editdate;
+            return {
+              id: id,
+              username: username,
+              postdate: postdate,
+              editdate: editdate,
+              edited: edited,
+              body: body,
+              vote: vote,
+              minutes: minutes
+            };
           }, _));
-      return {subject: subject, articles: articles};
+      return {
+        subject: subject,
+        articles: articles,
+        votes: _.filtera(voted, articles)
+      };
     }) : null;
   }
 
-  var params = _.fromQueryString(location.href);
-
   //http://localhost:8080/?id=278904
-  _.fmap(geeklist(params.id), _.log);
+  _.just(location, _.get(_, "href"), _.fromQueryString, _.get(_, "id"), geeklist, _.fmap(_, _.log));
 
 });
