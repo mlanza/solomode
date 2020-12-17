@@ -9,7 +9,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return _.fmap(fetch("https://boardgamegeek.com/xmlapi/geeklist/" + params.id + "/?comments=1"), repos.xml, function(doc){
       var title = _.just(doc, dom.sel1("title", _), dom.text),
           username = _.just(doc, dom.sel1("username", _), dom.text);
-      return _.fmap(_.just(doc, dom.sel("item", _), _.mapa(_.partial(item, params), _), function(items){
+      return _.fmap(_.just(doc, dom.sel("item", _), _.mapa(_.partial(item, params), _), _.filter(function(item){
+        return !item.disqualified;
+      }, _), function(items){
         return Promise.all(items);
       }), _.filtera(promptRegistration, _), function(items){
         var voters = _.just(items, _.mapcat(_.get(_, "votes"), _), _.groupBy(_.get(_, "username"), _)),
@@ -34,13 +36,18 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         username = dom.attr(el, "username"),
         postdate = _.date(dom.attr(el, "postdate")),
         body = _.just(el, dom.sel1("body", _), dom.text),
+        comments = dom.sel("comment", el),
         clamped = !!_.detect(function(el){
           return _.includes(dom.text(el), "CLAMPED");
-        }, dom.sel("comment", el)),
+        }, comments),
+        disqualified = !!_.detect(function(el){
+          return _.includes(dom.text(el), "DISQUALIFIED");
+        }, comments),
         eligibility = _.just([clamped ? "clamp" : null, objectid == params.hill ? "hill" : null], _.compact, _.toArray);
     return _.fmap(_.just(body, _.reFind(/\[thread=(\d+)\]|\[.*url=.+\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, _.partial(thread, params, {id: id, objectid: objectid, objectname: objectname})), _.merge({
       subtype: subtype,
       id: id,
+      disqualified: disqualified,
       objectid: objectid,
       objectname: objectname,
       eligibility: eligibility,
