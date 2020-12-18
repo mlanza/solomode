@@ -1,5 +1,9 @@
 require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 'atomic/repos'], function(_, dom, $, t, repos){
 
+  //rankings
+  var byScore = _.desc(_.get(_, "score")),
+      byPlays = _.desc(_.get(_, "plays"));
+
   //get the registrations from the geeklist
   function geeklist(params){
     var registered = _.date(params.registered);
@@ -21,7 +25,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           voters: voters,
           title: title,
           host: username,
-          items: items
+          items: items,
+          accolades: {
+            devotion: _.sort(byScore, byPlays, items),
+            plays: _.sort(byPlays, items)
+          }
         };
       });
     });
@@ -67,6 +75,10 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return article.vote == "LOVE";
   }
 
+  function fakevote(){
+    return _.get({0: "LIKE", 1: "LUMP", 2: "LOVE"}, _.randInt(3));
+  }
+
   //get the votes for the submission
   function thread(params, topic, id){
     var start = _.date(params.start),
@@ -81,7 +93,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
                 username = dom.attr(el, "username"),
                 postdate = _.maybe(el, dom.attr(_, "postdate"), _.blot, _.date),
                 editdate = _.maybe(el, dom.attr(_, "editdate"), _.blot, _.date),
-                body = _.just(el, dom.sel1("body", _), dom.text),
+                body = params.fake == 1 ? fakevote() : _.just(el, dom.sel1("body", _), dom.text),
                 found = _.reFind(/^(LIKE|LOVE|LUMP)(.*\((\d+) minutes\))?/, body),
                 vote = _.nth(found, 1),
                 score = _.maybe(vote, scored),
@@ -122,7 +134,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   var params = _.fromQueryString(location.href);
 
-  //http://localhost:8080/?id=278904&hill=13&registered=2021-01-02T05:00:00.000Z&start=2021-02-01T05:00:00.000Z&end=2021-03-01T05:00:00.000Z
+  //http://localhost:8080/?fake=1&id=278904&hill=13&registered=2021-01-02T05:00:00.000Z&start=2021-02-01T05:00:00.000Z&end=2021-03-01T05:00:00.000Z
   _.fmap(geeklist(params), _.log);
 
 });
