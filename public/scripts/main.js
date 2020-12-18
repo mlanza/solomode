@@ -9,10 +9,10 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   */
 
-  var delay = 500;
+  var delay = 200;
 
   function request(url, options){
-    delay += 50; //stagger to avoid overwhelming server
+    delay += 100; //stagger to avoid overwhelming server
     return new Promise(function(resolve, reject){
       setTimeout(function(){
         _.fork(fetch(url, options || {}), reject, resolve);
@@ -67,12 +67,14 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         var _voters = voters(data.items),
             _accolades = accolades(data.items, _voters, data.contestants),
             _ranked = rank(ranked, _accolades),
-            _positions = positions(_ranked);
+            _positions = positions(_ranked),
+            _monospace = monospace(_positions);
         return _.merge(data, {
           voters: _voters,
           accolades: _accolades,
           ranked: _ranked,
-          positions: _positions
+          positions: _positions,
+          monospace: _monospace
         });
       }));
     });
@@ -140,6 +142,120 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }, [], _));
   }
 
+  function desc(type, idx){
+    var title = _.get({
+      "devotion": "Most Devotion",
+      "clamped": "Clamped Award",
+      "kingofthehill": "King of the Hill",
+      "loved": "Most Loved",
+      "players": "Most Players",
+      "plays": "Most Played",
+      "mvp": "Most Valuable Player",
+      "centennial": "Centennial",
+      "quarter": "Quarter",
+      "dime": "Dime"
+    }, type);
+    switch(type){
+      case "devotion":
+      case "clamped":
+      case "kingofthehill":
+      case "loved":
+      case "plays":
+      case "players":
+      case "mvp":
+        return (title || type) + (idx === 0 ? "" : " Runner Up");
+      default:
+        var pos = _.get({
+          0: "1st",
+          1: "2nd",
+          2: "3rd",
+          3: "4th",
+          4: "5th",
+          5: "6th",
+          6: "7th",
+          7: "8th",
+          8: "9th",
+          9: "10th"
+        }, idx);
+        return pos + " " + (title || type);
+    }
+  }
+
+  function stats(type, accolade){
+    switch(type){
+      case "devotion":
+      case "clamped":
+      case "kingofthehill":
+      case "centennial":
+        return accolade.score + " Score";
+      case "loved":
+        return accolade.loves.length + " Players";
+      case "plays":
+      case "mvp":
+      case "quarter":
+      case "dime":
+        return accolade.votes.length + " Plays";
+      case "players":
+        return accolade.voters.length + " Players";
+    }
+  }
+
+  function monospace(positions){
+    return _.just(positions, _.mapcat(function(position){
+      return _.mapIndexed(function(idx, accolade){
+        return {
+          username: idx == 0 ? position.username : "",
+          game: accolade.objectname ? {
+            text: accolade.objectname,
+            id: accolade.objectid,
+            type: "thing"
+          } : "",
+          submission: accolade.id ? {
+            text: "Submission",
+            id: accolade.id,
+            type: "thread"
+          } : "",
+          accolade: desc(accolade.accolade, accolade.idx),
+          stats: stats(accolade.accolade, accolade)
+        }
+      }, position.accolades);
+    }, _), _.toArray, function(rows){
+      function pad(n){
+        return function(obj){
+          return _.isString(obj) ? _.rpad(obj, n) : "[" + obj.type + "=" + obj.id + "]" + obj.text + "[/" + obj.type + "]" + _.rpad("", n - obj.text.length);
+        }
+      }
+      function underline(text){
+        return _.lpad("", text.length, "-");
+      }
+      var username = _.just(rows, _.map(_.getIn(_, ["username", "length"]), _), _.spread(_.max), pad),
+          game = _.just(rows, _.map(_.getIn(_, ["game", "text", "length"]), _), _.spread(_.max), pad),
+          submission = _.just(rows, _.map(_.getIn(_, ["submission", "text", "length"]), _), _.spread(_.max), pad),
+          accolade =  _.just(rows, _.map(_.getIn(_, ["accolade", "length"]), _), _.spread(_.max), pad),
+          stats = _.just(rows, _.map(_.getIn(_, ["stats", "length"]), _), _.spread(_.max), pad);
+
+      var header = username("User") + "  " +
+        game("Game") + "  " +
+        submission("Submission") + "  " +
+        accolade("Accolade") + "  " +
+        stats("Stats");
+
+      var underlines = underline(username("")) + "  " +
+        underline(game("")) + "  " +
+        underline(submission("")) + "  " +
+        underline(accolade("")) + "  " +
+        underline(stats(""));
+
+      return _.join("\n", _.toArray(_.cons(header, _.cons(underlines, _.mapa(function(row){
+        return username(row.username) + "  " +
+          game(row.game) + "  " +
+          submission(row.submission) + "  " +
+          accolade(row.accolade) + "  " +
+          stats(row.stats );
+      }, rows)))));
+    });
+  }
+
   //determine the date a threshold was reached
   function threshold(num, dt, max){
     return function(item){
@@ -203,7 +319,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   }
 
   function addthread(params, contestants, item){
-    return _.fmap(_.just(item.body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, _.partial(thread, params, item, contestants)), _.merge(item, _));
+    return _.fmap(_.just(item.body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, parseInt, _.partial(thread, params, item, contestants)), _.merge(item, _));
   }
 
   var scored = _.get({"LIKE": 1.0, "LUMP": 0.75, "LOVE": 1.25}, _);
@@ -275,6 +391,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           score = _.just(votes, _.map(_.get(_, "score"), _), _.sum),
           earliest = _.maybe(votes, _.first, _.get(_, "postdate"));
       return {
+        id: id,
         subject: subject,
         articles: articles,
         earliest: earliest,
@@ -293,6 +410,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     registered: "2021-01-02T05:00:00.000Z",
     start: "2020-02-01T05:00:00.000Z",
     end: "2021-03-01T05:00:00.000Z"
-  }), _.log);
+  }), function(data){
+    dom.html(document.body, data.monospace);
+    _.log(data);
+  });
 
 });
