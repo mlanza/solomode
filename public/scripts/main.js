@@ -2,10 +2,10 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   //rankings
   var byScore = _.desc(_.get(_, "score")),
-      byPlays = _.desc(_.get(_, "plays")),
+      byPlays = _.desc(_.getIn(_, ["plays", "length"])),
       byPlayers = _.desc(_.comp(_.count, _.get(_, "voters"))),
       byEarliest = _.desc(_.get(_, "earliest")),
-      byLoved = _.desc(_.get(_, "loves"));
+      byLoved = _.desc(_.getIn(_, ["loves", "length"]));
 
   //get submissions
   function submissions(params){
@@ -21,7 +21,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return _.fmap(submissions(params), function(doc){
       var title = _.just(doc, dom.sel1("title", _), dom.text),
           username = _.just(doc, dom.sel1("username", _), dom.text);
-      return _.fmap(_.just(doc, dom.sel("item", _), _.mapa(_.partial(item, params), _), Promise.all.bind(Promise)), _.remove(_.get(_, "disqualified"), _), _.filter(cutoff, _), function(items){
+      return _.fmap(_.just(doc, dom.sel("item", _), _.mapa(_.partial(item, params), _), Promise.all.bind(Promise)), _.remove(_.get(_, "disqualified"), _), _.filtera(cutoff, _), function(items){
         var voters = _.just(items, _.mapcat(_.get(_, "votes"), _), _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, voter, votes){
               return _.conj(memo, {username: voter, votes: votes});
             }, [], _)),
@@ -38,6 +38,20 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     });
   }
 
+  //determine the date a threshold was reached
+  function threshold(num, dt, max){
+    return function(item){
+      var total = 0;
+      for(var vote of item.votes) {
+        total += vote[num];
+        if (total >= max) {
+          return vote[dt];
+        }
+      }
+      return null;
+    }
+  }
+
   //rank outcomes
   function accolades(items, voters, contestants){
     var clamped = _.filtera(_.comp(_.includes(_, "clamp"), _.get(_, "eligibility")), items),
@@ -45,7 +59,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         centennial = _.filtera(_.comp(_.gte(_, 100), _.get(_, "score")), items),
         quarters = _.filtera(_.comp(_.gte(_, 25), _.getIn(_, ["votes", "length"])), items),
         dimes = _.filtera(_.comp(_.gte(_, 10), _.getIn(_, ["votes", "length"])), items);
-    return {
+    return { //TODO add tiebreakers
       devotion: _.sort(byScore, items),
       plays: _.sort(byPlays, items),
       players: _.sort(byPlayers, items),
@@ -53,17 +67,25 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       kingofthehill: _.sort(byScore, hill),
       loved: _.sort(byLoved, items),
       mvps: _.sort(_.desc(_.getIn(_, ["votes", "length"])), _.asc(_.getIn(_, ["votes", 0, "postdate"])), voters),
-      centennial: centennial, //?
+      centennial: _.sort(_.asc(threshold("score", "postdate", 100)), centennial),
       quarters: _.sort(_.asc(_.comp(_.get(_, "postdate"), _.last, _.take(25, _), _.get(_, "votes"))), quarters),
       dimes: _.sort(_.asc(_.comp(_.get(_, "postdate"), _.last, _.take(10, _), _.get(_, "votes"))), dimes)
     }
   }
 
-  //set minimum number of entrants for this accolade category
+  //set minimum number of entrants for category
   function entrants(min){
     return function(items){
       return items.length >= min ? items : [];
     }
+  }
+
+  function minplaytime(id){
+    return _.fmap(fetch("https://boardgamegeek.com/xmlapi2/thing?id=" + id), repos.xml, _.maybe(_, dom.sel1("minplaytime", _), dom.attr(_, "value"), _.blot, parseInt));
+  }
+
+  function units(minutes){
+    return Math.round(minutes / 30);
   }
 
   //get the contest submission
@@ -78,22 +100,28 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         comments = _.mapa(dom.text, dom.sel("comment", el)),
         clamped = _.detect(_.includes(_, "CLAMPED"), comments),
         disqualified = _.detect(_.includes(_, "DISQUALIFIED"), comments),
+        minimum = _.maybe(comments, _.detect(_.includes(_, "MINIMUM PLAYING TIME"), _), _.reFind(/MINIMUM PLAYING TIME\=(\d+)/, _), _.nth(_, 1), _.blot, parseInt),
         eligibility = _.just([clamped ? "clamp" : null, objectid == params.hill ? "hill" : null], _.compact, _.toArray);
-    return _.fmap(_.just(body, _.reFind(/\[thread=(\d+)\]|\[.*url=.+\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, _.partial(thread, params, {id: id, objectid: objectid, objectname: objectname})), _.merge({
-      subtype: subtype,
-      id: id,
-      disqualified: !!disqualified,
-      objectid: objectid,
-      objectname: objectname,
-      eligibility: eligibility,
-      username: username,
-      postdate: postdate,
-      body: body
-    }, _));
+    return _.fmap(minplaytime(objectid), function(minplaytime){
+      var playunits = units(minimum || minplaytime);
+      return _.fmap(_.just(body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, _.partial(thread, params, {id: id, objectid: objectid, objectname: objectname, playunits: playunits, username: username})), _.merge({
+        subtype: subtype,
+        id: id,
+        disqualified: !!disqualified,
+        minplaytime: minimum || minplaytime,
+        playunits: playunits,
+        objectid: objectid,
+        objectname: objectname,
+        eligibility: eligibility,
+        username: username,
+        postdate: postdate,
+        body: body
+      }, _));
+    });
   }
 
   function voted(article){
-    return article.vote && article.edited;
+    return article.vote && !article.edited;
   }
 
   var scored = _.get({"LIKE": 1.0, "LUMP": 0.75, "LOVE": 1.25}, _);
@@ -112,6 +140,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         end = _.date(params.end);
     function timelyVote(article){
       return article.postdate > start && article.postdate < end;
+    }
+    function other(article){
+      return article.username !== topic.username;
     }
     return id ? _.fmap(fetch("https://boardgamegeek.com/xmlapi2/thread?id=" + id), repos.xml, function(el){
       var subject = _.just(el, dom.sel1("subject", _), dom.text),
@@ -135,15 +166,14 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
               edited: edited,
               body: body,
               vote: vote,
-              score: score,
+              score: score * topic.playunits,
               minutes: minutes,
               topic: topic
             };
           }, _)),
-          votes = _.filtera(_.and(timelyVote, voted), articles),
+          votes = _.just(articles, _.filtera(_.and(timelyVote, voted, other), _)), //TODO filter out excess contestant votes
           voters = _.unique(_.map(_.get(_, "username"), votes)),
-          plays = _.count(votes),
-          loves = _.count(_.filter(loved, articles)),
+          loves = _.just(votes, _.filtera(loved, _), _.groupBy(_.get(_, "username"), _), _.vals, _.mapa(_.first, _)),
           score = _.just(votes, _.map(_.get(_, "score"), _), _.sum),
           earliest = _.maybe(votes, _.first, _.get(_, "postdate"));
       return {
@@ -151,7 +181,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         articles: articles,
         earliest: earliest,
         loves: loves,
-        plays: plays,
         voters: voters,
         votes: votes,
         score: score
