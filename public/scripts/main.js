@@ -12,7 +12,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   var delay = 0;
 
   function request(url, options){
-    delay += 300; //stagger to avoid overwhelming server
+    delay += 600; //stagger to avoid overwhelming server
     return new Promise(function(resolve, reject){
       setTimeout(function(){
         _.fork(fetch(url, options || {}), reject, resolve);
