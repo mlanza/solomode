@@ -12,10 +12,12 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   var delay = 0;
 
   function request(url, options){
-    delay += 600; //stagger to avoid overwhelming server
+    delay += 500; //stagger to avoid overwhelming server
     return new Promise(function(resolve, reject){
-      setTimeout(function(){
-        _.fork(fetch(url, options || {}), reject, resolve);
+      setTimeout(function retrieve(){
+        setTimeout(function(){
+          _.fork(fetch(url, options || {}), retrieve, resolve);
+        }, 500)
       }, delay);
     })
   }
@@ -68,9 +70,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
             _accolades = accolades(data.items, _voters, data.contestants),
             _ranked = rank(ranked, _accolades),
             _positions = positions(_ranked),
+            _docked = _.just(data.items, _.filtera(_.get(_, "dock"), _)),
             _monospace = monospace(_positions);
         return _.merge(data, {
           voters: _voters,
+          docked: _docked,
           accolades: _accolades,
           ranked: _ranked,
           positions: _positions,
@@ -378,6 +382,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           voters = _.unique(_.map(_.get(_, "username"), votes)),
           loves = _.just(votes, _.filtera(loved, _), _.groupBy(_.get(_, "username"), _), _.vals, _.mapa(_.first, _)),
           score = _.just(votes, _.map(_.get(_, "score"), _), _.sum),
+          dock = docked(topic.minplaytime, votes),
           earliest = _.maybe(votes, _.first, _.get(_, "postdate"));
       return {
         id: id,
@@ -387,9 +392,23 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         loves: loves,
         voters: voters,
         votes: votes,
+        dock: dock,
         score: score
       };
     }) : null;
+  }
+
+  function docked(minplaytime, items){
+    if (_.count(items) > 0) {
+      var min = minplaytime - 45;
+      var concerns =  min > 0 ? _.just(items, _.filtera(function(vote){
+        return vote.minutes && vote.minutes < min;
+      }, _)) : [];
+      var percent = _.count(concerns) / _.count(items);
+      return percent >= (1 / 3) ? concerns : null;
+    } else {
+      return null;
+    }
   }
 
   _.fmap(tabulate({
@@ -400,7 +419,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     start: "2020-02-01T05:00:00.000Z",
     end: "2021-03-01T05:00:00.000Z"
   }), function(data){
-    dom.html(document.body, data.monospace);
+    dom.html(document.body, data.docked.length ? "DOCKED" : data.monospace);
     _.log(data);
   });
 
