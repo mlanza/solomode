@@ -201,7 +201,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   }
 
   function monospace(positions){
-    var strip = _.just(_, _.replace(_, /\[[a-z]+\=\d+\]/g, ""), _.replace(_, /\[\/[a-z]+\]/g, "")),
+    var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
         len = _.just(_, strip, _.get(_, "length"));
     function pad(n){
       return function(text){
@@ -214,7 +214,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return _.just(positions, _.mapcat(function(position){
       return _.mapIndexed(function(idx, accolade){
         return {
-          username: idx == 0 ? position.username : "",
+          username: idx == 0 ? "[user=" + position.username + "]" + position.username + "[/user]" : "",
           submission: accolade.objectid ? "[thing=" + accolade.objectid + "]" + accolade.objectname + "[/thing] ([thread=" + accolade.id + "]" + accolade.id + "[/thread])" : "",
           accolade: desc(accolade.accolade, accolade.idx),
           stats: stats(accolade.accolade, accolade)
