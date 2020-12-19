@@ -1,6 +1,6 @@
 # Solomode
 
-Compute results for BGG Solomode contest.
+Compute results for [BGG Solomode contest](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest).
 
 
 ## The MIT License (MIT)
