@@ -5,7 +5,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
     DISQUALIFIED - rules violation
     CLAMPED - eligible for The Clamp
-    MINIMUM PLAYING TIME=n - as determined by looking to the rules PDF
+    MINIMUM PLAYING TIME = n - as determined by looking to the rules PDF
 
   */
 
@@ -289,9 +289,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         postdate = _.date(dom.attr(el, "postdate")),
         body = _.just(el, dom.sel1("body", _), dom.text),
         comments = _.mapa(dom.text, dom.sel("comment", el)),
+        minimum = _.maybe(comments, _.detect(_.includes(_, "MINIMUM PLAYING TIME"), _), _.reFind(/MINIMUM PLAYING TIME[ ]?=[ ]?(\d+)/, _), _.nth(_, 1), _.blot, parseInt),
         clamped = _.detect(_.includes(_, "CLAMPED"), comments),
         disqualified = _.detect(_.includes(_, "DISQUALIFIED"), comments),
-        minimum = _.maybe(comments, _.detect(_.includes(_, "MINIMUM PLAYING TIME"), _), _.reFind(/MINIMUM PLAYING TIME\=(\d+)/, _), _.nth(_, 1), _.blot, parseInt),
         eligibility = _.just([clamped ? "clamp" : null, objectid == params.hill ? "hill" : null], _.compact, _.toArray);
     return {
       subtype: subtype,

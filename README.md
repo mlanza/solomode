@@ -1,7 +1,6 @@
 # Solomode
 
-Compute results for [BGG Solomode contest](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest).
-
+Compute results for [BGG Solomode contest](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest).  Tested within Google Chrome.
 
 ## The MIT License (MIT)
 **Copyright © 2020 Mario T. Lanza**
