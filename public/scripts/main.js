@@ -9,10 +9,10 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   */
 
-  var delay = 200;
+  var delay = 0;
 
   function request(url, options){
-    delay += 100; //stagger to avoid overwhelming server
+    delay += 300; //stagger to avoid overwhelming server
     return new Promise(function(resolve, reject){
       setTimeout(function(){
         _.fork(fetch(url, options || {}), reject, resolve);
@@ -136,9 +136,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   //rank users and list their accolades
   function positions(items){
     return _.just(items, _.mapa(_.get(_, "username"), _), _.unique, _.reduce(function(memo, username){
-      return _.conj(memo, {username: username, accolades: _.filtera(function(item){
+      return _.conj(memo, {username: username, accolades: _.just(items, _.filter(function(item){
         return item.username == username;
-      }, items)});
+      }, _), _.sort(_.asc(_.get(_, "id")), _), _.toArray)});
     }, [], _));
   }
 
@@ -201,58 +201,47 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   }
 
   function monospace(positions){
+    var strip = _.just(_, _.replace(_, /\[[a-z]+\=\d+\]/g, ""), _.replace(_, /\[\/[a-z]+\]/g, "")),
+        len = _.just(_, strip, _.get(_, "length"));
+    function pad(n){
+      return function(text){
+        return text + _.rpad("", n - len(text));
+      }
+    }
+    function underline(text){
+      return _.just(text, len, _.lpad("", _, "-"));
+    }
     return _.just(positions, _.mapcat(function(position){
       return _.mapIndexed(function(idx, accolade){
         return {
           username: idx == 0 ? position.username : "",
-          game: accolade.objectname ? {
-            text: accolade.objectname,
-            id: accolade.objectid,
-            type: "thing"
-          } : "",
-          submission: accolade.id ? {
-            text: "Submission",
-            id: accolade.id,
-            type: "thread"
-          } : "",
+          submission: accolade.objectid ? "[thing=" + accolade.objectid + "]" + accolade.objectname + "[/thing] ([thread=" + accolade.id + "]" + accolade.id + "[/thread])" : "",
           accolade: desc(accolade.accolade, accolade.idx),
           stats: stats(accolade.accolade, accolade)
         }
       }, position.accolades);
     }, _), _.toArray, function(rows){
-      function pad(n){
-        return function(obj){
-          return _.isString(obj) ? _.rpad(obj, n) : "[" + obj.type + "=" + obj.id + "]" + obj.text + "[/" + obj.type + "]" + _.rpad("", n - obj.text.length);
-        }
-      }
-      function underline(text){
-        return _.lpad("", text.length, "-");
-      }
-      var username = _.just(rows, _.map(_.getIn(_, ["username", "length"]), _), _.spread(_.max), pad),
-          game = _.just(rows, _.map(_.getIn(_, ["game", "text", "length"]), _), _.spread(_.max), pad),
-          submission = _.just(rows, _.map(_.getIn(_, ["submission", "text", "length"]), _), _.spread(_.max), pad),
-          accolade =  _.just(rows, _.map(_.getIn(_, ["accolade", "length"]), _), _.spread(_.max), pad),
-          stats = _.just(rows, _.map(_.getIn(_, ["stats", "length"]), _), _.spread(_.max), pad);
+      var username = _.just(rows, _.map(_.comp(len, _.get(_, "username")), _), _.spread(_.max), pad),
+          submission = _.just(rows, _.map(_.comp(len, _.get(_, "submission")), _), _.spread(_.max), pad),
+          accolade =  _.just(rows, _.map(_.comp(len, _.get(_, "accolade")), _), _.spread(_.max), pad),
+          stats = _.just(rows, _.map(_.comp(len, _.get(_, "stats")), _), _.spread(_.max), pad);
 
-      var header = username("User") + "  " +
-        game("Game") + "  " +
+      var headers = username("User") + "  " +
         submission("Submission") + "  " +
         accolade("Accolade") + "  " +
         stats("Stats");
 
       var underlines = underline(username("")) + "  " +
-        underline(game("")) + "  " +
         underline(submission("")) + "  " +
         underline(accolade("")) + "  " +
         underline(stats(""));
 
-      return _.join("\n", _.toArray(_.cons(header, _.cons(underlines, _.mapa(function(row){
+      return _.just(rows, _.mapa(function(row){
         return username(row.username) + "  " +
-          game(row.game) + "  " +
           submission(row.submission) + "  " +
           accolade(row.accolade) + "  " +
           stats(row.stats );
-      }, rows)))));
+      }, _), _.cons(underlines, _), _.cons(headers, _), _.join("\n", _));
     });
   }
 
