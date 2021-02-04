@@ -77,14 +77,16 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       },
       function(data){
         var _voters = voters(data.items),
-            _accolades = accolades(data.items, _voters, data.contestants),
+            _played = _.filtera(_.getIn(_, ["votes", "length"]), data.items),
+            _accolades = accolades(_played, _voters, data.contestants),
             _ranked = rank(ranked, _accolades),
             _positions = positions(_ranked),
-            _docked = _.just(data.items, _.filtera(_.get(_, "dock"), _)),
+            _docked = _.filtera(_.get(_, "dock"), _played),
             _monospace = monospace(_positions);
         return _.merge(data, {
           voters: _voters,
           docked: _docked,
+          played: _played,
           accolades: _accolades,
           ranked: _ranked,
           positions: _positions,
@@ -293,6 +295,12 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return Math.round(minutes / 30);
   }
 
+  function has(word){
+    return function(text){
+      return _.includes(_.split(text, "\n"), word);
+    }
+  }
+
   //get the contest submission
   function item(params, el){
     var subtype = dom.attr(el, "subtype"),
@@ -302,11 +310,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         username = dom.attr(el, "username"),
         postdate = _.date(dom.attr(el, "postdate")),
         body = _.just(el, dom.sel1("body", _), dom.text),
-        comments = _.mapa(dom.text, dom.sel("comment", el)),
+        comments = _.reverse(_.mapa(dom.text, dom.sel("comment", el))),
         minimum = _.maybe(comments, _.detect(_.includes(_, "MINIMUM PLAYING TIME"), _), _.reFind(/MINIMUM PLAYING TIME[ ]?=[ ]?(\d+)/, _), _.nth(_, 1), _.blot, parseInt),
-        clamped = _.detect(_.includes(_, "CLAMPED"), comments),
-        disqualified = _.detect(_.includes(_, "DISQUALIFIED"), comments),
-        withdrawn = _.detect(_.includes(_, "WITHDRAWN"), comments),
+        clamped = _.detect(has("CLAMPED"), comments),
+        disqualified = _.detect(has("DISQUALIFIED"), comments),
+        withdrawn = _.detect(has("WITHDRAWN"), comments),
         eligibility = _.just([clamped ? "clamp" : null, objectid == params.hill ? "hill" : null], _.compact, _.toArray);
 
     return {
