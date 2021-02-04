@@ -4,6 +4,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     Comments which must be added to the submissions geeklist prior to processing:
 
     DISQUALIFIED - rules violation
+    WITHDRAWN - no longer participating
     CLAMPED - eligible for The Clamp
     MINIMUM PLAYING TIME = n - as determined by looking to the rules PDF
 
@@ -53,7 +54,14 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return _.fmap(submissions(params), function(doc){
       var title = _.just(doc, dom.sel1("title", _), dom.text),
           username = _.just(doc, dom.sel1("username", _), dom.text);
-      return _.just(doc, dom.sel("item", _), _.mapa(_.partial(item, params), _), addminplaytimes, _.fmap(_, Promise.all.bind(Promise), _.filtera(deadline(_.date(params.registered)), _), _.remove(_.get(_, "disqualified"), _), function(items){
+      return _.just(doc, dom.sel("item", _),
+        _.mapa(_.partial(item, params), _),
+        addminplaytimes,
+        _.fmap(_, Promise.all.bind(Promise),
+        _.filtera(deadline(_.date(params.registered)), _),
+        params.unsifted ? _.identity : _.remove(_.get(_, "disqualified"), _),
+        params.unsifted ? _.identity : _.remove(_.get(_, "withdrawn"), _),
+      function(items){
         var contestants = _.unique(_.mapa(_.get(_, "username"), items));
         return {
           title: title,
@@ -61,11 +69,13 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           contestants: contestants,
           items: items
         }
-      }, function(data){
+      },
+      function(data){
         return _.fmap(Promise.all(_.mapa(_.partial(addthread, params, data.contestants), data.items)),
           _.assoc({}, "items", _),
           _.merge(data, _));
-      }, function(data){
+      },
+      function(data){
         var _voters = voters(data.items),
             _accolades = accolades(data.items, _voters, data.contestants),
             _ranked = rank(ranked, _accolades),
@@ -296,11 +306,14 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         minimum = _.maybe(comments, _.detect(_.includes(_, "MINIMUM PLAYING TIME"), _), _.reFind(/MINIMUM PLAYING TIME[ ]?=[ ]?(\d+)/, _), _.nth(_, 1), _.blot, parseInt),
         clamped = _.detect(_.includes(_, "CLAMPED"), comments),
         disqualified = _.detect(_.includes(_, "DISQUALIFIED"), comments),
+        withdrawn = _.detect(_.includes(_, "WITHDRAWN"), comments),
         eligibility = _.just([clamped ? "clamp" : null, objectid == params.hill ? "hill" : null], _.compact, _.toArray);
+
     return {
       subtype: subtype,
       id: id,
       minimum: minimum,
+      withdrawn: !!withdrawn,
       disqualified: !!disqualified,
       objectid: objectid,
       objectname: objectname,
@@ -358,7 +371,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
                 username = dom.attr(el, "username"),
                 postdate = _.maybe(el, dom.attr(_, "postdate"), _.blot, _.date),
                 editdate = _.maybe(el, dom.attr(_, "editdate"), _.blot, _.date),
-                body = params.fake == 1 ? fakevote() : _.just(el, dom.sel1("body", _), dom.text),
+                body = params.fake == 1 ? fakevote() : _.just(el, dom.sel1("body", _), dom.text, _.replace(_, "<b>", ""), _.replace(_, "</b>", "")),
                 found = _.reFind(/^(LIKE|LOVE|LUMP)(.*\((\d+) minutes\))?/, body),
                 vote = _.nth(found, 1),
                 score = _.maybe(vote, scored),
@@ -412,7 +425,8 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   }
 
   _.fmap(tabulate({
-    fake: 1,
+    fake: 0,
+    unsifted: 0,
     id: 278904,
     hill: 13,
     registered: "2021-01-02T05:00:00.000Z",
@@ -420,6 +434,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     end: "2021-03-01T05:00:00.000Z"
   }), function(data){
     dom.html(document.body, data.docked.length ? "DOCKED" : data.monospace);
+    window.results = data;
     _.log(data);
   });
 
