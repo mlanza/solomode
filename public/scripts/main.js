@@ -49,6 +49,14 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
+  function plays(items){
+    return _.just(items, _.mapcat(function(item){
+      return _.map(function(vote){
+        return {id: item.id, game: {id: item.objectid, objectname: item.objectname}, username: item.username, vote: vote.vote, voter: vote.username, postdate: vote.postdate, edited: vote.edited};
+      }, item.votes);
+    }, _), _.sort(_.asc(_.get(_, "postdate")), _), _.toArray);
+  }
+
   //tabulate results
   function tabulate(params){
     return _.fmap(submissions(params), function(doc){
@@ -78,19 +86,23 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       function(data){
         var _voters = voters(data.items),
             _played = _.filtera(_.getIn(_, ["votes", "length"]), data.items),
+            _plays = plays(_played),
             _accolades = accolades(_played, _voters, data.contestants),
             _ranked = rank(ranked, _accolades),
             _positions = positions(_ranked),
             _docked = _.filtera(_.get(_, "dock"), _played),
-            _monospace = monospace(_positions);
+            _reportedAccolades = reportAccolades(_positions),
+            _reportedPlays = reportPlays(_plays);
         return _.merge(data, {
           voters: _voters,
           docked: _docked,
           played: _played,
+          plays: _plays,
           accolades: _accolades,
           ranked: _ranked,
           positions: _positions,
-          monospace: _monospace
+          reportedAccolades: _reportedAccolades,
+          reportedPlays: _reportedPlays
         });
       }));
     });
@@ -216,17 +228,64 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
-  function monospace(positions){
-    var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
-        len = _.just(_, strip, _.get(_, "length"));
-    function pad(n){
-      return function(text){
-        return text + _.rpad("", n - len(text));
+  var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 ]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
+      len = _.just(_, strip, _.get(_, "length"));
+
+  function pad(n){
+    return function(text){
+      return text + _.rpad("", n - len(text));
+    }
+  }
+
+  function underline(text){
+    return _.just(text, len, _.lpad("", _, "-"));
+  }
+
+  function column(rows, key){
+    return _.just(rows, _.map(_.comp(len, _.get(_, key)), _), _.spread(_.max), pad);
+  }
+
+  var dt = _.fmt(_.pipe(_.month, _.inc, _.lpad(_, 2, "0")), "-", _.pipe(_.day, _.lpad(_, 2, "0")));
+
+  function reportPlays(plays){
+    return _.just(plays, _.map(function(item){
+      return {
+        username: "[user=" + item.username + "]" + item.username + "[/user]",
+        submission: item.game.id ? "[thing=" + item.game.id + "]" + item.game.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
+        voter: "[user=" + item.voter + "]" + item.voter + "[/user]",
+        vote: item.vote,
+        postdate: dt(item.postdate)
       }
-    }
-    function underline(text){
-      return _.just(text, len, _.lpad("", _, "-"));
-    }
+    }, _), _.toArray, function(rows){
+      var username = column(rows, "username"),
+          submission = column(rows, "submission"),
+          voter =  column(rows, "voter"),
+          vote = column(rows, "vote"),
+          postdate = column(rows, "postdate");
+
+      var headers = username("User") + "  " +
+        submission("Submission") + "  " +
+        voter("Voter") + "  " +
+        vote("Vote") + "  " +
+        postdate("Date");
+
+      var underlines = underline(username("")) + "  " +
+        underline(submission("")) + "  " +
+        underline(voter("")) + "  " +
+        underline(vote("")) + "  " +
+        underline(postdate(""));
+
+      return _.just(rows, _.mapa(function(row){
+        return username(row.username) + "  " +
+          submission(row.submission) + "  " +
+          voter(row.voter) + "  " +
+          vote(row.vote) + "  " +
+          postdate(row.postdate);
+      }, _), _.cons(underlines, _), _.cons(headers, _), _.join("\n", _));
+    });
+  }
+
+  function reportAccolades(positions){
     return _.just(positions, _.mapcat(function(position){
       return _.mapIndexed(function(idx, accolade){
         return {
@@ -237,10 +296,10 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         }
       }, position.accolades);
     }, _), _.toArray, function(rows){
-      var username = _.just(rows, _.map(_.comp(len, _.get(_, "username")), _), _.spread(_.max), pad),
-          submission = _.just(rows, _.map(_.comp(len, _.get(_, "submission")), _), _.spread(_.max), pad),
-          accolade =  _.just(rows, _.map(_.comp(len, _.get(_, "accolade")), _), _.spread(_.max), pad),
-          stats = _.just(rows, _.map(_.comp(len, _.get(_, "stats")), _), _.spread(_.max), pad);
+      var username = column(rows, "username"),
+          submission = column(rows, "submission"),
+          accolade =  column(rows, "accolade"),
+          stats = column(rows, "stats");
 
       var headers = username("User") + "  " +
         submission("Submission") + "  " +
@@ -256,7 +315,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         return username(row.username) + "  " +
           submission(row.submission) + "  " +
           accolade(row.accolade) + "  " +
-          stats(row.stats );
+          stats(row.stats);
       }, _), _.cons(underlines, _), _.cons(headers, _), _.join("\n", _));
     });
   }
@@ -441,7 +500,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     start: "2020-02-01T05:00:00.000Z",
     end: "2021-03-01T05:00:00.000Z"
   }), function(data){
-    dom.html(document.body, data.docked.length ? "DOCKED" : data.monospace);
+    dom.html(document.body, data.docked.length ? "DOCKED" : data.reportedAccolades + "\n\n" + data.reportedPlays);
     window.results = data;
     _.log(data);
   });
