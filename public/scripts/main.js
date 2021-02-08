@@ -38,7 +38,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   }
 
   function voters(items){
-    return _.just(items, _.mapcat(_.get(_, "votes"), _), _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, voter, votes){
+    return _.just(items, _.mapcat(_.get(_, "votes"), _), _.toArray, _.see("votes"), _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, voter, votes){
       return _.conj(memo, {username: voter, votes: votes});
     }, [], _));
   }
@@ -64,6 +64,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           username = _.just(doc, dom.sel1("username", _), dom.text);
       return _.just(doc, dom.sel("item", _),
         _.mapa(_.partial(item, params), _),
+        _.filter(function(item){
+          return params.selected(item.objectname);
+        }, _),
         addminplaytimes,
         _.fmap(_, Promise.all.bind(Promise),
         _.filtera(deadline(_.date(params.registered)), _),
@@ -121,7 +124,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   //accolade eligibility?
   function accolades(items, voters, contestants){
     var clamped = _.filtera(_.comp(_.includes(_, "clamp"), _.get(_, "eligibility")), items),
-        hill = _.just(items, _.filtera(_.comp(_.includes(_, "hill"), _.get(_, "eligibility")), _), entrants(3)),
+        hill = _.just(items, _.filtera(_.comp(_.includes(_, "hill"), _.get(_, "eligibility")), _)),
         centennials = _.filtera(_.comp(_.gte(_, 100), _.get(_, "score")), items),
         quarters = _.filtera(_.comp(_.gte(_, 25), _.getIn(_, ["votes", "length"])), items),
         dimes = _.filtera(_.comp(_.gte(_, 10), _.getIn(_, ["votes", "length"])), items);
@@ -228,7 +231,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
-  var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 ]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
+  var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 _]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
       len = _.just(_, strip, _.get(_, "length"));
 
   function pad(n){
@@ -334,13 +337,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
-  //set minimum number of entrants for category
-  function entrants(min){
-    return function(items){
-      return items.length >= min ? items : [];
-    }
-  }
-
   function minplaytimes(ids){
     return _.fmap(request("https://boardgamegeek.com/xmlapi2/thing?type=boardgame&id=" + _.join(",", ids)), repos.xml, function(el){
       return _.reduce(function(memo, id){
@@ -392,7 +388,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   }
 
   function addthread(params, contestants, item){
-    return _.fmap(_.just(item.body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, parseInt, _.partial(thread, params, item, contestants)), _.merge(item, _));
+    return _.fmap(_.just(item.body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, parseInt, _.partial(thread, params, item, contestants)), _.merge({_game: item.objectname}, item, _));
   }
 
   var scored = _.get({"LIKE": 1.0, "LUMP": 0.75, "LOVE": 1.25}, _);
@@ -458,7 +454,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
               minutes: minutes
             };
           }, _)),
-          votes = _.just(articles, _.filtera(_.and(timely(_.date(params.start), _.date(params.end)), voted, unbiased(topic.username), limited(articles, contestants)), _)),
+          votes = _.just(articles, _.filtera(_.and(timely(_.date(params.start), _.date(params.end)), voted, unbiased(topic.username)), _), function(articles){
+            return _.filtera(limited(articles, contestants), articles);
+          }),
           voters = _.unique(_.map(_.get(_, "username"), votes)),
           loves = _.just(votes, _.filtera(loved, _), _.groupBy(_.get(_, "username"), _), _.vals, _.mapa(_.first, _)),
           score = _.just(votes, _.map(_.get(_, "score"), _), _.sum),
@@ -496,6 +494,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     unsifted: 0,
     id: 278904,
     hill: 13,
+    selected: _.constantly(true),
     registered: "2021-01-02T05:00:00.000Z",
     start: "2020-02-01T05:00:00.000Z",
     end: "2021-03-01T05:00:00.000Z"
