@@ -38,7 +38,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   }
 
   function voters(items){
-    return _.just(items, _.mapcat(_.get(_, "votes"), _), _.toArray, _.see("votes"), _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, voter, votes){
+    return _.just(items, _.mapcat(_.get(_, "votes"), _), _.toArray, _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, voter, votes){
       return _.conj(memo, {username: voter, votes: votes});
     }, [], _));
   }
