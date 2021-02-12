@@ -88,6 +88,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       },
       function(data){
         var _voters = voters(data.items),
+            _unlinked = _.filtera(_.complement(_.get(_, "articles")), data.items),
             _played = _.filtera(_.getIn(_, ["votes", "length"]), data.items),
             _plays = plays(_played),
             _accolades = accolades(_played, _voters, data.contestants),
@@ -98,6 +99,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
             _reportedPlays = reportPlays(_plays);
         return _.merge(data, {
           voters: _voters,
+          unlinked: _unlinked,
           docked: _docked,
           played: _played,
           plays: _plays,
