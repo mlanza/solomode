@@ -115,7 +115,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   //rankings
   var byScore = _.desc(_.get(_, "score")),
-      byPlays = _.desc(_.getIn(_, ["plays", "length"])),
+      byPlays = _.desc(_.getIn(_, ["votes", "length"])),
       byPlayers = _.desc(_.comp(_.count, _.get(_, "voters"))),
       byLoved = _.desc(_.getIn(_, ["loves", "length"])),
       byFastestCentennial = _.asc(threshold("score", "postdate", 100)),
@@ -133,17 +133,17 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         dimes = _.filtera(_.comp(_.gte(_, 10), _.getIn(_, ["votes", "length"])), items),
         nickels = _.filtera(_.comp(_.gte(_, 5), _.getIn(_, ["votes", "length"])), items);
     return {
-      devotion: _.just(items, _.sort(byScore, byPlays, byPlayers, byLoved, byFastestCentennial, byFastestQuarter, byFastestDime, byFastestNickel, byFastestVote, _)),
-      plays: _.just(items, _.sort(byPlays, byScore, byPlayers, byLoved, byFastestCentennial, byFastestQuarter, byFastestDime, byFastestNickel, byFastestVote, _)),
-      players: _.just(items, _.sort(byPlayers, byScore, byPlays, byLoved, byFastestCentennial, byFastestQuarter, byFastestDime, byFastestNickel, byFastestVote, _)),
-      clamped: _.just(clamped, _.sort(byScore, byPlays, byPlayers, byLoved, byFastestCentennial, byFastestQuarter, byFastestDime, byFastestNickel, byFastestVote, _)),
-      kingofthehill: _.just(hill, _.sort(byScore, byPlays, byPlayers, byLoved, byFastestCentennial, byFastestQuarter, byFastestDime, byFastestNickel, byFastestVote, _)),
-      loved: _.just(items, _.sort(byLoved, byScore, byPlays, byPlayers, byFastestCentennial, byFastestQuarter, byFastestDime, byFastestNickel, byFastestVote, _)),
-      mvp: _.just(voters, _.sort(_.desc(_.getIn(_, ["votes", "length"])), _.asc(_.getIn(_, ["votes", 0, "postdate"])), _)),
-      centennial: _.sort(byFastestCentennial, byScore, byPlays, byPlayers, byLoved, byFastestQuarter, byFastestDime, byFastestNickel, byFastestVote, centennials),
-      quarter: _.sort(byFastestQuarter, byScore, byPlays, byPlayers, byLoved, byFastestCentennial, byFastestDime, byFastestNickel, byFastestVote, quarters),
-      dime: _.sort(byFastestDime, byScore, byPlays, byPlayers, byLoved, byFastestCentennial, byFastestQuarter, byFastestNickel, byFastestVote, dimes),
-      nickel: _.sort(byFastestNickel, byScore, byPlays, byPlayers, byLoved, byFastestCentennial, byFastestQuarter, byFastestVote, nickels)
+      devotion: _.sort(byScore, byFastestVote, items),
+      plays: _.sort(byPlays, byFastestVote, items),
+      players: _.sort(byPlayers, byFastestVote, items),
+      clamped: _.sort(byScore, byFastestVote, clamped),
+      kingofthehill: _.sort(byScore, byFastestVote, hill),
+      loved: _.sort(byLoved, byFastestVote, items),
+      mvp: _.sort(_.desc(_.getIn(_, ["votes", "length"])), _.asc(_.getIn(_, ["votes", 0, "postdate"])), voters),
+      centennial: _.sort(byFastestCentennial, byFastestVote, centennials),
+      quarter: _.sort(byFastestQuarter, byFastestVote, quarters),
+      dime: _.sort(byFastestDime, byFastestVote, dimes),
+      nickel: _.sort(byFastestNickel, byFastestVote, nickels)
     }
   }
 
