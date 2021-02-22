@@ -454,6 +454,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
+  var voting = _.reFind(/(LIKE|LOVE|LUMP)( \((\d+) minutes\))?\s*$/m, _);
+  var stripMarkup = _.just(_, _.replace(_, /\<br[\/]?\>/g, "\n"), _.replace(_, /(\<[a-z0-9]*\>|\<\/[a-z0-9]*\>)/g, ""));
+
   //get the votes for the submission
   function thread(params, topic, contestants, id){
     return id ? _.fmap(request("https://boardgamegeek.com/xmlapi2/thread?id=" + id), repos.xml, function(el){
@@ -463,8 +466,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
                 username = dom.attr(el, "username"),
                 postdate = _.maybe(el, dom.attr(_, "postdate"), _.blot, _.date),
                 editdate = _.maybe(el, dom.attr(_, "editdate"), _.blot, _.date),
-                body = params.fake == 1 ? fakevote() : _.just(el, dom.sel1("body", _), dom.text, _.replace(_, "<b>", ""), _.replace(_, "</b>", "")),
-                found = _.reFind(/^(LIKE|LOVE|LUMP)(.*\((\d+) minutes\))?/, body),
+                body = params.fake == 1 ? fakevote() : _.just(el, dom.sel1("body", _), dom.text, stripMarkup),
+                firstline = _.just(body, _.split(_, "\n"), _.first),
+                found = voting(firstline),
                 vote = _.nth(found, 1),
                 score = _.maybe(vote, scored),
                 minutes = _.maybe(found, _.nth(_, 3), _.blot, parseInt),
@@ -478,6 +482,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
               editdate: editdate,
               edited: edited,
               body: body,
+              firstline: firstline,
               vote: vote,
               score: score * topic.playunits,
               minutes: minutes
