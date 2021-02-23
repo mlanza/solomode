@@ -73,7 +73,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         params.unsifted ? _.identity : _.remove(_.get(_, "disqualified"), _),
         params.unsifted ? _.identity : _.remove(_.get(_, "withdrawn"), _),
       function(items){
-        var contestants = _.unique(_.mapa(_.get(_, "username"), items));
+        var contestants = _.sort(_.unique(_.mapa(_.get(_, "username"), items)));
         return {
           title: title,
           host: username,
@@ -454,7 +454,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
-  var voting = _.reFind(/(LIKE|LOVE|LUMP)( \((\d+) minutes\))?\s*$/m, _);
+  var voting = _.reFind(/^(LIKE|LOVE|LUMP)( \((\d+) minutes\))?\s*$/m, _);
   var stripMarkup = _.just(_, _.replace(_, /\<br[\/]?\>/g, "\n"), _.replace(_, /(\<[a-z0-9]*\>|\<\/[a-z0-9]*\>)/g, ""));
 
   //get the votes for the submission
@@ -490,7 +490,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           }, _)),
           votes = _.just(articles, _.filtera(_.and(timely(_.date(params.start), _.date(params.end)), voted, unbiased(topic.username)), _), function(articles){
             return _.filtera(limited(articles, contestants), articles);
-          }),
+          }), 
           voters = _.unique(_.map(_.get(_, "username"), votes)),
           loves = _.just(votes, _.filtera(loved, _), _.groupBy(_.get(_, "username"), _), _.vals, _.mapa(_.first, _)),
           score = _.just(votes, _.map(_.get(_, "score"), _), _.sum),
