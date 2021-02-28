@@ -43,12 +43,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }, [], _));
   }
 
-  function deadline(registered){
-    return function(item){
-      return item.postdate < registered;
-    }
-  }
-
   function plays(items){
     return _.just(items, _.mapcat(function(item){
       return _.map(function(vote){
@@ -69,7 +63,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         }, _),
         addminplaytimes,
         _.fmap(_, Promise.all.bind(Promise),
-        _.filtera(deadline(_.date(params.registered)), _),
+        _.filtera(params.timelyRegistration, _),
         params.unsifted ? _.identity : _.remove(_.get(_, "disqualified"), _),
         params.unsifted ? _.identity : _.remove(_.get(_, "withdrawn"), _),
       function(items){
@@ -426,10 +420,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return article.vote == "LOVE";
   }
 
-  function fakevote(){
-    return _.get({0: "LIKE", 1: "LUMP", 2: "LOVE"}, _.randInt(3));
-  }
-
   function limited(articles, contestants){
     return function(article){ //count only the last vote of a contestant
       return _.includes(contestants, article.username) ? _.just(articles, _.filter(function(a){
@@ -438,13 +428,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
-  function timely(start, end){
-    return function(article){
-      return article.postdate > start && article.postdate < end;
-    }
-  }
-
-  function voted(article){
+  function untainted(article){
     return article.vote && !article.edited;
   }
 
@@ -466,29 +450,34 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
                 username = dom.attr(el, "username"),
                 postdate = _.maybe(el, dom.attr(_, "postdate"), _.blot, _.date),
                 editdate = _.maybe(el, dom.attr(_, "editdate"), _.blot, _.date),
-                body = params.fake == 1 ? fakevote() : _.just(el, dom.sel1("body", _), dom.text, stripMarkup),
-                firstline = _.just(body, _.split(_, "\n"), _.first),
+                body = _.just(el, dom.sel1("body", _), dom.text, stripMarkup);
+
+            var item = params.simulate({
+              id: id,
+              topic: topic,
+              subject: subject,
+              username: username,
+              postdate: postdate,
+              editdate: editdate,
+              body: body
+            });
+
+            var firstline = _.just(item.body, _.split(_, "\n"), _.first),
                 found = voting(firstline),
                 vote = _.nth(found, 1),
                 score = _.maybe(vote, scored),
                 minutes = _.maybe(found, _.nth(_, 3), _.blot, parseInt),
                 edited = _.eq(postdate, editdate) ? null : editdate;
-            return {
-              topic: topic,
-              id: id,
-              subject: subject,
-              username: username,
-              postdate: postdate,
-              editdate: editdate,
+
+            return _.merge(item, {
               edited: edited,
-              body: body,
               firstline: firstline,
               vote: vote,
               score: score * topic.playunits,
               minutes: minutes
-            };
+            });
           }, _)),
-          votes = _.just(articles, _.filtera(_.and(timely(_.date(params.start), _.date(params.end)), voted, unbiased(topic.username)), _), function(articles){
+          votes = _.just(articles, _.filtera(_.and(params.timelyVote, untainted, unbiased(topic.username)), _), function(articles){
             return _.filtera(limited(articles, contestants), articles);
           }), 
           voters = _.unique(_.map(_.get(_, "username"), votes)),
@@ -523,15 +512,30 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
+  function randomVote(){
+    return _.get({0: "LIKE", 1: "LUMP", 2: "LOVE"}, _.randInt(3));
+  }
+
+  function timelyVote(start, end){
+    return function(item){
+      return item.postdate > start && item.postdate < end;
+    }
+  }
+
+  function timelyRegistration(end){
+    return function(item){
+      return item.postdate < end;
+    }
+  }
+
   _.fmap(tabulate({
-    fake: 0,
     unsifted: 0,
     id: 278904,
     hill: 13,
+    simulate: _.identity,
     selected: _.constantly(true),
-    registered: "2021-01-02T05:00:00.000Z",
-    start: "2020-02-01T05:00:00.000Z",
-    end: "2021-03-01T05:00:00.000Z"
+    timelyVote: timelyVote(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
+    timelyRegistration: timelyRegistration(_.date("2021-01-02T05:00:00.000Z"))
   }), function(data){
     dom.html(document.body, data.docked.length ? "DOCKED" : data.reportedAccolades + "\n\n" + data.reportedPlays);
     window.results = data;
