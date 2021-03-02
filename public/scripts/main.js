@@ -89,7 +89,8 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
             _ranked = rank(ranked, _accolades),
             _positions = positions(_ranked),
             _docked = _.filtera(_.get(_, "dock"), _played),
-            _reportedAccolades = reportAccolades(_positions),
+            _reportedAccolades = reportAccolades(_ranked),
+            _reportedPositions = reportPositions(_positions),
             _reportedPlays = reportPlays(_plays);
         return _.merge(data, {
           voters: _voters,
@@ -101,6 +102,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           ranked: _ranked,
           positions: _positions,
           reportedAccolades: _reportedAccolades,
+          reportedPositions: _reportedPositions,
           reportedPlays: _reportedPlays
         });
       }));
@@ -112,7 +114,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       byPlays = _.desc(_.getIn(_, ["votes", "length"])),
       byPlayers = _.desc(_.comp(_.count, _.get(_, "voters"))),
       byLoved = _.desc(_.getIn(_, ["loves", "length"])),
-      byFastestCentennial = _.asc(threshold("score", "postdate", 100)),
       byFastestQuarter = _.asc(_.comp(_.get(_, "postdate"), _.last, _.take(25, _), _.get(_, "votes"))),
       byFastestDime = _.asc(_.comp(_.get(_, "postdate"), _.last, _.take(10, _), _.get(_, "votes"))),
       byFastestNickel = _.asc(_.comp(_.get(_, "postdate"), _.last, _.take(5, _), _.get(_, "votes"))),
@@ -123,7 +124,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     var clamped = _.filtera(_.comp(_.includes(_, "clamp"), _.get(_, "eligibility")), items),
         hill = _.just(items, _.filtera(_.comp(_.includes(_, "hill"), _.get(_, "eligibility")), _)),
         loved = _.just(items, _.filter(_.getIn(_, ["loves", "length"]), _)),
-        centennials = _.filtera(_.comp(_.gte(_, 100), _.get(_, "score")), items),
         quarters = _.filtera(_.comp(_.gte(_, 25), _.getIn(_, ["votes", "length"])), items),
         dimes = _.filtera(_.comp(_.gte(_, 10), _.getIn(_, ["votes", "length"])), items),
         nickels = _.filtera(_.comp(_.gte(_, 5), _.getIn(_, ["votes", "length"])), items);
@@ -135,7 +135,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       kingofthehill: _.sort(byScore, byFastestVote, hill),
       loved: _.sort(byLoved, byFastestVote, loved),
       mvp: _.sort(_.desc(_.getIn(_, ["votes", "length"])), _.asc(_.getIn(_, ["votes", 0, "postdate"])), voters),
-      centennial: _.sort(byFastestCentennial, byFastestVote, centennials),
       quarter: _.sort(byFastestQuarter, byFastestVote, quarters),
       dime: _.sort(byFastestDime, byFastestVote, dimes),
       nickel: _.sort(byFastestNickel, byFastestVote, nickels)
@@ -151,7 +150,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     {accolade: "kingofthehill", limit: 2},
     {accolade: "loved", limit: 2},
     {accolade: "mvp", limit: 2},
-    {accolade: "centennial"},
     {accolade: "quarter"},
     {accolade: "dime"},
     {accolade: "nickel"}
@@ -183,7 +181,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       "players": "Most Players",
       "plays": "Most Played",
       "mvp": "Most Valuable Player",
-      "centennial": "Centennial",
       "quarter": "Quarter",
       "dime": "Dime",
       "nickel": "Nickel"
@@ -239,8 +236,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       case "devotion":
       case "clamped":
       case "kingofthehill":
-      case "centennial":
-        return accolade.score + " Score";
       case "loved":
         return accolade.loves.length + " Players";
       case "plays":
@@ -311,7 +306,34 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     });
   }
 
-  function reportAccolades(positions){
+  function reportAccolades(items){
+    return _.just(items, _.mapa(function(item){
+        return {
+          username: "[user=" + item.username + "]" + item.username + "[/user]",
+          submission: item.objectid ? "[thing=" + item.objectid + "]" + item.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
+          accolade: desc(item.accolade, item.idx)
+        }
+      }, _), function(rows){
+      var username = column(rows, "username"),
+          submission = column(rows, "submission"),
+          accolade =  column(rows, "accolade");
+
+      var headers = username("User") + "  " +
+        submission("Submission") + "  " +
+        accolade("Accolade");
+
+      var underlines = underline(username("")) + "  " +
+        underline(submission("")) + "  --" +
+        underline(accolade(""));
+      return _.just(rows, _.mapa(function(row){
+        return username(row.username) + "  " +
+          submission(row.submission) + "  :chalice: " +
+          accolade(row.accolade);
+      }, _), _.cons(underlines, _), _.cons(headers, _), _.join("\n", _));
+    });
+  }
+
+  function reportPositions(positions){
     return _.just(positions, _.mapcat(function(position){
       return _.mapIndexed(function(idx, accolade){
         return {
@@ -537,7 +559,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     timelyVote: timelyVote(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
     timelyRegistration: timelyRegistration(_.date("2021-01-02T05:00:00.000Z"))
   }), function(data){
-    dom.html(document.body, data.docked.length ? "DOCKED" : data.reportedAccolades + "\n\n" + data.reportedPlays);
+    dom.html(document.body, data.docked.length ? "DOCKED" : data.reportedAccolades + "\n\n" + data.reportedPositions + "\n\n" + data.reportedPlays);
     window.results = data;
     _.log(data);
   });
