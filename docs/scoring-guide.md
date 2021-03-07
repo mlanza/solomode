@@ -47,8 +47,8 @@ Solo mode scoreboard:
 
 Player scoreboard:
 1. Sadie = 11
-1. Latisha = 7
 1. Joseph = 8
+1. Latisha = 7
 1. Haruo = 5
 1. Leopold = 5
 
