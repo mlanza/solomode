@@ -52,6 +52,6 @@ Player scoreboard:
 1. Haruo = 5
 1. Leopold = 5
 
-This solo mode's score represents a single slice of the overall player scoreboard.  Players earns points for all the solo modes they play in a category.  In this category there are 7.  So while Martin's currently ranks third he still has hopes over overtaking Tony.
+This solo mode's score represents a single slice of the overall player scoreboard.  Players earns points for all the solo modes they play in a category.  In this category there are 7.  So while Martin's currently ranks third he still has hopes of overtaking Tony.
 
 So while Sadie's Kandee Krush score is better than Haruo's, he's played 4 of the 7 solo modes and maintains a wide lead on the overall player scoreboard.
