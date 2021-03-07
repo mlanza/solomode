@@ -2,6 +2,8 @@
 
 Tabulates results for [Solomode](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest) a solo mode design contest hosted on BoardGameGeek.  Tested in Chromium browsers.
 
+Working drafts for 2021 contest rules: [creators](./docs/creators-guide.md) and [players](./docs/players-guide.md).
+
 ## The MIT License (MIT)
 **Copyright © 2020 Mario T. Lanza**
 
