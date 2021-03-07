@@ -5,7 +5,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
     DISQUALIFIED - rules violation
     WITHDRAWN - no longer participating
-    CLAMPED - eligible for The Clamp
     MINIMUM PLAYING TIME = n - as determined by looking to the rules PDF
 
   */
@@ -29,25 +28,26 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   }
 
   function addminplaytimes(items){
+    return Promise.resolve(items);
     return _.fmap(_.just(items, _.mapa(_.get(_, "objectid"), _), _.unique, minplaytimes), function(times){
       return _.mapa(function(item){
         var minplaytime = item.minimum || times[item.objectid];
-        return _.merge(item, {minplaytime: minplaytime, playunits: units(minplaytime)});
+        return _.merge(item, {minplaytime: minplaytime});
       }, items);
     });
   }
 
-  function voters(items){
-    return _.just(items, _.mapcat(_.get(_, "votes"), _), _.toArray, _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, voter, votes){
-      return _.conj(memo, {username: voter, votes: votes});
+  function players(items){
+    return _.just(items, _.mapcat(_.get(_, "plays"), _), _.toArray, _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, player, plays){
+      return _.conj(memo, {username: player, plays: plays, score: _.just(plays, _.map(_.get(_, "score"), _), _.sum), earliest: _.just(plays, _.map(_.get(_, "earliest"), _), _.sort, _.first)});
     }, [], _));
   }
 
   function plays(items){
     return _.just(items, _.mapcat(function(item){
-      return _.map(function(vote){
-        return {id: item.id, game: {id: item.objectid, objectname: item.objectname}, username: item.username, vote: vote.vote, voter: vote.username, postdate: vote.postdate, edited: vote.edited};
-      }, item.votes);
+      return _.map(function(play){
+        return {id: item.id, game: {id: item.objectid, objectname: item.objectname}, username: item.username, tallyword: play.tallyword, player: play.username, postdate: play.postdate, edited: play.edited, score: play.score};
+      }, item.plays);
     }, _), _.sort(_.asc(_.get(_, "postdate")), _), _.toArray);
   }
 
@@ -67,319 +67,146 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         params.unsifted ? _.identity : _.remove(_.get(_, "disqualified"), _),
         params.unsifted ? _.identity : _.remove(_.get(_, "withdrawn"), _),
       function(items){
-        var contestants = _.sort(_.unique(_.mapa(_.get(_, "username"), items)));
+        var authors = _.sort(_.unique(_.mapa(_.get(_, "username"), items)));
         return {
           title: title,
           host: username,
-          contestants: contestants,
+          authors: authors,
           items: items
         }
       },
       function(data){
-        return _.fmap(Promise.all(_.mapa(_.partial(addthread, params, data.contestants), data.items)),
+        return _.fmap(Promise.all(_.mapa(_.partial(addthread, params, data.authors), data.items)),
           _.assoc({}, "items", _),
           _.merge(data, _));
       },
       function(data){
-        var _voters = voters(data.items),
-            _unlinked = _.filtera(_.complement(_.get(_, "articles")), data.items),
-            _played = _.filtera(_.getIn(_, ["votes", "length"]), data.items),
+        var _played = _.just(data.items, _.filter(_.getIn(_, ["plays", "length"]), _), _.sort(_.desc(_.get(_, "score")), _.desc(_.getIn(_, ["plays", "length"])), _.desc(_.get(_, "earliest")), _)),
+            _players = _.just(data.items, players, _.sort(_.desc(_.get(_, "score")), _.desc(_.getIn(_, ["plays", "length"])), _.desc(_.get(_, "earliest")), _)),
             _plays = plays(_played),
-            _accolades = accolades(_played, _voters, data.contestants),
-            _ranked = rank(ranked, _accolades),
-            _positions = positions(_ranked),
-            _docked = _.filtera(_.get(_, "dock"), _played),
-            _reportedAccolades = reportAccolades(_ranked),
-            _reportedPositions = reportPositions(_positions),
+            _unlinked = _.filtera(_.complement(_.get(_, "articles")), data.items),
+            _reportedPlayed = reportPlayed(_played),
+            _reportedPlayers = reportPlayers(_players),
             _reportedPlays = reportPlays(_plays);
         return _.merge(data, {
-          voters: _voters,
-          unlinked: _unlinked,
-          docked: _docked,
           played: _played,
           plays: _plays,
-          accolades: _accolades,
-          ranked: _ranked,
-          positions: _positions,
-          reportedAccolades: _reportedAccolades,
-          reportedPositions: _reportedPositions,
-          reportedPlays: _reportedPlays
+          players: _players,
+          unlinked: _unlinked,
+          reportedPlays: _reportedPlays,
+          reportedPlayers: _reportedPlayers,
+          reportedPlayed: _reportedPlayed
         });
       }));
     });
   }
 
-  //rankings
-  var byScore = _.desc(_.get(_, "score")),
-      byPlays = _.desc(_.getIn(_, ["votes", "length"])),
-      byPlayers = _.desc(_.comp(_.count, _.get(_, "voters"))),
-      byLoved = _.desc(_.getIn(_, ["loves", "length"])),
-      byFastestQuarter = _.asc(_.comp(_.get(_, "postdate"), _.last, _.take(25, _), _.get(_, "votes"))),
-      byFastestDime = _.asc(_.comp(_.get(_, "postdate"), _.last, _.take(10, _), _.get(_, "votes"))),
-      byFastestNickel = _.asc(_.comp(_.get(_, "postdate"), _.last, _.take(5, _), _.get(_, "votes"))),
-      byFastestVote = _.desc(_.get(_, "earliest"));
-
-  //accolade eligibility?
-  function accolades(items, voters, contestants){
-    var clamped = _.filtera(_.comp(_.includes(_, "clamp"), _.get(_, "eligibility")), items),
-        hill = _.just(items, _.filtera(_.comp(_.includes(_, "hill"), _.get(_, "eligibility")), _)),
-        loved = _.just(items, _.filter(_.getIn(_, ["loves", "length"]), _)),
-        quarters = _.filtera(_.comp(_.gte(_, 25), _.getIn(_, ["votes", "length"])), items),
-        dimes = _.filtera(_.comp(_.gte(_, 10), _.getIn(_, ["votes", "length"])), items),
-        nickels = _.filtera(_.comp(_.gte(_, 5), _.getIn(_, ["votes", "length"])), items);
-    return {
-      devotion: _.sort(byScore, byFastestVote, items),
-      plays: _.sort(byPlays, byFastestVote, items),
-      players: _.sort(byPlayers, byFastestVote, items),
-      clamped: _.sort(byScore, byFastestVote, clamped),
-      kingofthehill: _.sort(byScore, byFastestVote, hill),
-      loved: _.sort(byLoved, byFastestVote, loved),
-      mvp: _.sort(_.desc(_.getIn(_, ["votes", "length"])), _.asc(_.getIn(_, ["votes", 0, "postdate"])), voters),
-      quarter: _.sort(byFastestQuarter, byFastestVote, quarters),
-      dime: _.sort(byFastestDime, byFastestVote, dimes),
-      nickel: _.sort(byFastestNickel, byFastestVote, nickels)
-    }
-  }
-
-  //ranked from better to worse
-  var ranked = [
-    {accolade: "devotion", limit: 2},
-    {accolade: "plays", limit: 2},
-    {accolade: "players", limit: 2},
-    {accolade: "clamped", limit: 2},
-    {accolade: "kingofthehill", limit: 2},
-    {accolade: "loved", limit: 2},
-    {accolade: "mvp", limit: 2},
-    {accolade: "quarter"},
-    {accolade: "dime"},
-    {accolade: "nickel"}
-  ]
-
-  function rank(ranked, accolades){
-    return _.toArray(_.mapcat(function(ranking){
-      return _.just(accolades, _.get(_, ranking.accolade), ranking.limit ? _.take(ranking.limit, _) : _.identity, _.mapa(_.merge(_, {accolade: ranking.accolade}), _), _.mapIndexed(function(idx, item){
-        return _.merge(item, {idx: idx});
-      }, _));
-    }, ranked));
-  }
-
-  //rank users and list their accolades
-  function positions(items){
-    return _.just(items, _.mapa(_.get(_, "username"), _), _.unique, _.reduce(function(memo, username){
-      return _.conj(memo, {username: username, accolades: _.just(items, _.filter(function(item){
-        return item.username == username;
-      }, _), _.sort(_.asc(_.get(_, "id")), _), _.toArray)});
-    }, [], _));
-  }
-
-  function desc(type, idx){
-    var title = _.get({
-      "devotion": "Most Devotion",
-      "clamped": "Clamped Award",
-      "kingofthehill": "King of the Hill",
-      "loved": "Most Loved",
-      "players": "Most Players",
-      "plays": "Most Played",
-      "mvp": "Most Valuable Player",
-      "quarter": "Quarter",
-      "dime": "Dime",
-      "nickel": "Nickel"
-    }, type);
-    switch(type){
-      case "devotion":
-      case "clamped":
-      case "kingofthehill":
-      case "loved":
-      case "plays":
-      case "players":
-      case "mvp":
-        return (title || type) + (idx === 0 ? "" : " Runner Up");
-      default:
-        var pos = _.get({
-          0: "1st",
-          1: "2nd",
-          2: "3rd",
-          3: "4th",
-          4: "5th",
-          5: "6th",
-          6: "7th",
-          7: "8th",
-          8: "9th",
-          9: "10th",
-          10: "11th",
-          11: "12th",
-          12: "13th",
-          13: "14th",
-          14: "15th",
-          15: "16th",
-          16: "17th",
-          17: "18th",
-          18: "19th",
-          19: "20th",
-          20: "21st",
-          21: "22nd",
-          22: "23rd",
-          23: "24th",
-          24: "25th",
-          25: "26th",
-          26: "27th",
-          27: "28th",
-          28: "29th",
-          29: "30th"
-        }, idx);
-        return pos + " " + (title || type);
-    }
-  }
-
-  function stats(type, accolade){
-    switch(type){
-      case "devotion":
-      case "clamped":
-      case "kingofthehill":
-      case "loved":
-        return accolade.loves.length + " Players";
-      case "plays":
-      case "mvp":
-      case "quarter":
-      case "dime":
-      case "nickel":
-        return accolade.votes.length + " Plays";
-      case "players":
-        return accolade.voters.length + " Players";
-    }
-  }
-
   var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 _]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
       len = _.just(_, strip, _.get(_, "length"));
 
-  function pad(n){
+  function rpad(n){
     return function(text){
       return text + _.rpad("", n - len(text));
     }
   }
 
-  function underline(text){
-    return _.just(text, len, _.lpad("", _, "-"));
+  function lpad(n){
+    return function(text){
+      return _.lpad("", n - len(text)) + text;
+    }
   }
 
-  function column(rows, key){
-    return _.just(rows, _.map(_.comp(len, _.get(_, key)), _), _.spread(_.max), pad);
+  function underline(len){
+    return _.lpad("", len, "-");
+  }
+
+  function render(columns){
+    return function(rows){
+      var cols = _.mapa(function(col){
+        return col(rows);
+      }, columns);
+      return _.just(rows, _.mapa(function(row){
+          return _.join("  ", _.map(function(col){
+            return col.justify(row);
+          }, cols));
+        }, _),
+        _.cons(_.just(cols, _.map(_.get(_, "underline"), _), _.join("  ", _)), _),
+        _.cons(_.just(cols, _.map(_.get(_, "heading"), _), _.join("  ", _)), _),
+        _.join("\n", _));
+    }
+  }
+
+  function column(key, heading, pad){
+    return function(rows){
+      var width = _.max(heading.length, _.just(rows, _.map(_.comp(len, _.str, _.get(_, key)), _), _.spread(_.max)));
+      var pads = pad(width);
+      return {
+        width: width,
+        heading: pads(heading),
+        underline: underline(width),
+        justify: _.pipe(_.get(_, key), pads)
+      }
+    }
   }
 
   var dt = _.fmt(_.pipe(_.month, _.inc, _.lpad(_, 2, "0")), "-", _.pipe(_.day, _.lpad(_, 2, "0")));
 
   function reportPlays(plays){
-    return _.just(plays, _.map(function(item){
-      return {
-        username: "[user=" + item.username + "]" + item.username + "[/user]",
-        submission: item.game.id ? "[thing=" + item.game.id + "]" + item.game.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
-        voter: "[user=" + item.voter + "]" + item.voter + "[/user]",
-        vote: item.vote,
-        postdate: dt(item.postdate)
-      }
-    }, _), _.toArray, function(rows){
-      var username = column(rows, "username"),
-          submission = column(rows, "submission"),
-          voter =  column(rows, "voter"),
-          vote = column(rows, "vote"),
-          postdate = column(rows, "postdate");
-
-      var headers = username("User") + "  " +
-        submission("Submission") + "  " +
-        voter("Voter") + "  " +
-        vote("Vote") + "  " +
-        postdate("Date");
-
-      var underlines = underline(username("")) + "  " +
-        underline(submission("")) + "  " +
-        underline(voter("")) + "  " +
-        underline(vote("")) + "  " +
-        underline(postdate(""));
-
-      return _.just(rows, _.mapa(function(row){
-        return username(row.username) + "  " +
-          submission(row.submission) + "  " +
-          voter(row.voter) + "  " +
-          vote(row.vote) + "  " +
-          postdate(row.postdate);
-      }, _), _.cons(underlines, _), _.cons(headers, _), _.join("\n", _));
-    });
+    return _.just(plays,
+      _.map(function(item){
+        return {
+          username: "[user=" + item.username + "]" + item.username + "[/user]",
+          submission: item.game.id ? "[thing=" + item.game.id + "]" + item.game.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
+          player: "[user=" + item.player + "]" + item.player + "[/user]",
+          tallyword: item.tallyword,
+          score: _.str(item.score),
+          postdate: dt(item.postdate)
+        }
+      }, _),
+      render([
+        column("username", "Author", rpad),
+        column("submission", "Submission", rpad),
+        column("player", "Player", rpad),
+        column("tallyword", "Said", rpad),
+        column("score", "VP", lpad),
+        column("postdate", "Date", rpad)]));
   }
 
-  function reportAccolades(items){
-    return _.just(items, _.mapa(function(item){
+  function reportPlayed(played){
+    return _.just(played,
+      _.map(function(item){
         return {
           username: "[user=" + item.username + "]" + item.username + "[/user]",
           submission: item.objectid ? "[thing=" + item.objectid + "]" + item.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
-          accolade: desc(item.accolade, item.idx)
+          plays: _.str(item.plays.length),
+          score: _.str(item.score),
+          postdate: dt(item.postdate)
         }
-      }, _), function(rows){
-      var username = column(rows, "username"),
-          submission = column(rows, "submission"),
-          accolade =  column(rows, "accolade");
-
-      var headers = username("User") + "  " +
-        submission("Submission") + "  " +
-        accolade("Accolade");
-
-      var underlines = underline(username("")) + "  " +
-        underline(submission("")) + "  --" +
-        underline(accolade(""));
-      return _.just(rows, _.mapa(function(row){
-        return username(row.username) + "  " +
-          submission(row.submission) + "  :chalice: " +
-          accolade(row.accolade);
-      }, _), _.cons(underlines, _), _.cons(headers, _), _.join("\n", _));
-    });
+      }, _),
+      render([
+        column("username", "Author", rpad),
+        column("submission", "Submission", rpad),
+        column("score", "VP", lpad),
+        column("plays", "Plays", lpad),
+        column("postdate", "Date", rpad)]));
   }
 
-  function reportPositions(positions){
-    return _.just(positions, _.mapcat(function(position){
-      return _.mapIndexed(function(idx, accolade){
+  function reportPlayers(players){
+    return _.just(players,
+      _.map(function(item){
+        var score = _.just(item.plays, _.map(_.get(_, "score"), _), _.sum);
         return {
-          username: idx == 0 ? "[user=" + position.username + "]" + position.username + "[/user]" : "",
-          submission: accolade.objectid ? "[thing=" + accolade.objectid + "]" + accolade.objectname + "[/thing] ([thread=" + accolade.id + "]" + accolade.id + "[/thread])" : "",
-          accolade: desc(accolade.accolade, accolade.idx),
-          stats: stats(accolade.accolade, accolade)
+          username: "[user=" + item.username + "]" + item.username + "[/user]",
+          plays: _.str(item.plays.length),
+          score: _.str(score),
+          postdate: _.maybe(item.plays, _.last, _.get(_, "postdate"), dt)
         }
-      }, position.accolades);
-    }, _), _.toArray, function(rows){
-      var username = column(rows, "username"),
-          submission = column(rows, "submission"),
-          accolade =  column(rows, "accolade"),
-          stats = column(rows, "stats");
-
-      var headers = username("User") + "  " +
-        submission("Submission") + "  " +
-        accolade("Accolade") + "  " +
-        stats("Stats");
-
-      var underlines = underline(username("")) + "  " +
-        underline(submission("")) + "  " +
-        underline(accolade("")) + "  " +
-        underline(stats(""));
-
-      return _.just(rows, _.mapa(function(row){
-        return username(row.username) + "  " +
-          submission(row.submission) + "  " +
-          accolade(row.accolade) + "  " +
-          stats(row.stats);
-      }, _), _.cons(underlines, _), _.cons(headers, _), _.join("\n", _));
-    });
-  }
-
-  //determine the date a threshold was reached
-  function threshold(num, dt, max){
-    return function(item){
-      var total = 0;
-      for(var vote of item.votes || []) {
-        total += vote[num];
-        if (total >= max) {
-          return vote[dt];
-        }
-      }
-      return null;
-    }
+      }, _),
+      render([
+        column("username", "Player", rpad),
+        column("score", "VP", lpad),
+        column("plays", "Plays", lpad),
+        column("postdate", "Date", rpad)]));
   }
 
   function minplaytimes(ids){
@@ -389,10 +216,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         return _.assoc(memo, id, minutes);
       }, {}, ids);
     });
-  }
-
-  function units(minutes){
-    return Math.round(minutes / 30);
   }
 
   function has(word){
@@ -412,11 +235,8 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         body = _.just(el, dom.sel1("body", _), dom.text),
         comments = _.reverse(_.mapa(dom.text, dom.sel("comment", el))),
         minimum = _.maybe(comments, _.detect(_.includes(_, "MINIMUM PLAYING TIME"), _), _.reFind(/MINIMUM PLAYING TIME[ ]?=[ ]?(\d+)/, _), _.nth(_, 1), _.blot, parseInt),
-        clamped = _.detect(has("CLAMPED"), comments),
         disqualified = _.detect(has("DISQUALIFIED"), comments),
-        withdrawn = _.detect(has("WITHDRAWN"), comments),
-        eligibility = _.just([clamped ? "clamp" : null, objectid == params.hill ? "hill" : null], _.compact, _.toArray);
-
+        withdrawn = _.detect(has("WITHDRAWN"), comments);
     return {
       subtype: subtype,
       id: id,
@@ -425,33 +245,23 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
       disqualified: !!disqualified,
       objectid: objectid,
       objectname: objectname,
-      eligibility: eligibility,
       username: username,
       postdate: postdate,
       body: body
     };
   }
 
-  function addthread(params, contestants, item){
-    return _.fmap(_.just(item.body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, parseInt, _.partial(thread, params, item, contestants)), _.merge({_game: item.objectname}, item, _));
+  function addthread(params, authors, item){
+    return _.fmap(_.just(item.body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, parseInt, _.partial(thread, params, item, authors)), _.merge({_game: item.objectname}, item, _));
   }
 
-  var scored = _.get({"LIKE": 1.0, "LUMP": 0.75, "LOVE": 1.25}, _);
-
-  function loved(article){
-    return article.vote == "LOVE";
-  }
-
-  function limited(articles, contestants){
-    return function(article){ //count only the last vote of a contestant
-      return _.includes(contestants, article.username) ? _.just(articles, _.filter(function(a){
+  function limited(articles, authors){
+    return function(article){ //count only the last play of a contestant
+      return true;
+      return _.includes(authors, article.username) ? _.just(articles, _.filter(function(a){
         return a.username === article.username;
       }, _), _.last, _.get(_, "id")) == article.id : true;
     }
-  }
-
-  function untainted(article){
-    return article.vote && !article.edited;
   }
 
   function unbiased(username){
@@ -460,11 +270,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }
   }
 
-  var voting = _.reFind(/^(LIKE|LOVE|LUMP)( \((\d+) minutes\))?\s*$/m, _);
+  var tallyword = _.reFind(/^(LIKE|LOVE|LUMP)\s*$/m, _);
   var stripMarkup = _.just(_, _.replace(_, /\<br[\/]?\>/g, "\n"), _.replace(_, /(\<[a-z0-9]*\>|\<\/[a-z0-9]*\>)/g, ""));
 
   //get the votes for the submission
-  function thread(params, topic, contestants, id){
+  function thread(params, topic, authors, id){
     return id ? _.fmap(request("https://boardgamegeek.com/xmlapi2/thread?id=" + id), repos.xml, function(el){
       var subject = _.just(el, dom.sel1("subject", _), dom.text),
           articles = _.just(el, dom.sel("article", _), _.mapa(function(el){
@@ -484,61 +294,39 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
               body: body
             });
 
-            var firstline = _.just(item.body, _.split(_, "\n"), _.first),
-                found = voting(firstline),
-                vote = _.nth(found, 1),
-                score = _.maybe(vote, scored),
-                minutes = _.maybe(found, _.nth(_, 3), _.blot, parseInt),
-                edited = _.eq(postdate, editdate) ? null : editdate;
+            var firstline = _.just(item.body, _.split(_, "\n"), _.first);
 
             return _.merge(item, {
-              edited: edited,
+              edited: _.eq(postdate, editdate) ? null : editdate,
               firstline: firstline,
-              vote: vote,
-              score: score * topic.playunits,
-              minutes: minutes
+              tallyword: _.nth(tallyword(firstline), 1) || null
             });
           }, _)),
-          votes = _.just(articles, _.filtera(_.and(params.timelyVote, untainted, unbiased(topic.username)), _), function(articles){
-            return _.filtera(limited(articles, contestants), articles);
-          }), 
-          voters = _.unique(_.map(_.get(_, "username"), votes)),
-          loves = _.just(votes, _.filtera(loved, _), _.groupBy(_.get(_, "username"), _), _.vals, _.mapa(_.first, _)),
-          score = _.just(votes, _.map(_.get(_, "score"), _), _.sum),
-          dock = docked(topic.minplaytime, votes),
-          earliest = _.maybe(votes, _.first, _.get(_, "postdate"));
+          summary = _.just(articles, _.filtera(_.and(_.get(_, "tallyword"), params.timelyPlay, unbiased(topic.username)), _), function(articles){
+            return _.filtera(limited(articles, authors), articles);
+          }, _.reduce(function(memo, play){
+            var newPlayer = !_.includes(memo.players, play.username);
+            var bonus = newPlayer ? 4 + memo.bonus : 0;
+            var score = 1 + bonus;
+            return _.just(memo, newPlayer ? _.update(_, "bonus", _.dec) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
+          }, {bonus: 3, plays: [], players: []}, _)),
+          plays = _.get(summary, "plays"),
+          players = _.get(summary, "players"),
+          score = _.just(plays, _.map(_.get(_, "score"), _), _.sum),
+          earliest = _.maybe(plays, _.first, _.get(_, "postdate"));
       return {
         id: id,
         subject: subject,
         articles: articles,
-        earliest: earliest,
-        loves: loves,
-        voters: voters,
-        votes: votes,
-        dock: dock,
-        score: score
+        players: players,
+        plays: plays,
+        score: score,
+        earliest: earliest
       };
     }) : null;
   }
 
-  function docked(minplaytime, items){
-    if (_.count(items) > 0) {
-      var min = minplaytime - 45;
-      var concerns =  min > 0 ? _.just(items, _.filtera(function(vote){
-        return vote.minutes && vote.minutes < min;
-      }, _)) : [];
-      var percent = _.count(concerns) / _.count(items);
-      return percent >= (1 / 3) ? concerns : null;
-    } else {
-      return null;
-    }
-  }
-
-  function randomVote(){
-    return _.get({0: "LIKE", 1: "LUMP", 2: "LOVE"}, _.randInt(3));
-  }
-
-  function timelyVote(start, end){
+  function timelyPlay(start, end){
     return function(item){
       return item.postdate > start && item.postdate < end;
     }
@@ -555,11 +343,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     id: 278904,
     hill: 13,
     simulate: _.identity,
-    selected: _.constantly(true),
-    timelyVote: timelyVote(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
+    selected: _.includes(["Catan", "Mexica", "Hyperborea"], _),
+    timelyPlay: timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
     timelyRegistration: timelyRegistration(_.date("2021-01-02T05:00:00.000Z"))
   }), function(data){
-    dom.html(document.body, data.docked.length ? "DOCKED" : data.reportedAccolades + "\n\n" + data.reportedPositions + "\n\n" + data.reportedPlays);
+    dom.html(document.body, "[c]" + data.reportedPlayed + "\n\n" + data.reportedPlayers + "\n\n" + data.reportedPlays + "[/c]");
     window.results = data;
     _.log(data);
   });
