@@ -21,7 +21,7 @@ Read [Solomode Player's Guide](./players-guide.md) to understand registered play
 ## Scoreboards
 Each category is scored separately and has its own publicly displayed, periodically updated scoreboard.  When the race concludes a final snapshot will immortalize the results and winners will receive whatever prizes were made available to the category.  Listed prizes will be awarded only in categories in which at least 5 entrants clear registration.
 
-*While votes can be cast anytime only those cast during the **Derby** are scored.*  Scoreboards, periodically, updated, will be posted giving a glimpse of the race as it progresses.  Ties favor the solo mode with the earliest registered vote.
+*While plays can be registered anytime only those registered during the **Derby** are scored.*  Scoreboards, periodically, updated, will be posted giving a glimpse of the race as it progresses.  Ties favor the solo mode with the earliest registered play.
 
 ## Example
 Martin's solo mode, Kandee Krush, records the following registered plays (points and bonuses noted):
