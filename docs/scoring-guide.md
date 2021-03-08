@@ -5,7 +5,7 @@ Solomode is divided into categories (e.g. different events/geeklists) in which a
 *These categories have not yet been determined, but there will be approximately 5.*
 
 ## Scoring
-Registered plays earn points plus bonuses for both solo modes (added to the solo mode scoreboard) and players who registered  plays (added to the player scoreboard).
+Registered plays earn points plus bonuses for both solo modes (added to the submission scoreboard) and players who registered  plays (added to the player scoreboard).
 
 Every registered play earns:
 * 1 point
@@ -19,7 +19,7 @@ Every registered play earns bonus points when new players play a solo mode:
 Read [Solomode Player's Guide](./players-guide.md) to understand registered plays.  Basically, the more a solo mode is played, the better its score.  *Solo mode players earn as many points and their plays garner the solo modes they played.*
 
 ## Scoreboards
-Each category is scored separately and has its own publicly displayed, periodically updated scoreboard.  When the race concludes a final snapshot will immortalize the results and winners will receive whatever prizes were made available to the category.  Listed prizes will be awared only in categories in which at least 5 entrants clear registration.
+Each category is scored separately and has its own publicly displayed, periodically updated scoreboard.  When the race concludes a final snapshot will immortalize the results and winners will receive whatever prizes were made available to the category.  Listed prizes will be awarded only in categories in which at least 5 entrants clear registration.
 
 *While votes can be cast anytime only those cast during the **Derby** are scored.*  Scoreboards, periodically, updated, will be posted giving a glimpse of the race as it progresses.  Ties favor the solo mode with the earliest registered vote.
 
