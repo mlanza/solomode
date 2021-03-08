@@ -297,10 +297,10 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   var tallyword = _.reFind(/^(LIKE|LOVE|LUMP)\s*$/m, _);
   var stripMarkup = _.just(_, _.replace(_, /\<br[\/]?\>/g, "\n"), _.replace(_, /(\<[a-z0-9]*\>|\<\/[a-z0-9]*\>)/g, ""));
+  var SCORE_PER_PLAY = 1, NEW_PLAYER_BONUS = 4, EARLY_ADOPTER_BONUS = NEW_PLAYER_BONUS - 1;
 
   //get the votes for the submission
   function thread(params, topic, authors, id){
-    var NEW_PLAYER_BONUS = 4, FIRST_PLAYER_BONUS = 3;
     return id ? _.fmap(request("https://boardgamegeek.com/xmlapi2/thread?id=" + id), repos.xml, function(el){
       var subject = _.just(el, dom.sel1("subject", _), dom.text),
           articles = _.just(el, dom.sel("article", _), _.mapa(function(el){
@@ -331,11 +331,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           summary = _.just(articles, _.filtera(_.and(_.get(_, "tallyword"), _.complement(_.get(_, "edited")), params.timelyPlay, unbiased(topic.username)), _), function(articles){
             return _.filtera(limited(articles, authors), articles);
           }, _.reduce(function(memo, play){
-            var newPlayer = !_.includes(memo.players, play.username);
-            var bonus = newPlayer ? NEW_PLAYER_BONUS + memo.bonus : 0;
-            var score = 1 + bonus;
-            return _.just(memo, newPlayer ? _.update(_, "bonus", _.comp(_.max(0, _), _.dec)) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
-          }, {bonus: FIRST_PLAYER_BONUS, plays: [], players: []}, _)),
+            var newPlayer = !_.includes(memo.players, play.username),
+                bonus = newPlayer ? NEW_PLAYER_BONUS + memo.earlyadopter : 0,
+                score = SCORE_PER_PLAY + bonus;
+            return _.just(memo, newPlayer ? _.update(_, "earlyadopter", _.comp(_.max(0, _), _.dec)) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
+          }, {earlyadopter: EARLY_ADOPTER_BONUS, plays: [], players: []}, _)),
           plays = _.get(summary, "plays"),
           players = _.get(summary, "players"),
           score = _.just(plays, _.map(_.get(_, "score"), _), _.sum),
