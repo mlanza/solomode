@@ -284,18 +284,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return _.fmap(_.just(item.body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, parseInt, _.partial(thread, params, item, authors)), _.merge({_game: item.objectname}, item, _));
   }
 
-  function limited(articles, authors){
-    return function(article){ //count only the last play of a contestant
-      return _.includes(authors, article.username) ? _.just(articles, _.filter(function(a){
-        return a.username === article.username;
-      }, _), _.last, _.get(_, "id")) == article.id : true;
-    }
-  }
-
-  function limited(articles, authors){
-    return _.constantly(true);
-  }
-
   function unbiased(username){
     return function(article){
       return article.username !== username;
@@ -349,13 +337,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
             _.filtera(
               _.and(
                 _.get(_, "tallyword"),
-                _.complement(_.get(_, "edited")), //TODO drop edited
                 params.timelyPlay,
                 unbiased(topic.username)),
             _),
-            function(articles){ //TODO drop limits?
-              return _.filtera(limited(articles, authors), articles);
-            },
             tally),
           plays = _.get(tallied, "plays"),
           players = _.get(tallied, "players"),
@@ -388,7 +372,6 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
   _.fmap(tabulate({
     unsifted: 0,
     id: 278904,
-    hill: 13,
     simulate: _.identity,
     selected: _.constantly(true), //_.includes(["Catan"], _),
     timelyPlay: timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
