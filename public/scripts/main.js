@@ -106,9 +106,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           plays: _plays,
           players: _players,
           unlinked: _unlinked,
-          reportedPlays: _reportedPlays,
-          reportedPlayers: _reportedPlayers,
-          reportedPlayed: _reportedPlayed
+          reports: [
+            _reportedPlayed,
+            _reportedPlayers,
+            _reportedPlays
+          ]
         });
       }));
     });
@@ -133,7 +135,15 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     return _.lpad("", len, "-");
   }
 
-  function render(columns){
+  function tag(label){
+    return _.collapse(_.str("[", label, "]"), _, _.str("[/", label, "]"));
+  }
+
+  var u = tag("u"),
+      b = tag("b"),
+      c = tag("c");
+
+  function render(title, columns){
     return function(rows){
       var cols = _.mapa(function(col){
         return col(rows);
@@ -145,6 +155,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         }, _),
         _.cons(_.just(cols, _.map(_.get(_, "underline"), _), _.join("  ", _)), _),
         _.cons(_.just(cols, _.map(_.get(_, "heading"), _), _.join("  ", _)), _),
+        _.cons(_.just(title, b, u), _),
         _.join("\n", _));
     }
   }
@@ -164,8 +175,8 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   var dt = _.fmt(_.pipe(_.month, _.inc, _.lpad(_, 2, "0")), "-", _.pipe(_.day, _.lpad(_, 2, "0")));
 
-  function reportPlayed(played){
-    return _.just(played,
+  var reportPlayed =
+    _.pipe(
       _.mapIndexed(function(idx, item){
         return {
           pos: idx + 1,
@@ -177,7 +188,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           postdate: dt(item.earliest)
         }
       }, _),
-      render([
+      render("SOLO MODE SCOREBOARD", [
         column("pos", "#", lpad),
         column("username", "Author", rpad),
         column("submission", "Submission", rpad),
@@ -185,10 +196,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         column("postdate", "Date", rpad),
         column("players", "Peeps", lpad),
         column("plays", "Plays", lpad)]));
-  }
 
-  function reportPlayers(players){
-    return _.just(players,
+  var reportPlayers =
+    _.pipe(
       _.mapIndexed(function(idx, item){
         var score = _.just(item.plays, _.map(_.get(_, "score"), _), _.sum);
         return {
@@ -200,17 +210,16 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           postdate: _.maybe(item.plays, _.last, _.get(_, "postdate"), dt)
         }
       }, _),
-      render([
+      render("PLAYER SCOREBOARD", [
         column("pos", "#", lpad),
         column("username", "Player", rpad),
         column("score", "VP", lpad),
         column("postdate", "Date", rpad),
         column("solomodes", "Games", lpad),
         column("plays", "Plays", lpad)]));
-  }
 
-  function reportPlays(plays){
-    return _.just(plays,
+  var reportPlays =
+    _.pipe(
       _.map(function(item){
         return {
           username: "[user=" + item.username + "]" + item.username + "[/user]",
@@ -221,15 +230,13 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           postdate: dt(item.postdate)
         }
       }, _),
-      render([
+      render("REGISTERED PLAYS", [
         column("username", "Author", rpad),
         column("submission", "Submission", rpad),
         column("player", "Player", rpad),
         column("tallyword", "Vote", rpad),
         column("score", "VP", lpad),
         column("postdate", "Date", rpad)]));
-  }
-
 
   function minplaytimes(ids){
     return _.fmap(request("https://boardgamegeek.com/xmlapi2/thing?type=boardgame&id=" + _.join(",", ids)), repos.xml, function(el){
@@ -297,7 +304,16 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   var tallyword = _.reFind(/^(LIKE|LOVE|LUMP)\s*$/m, _);
   var stripMarkup = _.just(_, _.replace(_, /\<br[\/]?\>/g, "\n"), _.replace(_, /(\<[a-z0-9]*\>|\<\/[a-z0-9]*\>)/g, ""));
-  var SCORE_PER_PLAY = 1, NEW_PLAYER_BONUS = 4, EARLY_ADOPTER_BONUS = NEW_PLAYER_BONUS - 1;
+
+  function tally(plays){
+    var SCORE_PER_PLAY = 1, NEW_PLAYER_BONUS = 4, EARLY_ADOPTER_BONUS = NEW_PLAYER_BONUS - 1;
+    return _.reduce(function(memo, play){
+      var newPlayer = !_.includes(memo.players, play.username),
+          bonus = newPlayer ? NEW_PLAYER_BONUS + memo.earlyadopter : 0,
+          score = SCORE_PER_PLAY + bonus;
+      return _.just(memo, newPlayer ? _.update(_, "earlyadopter", _.comp(_.max(0, _), _.dec)) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
+    }, {earlyadopter: EARLY_ADOPTER_BONUS, plays: [], players: []}, plays);
+  }
 
   //get the votes for the submission
   function thread(params, topic, authors, id){
@@ -328,16 +344,21 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
               tallyword: _.nth(tallyword(firstline), 1) || null
             });
           }, _)),
-          summary = _.just(articles, _.filtera(_.and(_.get(_, "tallyword"), _.complement(_.get(_, "edited")), params.timelyPlay, unbiased(topic.username)), _), function(articles){
-            return _.filtera(limited(articles, authors), articles);
-          }, _.reduce(function(memo, play){
-            var newPlayer = !_.includes(memo.players, play.username),
-                bonus = newPlayer ? NEW_PLAYER_BONUS + memo.earlyadopter : 0,
-                score = SCORE_PER_PLAY + bonus;
-            return _.just(memo, newPlayer ? _.update(_, "earlyadopter", _.comp(_.max(0, _), _.dec)) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
-          }, {earlyadopter: EARLY_ADOPTER_BONUS, plays: [], players: []}, _)),
-          plays = _.get(summary, "plays"),
-          players = _.get(summary, "players"),
+          tallied = _.just(
+            articles,
+            _.filtera(
+              _.and(
+                _.get(_, "tallyword"),
+                _.complement(_.get(_, "edited")), //TODO drop edited
+                params.timelyPlay,
+                unbiased(topic.username)),
+            _),
+            function(articles){ //TODO drop limits?
+              return _.filtera(limited(articles, authors), articles);
+            },
+            tally),
+          plays = _.get(tallied, "plays"),
+          players = _.get(tallied, "players"),
           score = _.just(plays, _.map(_.get(_, "score"), _), _.sum),
           earliest = _.maybe(plays, _.first, _.get(_, "postdate"));
       return {
@@ -369,11 +390,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     id: 278904,
     hill: 13,
     simulate: _.identity,
-    selected: _.constantly(true),
+    selected: _.constantly(true), //_.includes(["Catan"], _),
     timelyPlay: timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
     timelyRegistration: timelyRegistration(_.date("2021-01-02T05:00:00.000Z"))
   }), function(data){
-    dom.html(document.body, "[c][u][b]SOLO MODE SCOREBOARD[/b][/u]\n" + data.reportedPlayed + "\n\n[u][b]PLAYER SCOREBOARD[/b][/u]\n" + data.reportedPlayers + "\n\n[u][b]VOTE REGISTRY[/b][/u]\n" + data.reportedPlays + "[/c]");
+    dom.html(document.body, _.just(data.reports, _.join("\n\n", _), c));
     window.results = data;
     _.log(data);
   });
