@@ -24,7 +24,20 @@ Each category is scored separately and has its own publicly displayed, periodica
 *While plays can be registered anytime only those registered during the **Derby** are scored.*  Scoreboards, periodically, updated, will be posted giving a glimpse of the race as it progresses.  Ties favor the solo mode with the earliest registered play.
 
 ## Example
-Martin's solo mode, Kandee Krush, records the following registered plays (points and bonuses noted):
+Within the *45 Minutes Or Less* category are 7 submissions:
+
+### Submission Scoreboard
+1. Catan Unplugged (Latisha) = 47
+1. Scythe: The Rescue (Tony) = 39
+1. Kandee Krush (Martin) = 36
+1. ..
+1. ..
+1. ..
+1. ..
+
+Here are the registered plays appearing in Martin's submission thread (points and bonuses denoted):
+
+### [Solomode 2021] Kandee Krush
 1. Sadie — 8 (1 + 7)
 1. Sadie — 1
 1. Sadie — 1
@@ -36,22 +49,13 @@ Martin's solo mode, Kandee Krush, records the following registered plays (points
 1. Leopold — 5 (1 + 4)
 1. Joseph — 1
 
-Solo mode scoreboard:
-1. Catan Unplugged (Latisha) = 57
-1. Scythe: The Rescue (Tony) = 43
-1. Kandee Krush (Martin) = 40
-1. ..
-1. ..
-1. ..
-1. ..
+Here is the slice of the scores earned from activity on *Kandee Krush*:
 
-Player scoreboard:
+### Player Scoreboard
 1. Sadie = 11
 1. Joseph = 8
 1. Latisha = 7
 1. Haruo = 5
 1. Leopold = 5
 
-This solo mode's score represents a single slice of the overall player scoreboard.  Players earns points for all the solo modes they play in a category.  In this category there are 7.  So while Martin's currently ranks third he still has hopes of overtaking Tony.
-
-So while Sadie's Kandee Krush score is better than Haruo's, he's played 4 of the 7 solo modes and maintains a wide lead on the overall player scoreboard.
+In the broader scheme these numbers are incomplete because players may have earned points from their activity in other solo mode threads within the category.  So while Sadie had earned more points playing Kandee Krush, Haruo was busy grabbing the best available bonuses on other solo modes.  And factoring those scores in, he maintains a wide lead within the category.
