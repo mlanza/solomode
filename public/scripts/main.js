@@ -41,6 +41,28 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     }, _), _.sort(_.asc(_.get(_, "postdate")), _), _.toArray);
   }
 
+  function units(minutes){
+    return Math.round(minutes / 30);
+  }
+
+  function minplaytimes(ids){
+    return _.fmap(request("https://boardgamegeek.com/xmlapi2/thing?type=boardgame&id=" + _.join(",", ids)), repos.xml, function(el){
+      return _.reduce(function(memo, id){
+        var minutes = _.maybe(el, dom.sel1("item[id=\"" + id +"\"] minplaytime", _), dom.attr(_, "value"), _.blot, parseInt)
+        return _.assoc(memo, id, minutes);
+      }, {}, ids);
+    });
+  }
+
+  function addminplaytimes(items){
+    return _.fmap(_.just(items, _.mapa(_.get(_, "objectid"), _), _.unique, minplaytimes), function(times){
+      return _.mapa(function(item){
+        var minplaytime = item.minimum || times[item.objectid];
+        return _.merge(item, {minplaytime: minplaytime, playunits: units(minplaytime)});
+      }, items);
+    });
+  }
+
   //tabulate results
   function tabulate(params){
     return _.fmap(submissions(params), function(doc){
@@ -51,7 +73,8 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         _.filter(function(item){
           return params.selected(item.objectname);
         }, _),
-        Promise.resolve.bind(Promise),
+        addminplaytimes,
+        //Promise.resolve.bind(Promise),
         _.fmap(_, Promise.all.bind(Promise),
         _.filtera(params.timelyRegistration, _),
         params.unsifted ? _.identity : _.remove(_.get(_, "disqualified"), _),
@@ -141,6 +164,51 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   var dt = _.fmt(_.pipe(_.month, _.inc, _.lpad(_, 2, "0")), "-", _.pipe(_.day, _.lpad(_, 2, "0")));
 
+  function reportPlayed(played){
+    return _.just(played,
+      _.mapIndexed(function(idx, item){
+        return {
+          pos: idx + 1,
+          username: "[user=" + item.username + "]" + item.username + "[/user]",
+          submission: item.objectid ? "[thing=" + item.objectid + "]" + item.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
+          plays: _.str(item.plays.length),
+          players: _.str(item.players.length),
+          score: _.str(item.score),
+          postdate: dt(item.earliest)
+        }
+      }, _),
+      render([
+        column("pos", "#", lpad),
+        column("username", "Author", rpad),
+        column("submission", "Submission", rpad),
+        column("score", "VP", lpad),
+        column("postdate", "Date", rpad),
+        column("players", "Peeps", lpad),
+        column("plays", "Plays", lpad)]));
+  }
+
+  function reportPlayers(players){
+    return _.just(players,
+      _.mapIndexed(function(idx, item){
+        var score = _.just(item.plays, _.map(_.get(_, "score"), _), _.sum);
+        return {
+          pos: idx + 1,
+          username: "[user=" + item.username + "]" + item.username + "[/user]",
+          score: _.str(score),
+          solomodes: _.str(item.solomodes.length),
+          plays: _.str(item.plays.length),
+          postdate: _.maybe(item.plays, _.last, _.get(_, "postdate"), dt)
+        }
+      }, _),
+      render([
+        column("pos", "#", lpad),
+        column("username", "Player", rpad),
+        column("score", "VP", lpad),
+        column("postdate", "Date", rpad),
+        column("solomodes", "Games", lpad),
+        column("plays", "Plays", lpad)]));
+  }
+
   function reportPlays(plays){
     return _.just(plays,
       _.map(function(item){
@@ -157,51 +225,11 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         column("username", "Author", rpad),
         column("submission", "Submission", rpad),
         column("player", "Player", rpad),
-        column("tallyword", "Desc", rpad),
+        column("tallyword", "Vote", rpad),
         column("score", "VP", lpad),
         column("postdate", "Date", rpad)]));
   }
 
-  function reportPlayed(played){
-    return _.just(played,
-      _.map(function(item){
-        return {
-          username: "[user=" + item.username + "]" + item.username + "[/user]",
-          submission: item.objectid ? "[thing=" + item.objectid + "]" + item.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
-          plays: _.str(item.plays.length),
-          players: _.str(item.players.length),
-          score: _.str(item.score),
-          postdate: dt(item.earliest)
-        }
-      }, _),
-      render([
-        column("username", "Author", rpad),
-        column("submission", "Submission", rpad),
-        column("score", "VP", lpad),
-        column("postdate", "Date", rpad),
-        column("players", "Peeps", lpad),
-        column("plays", "Plays", lpad)]));
-  }
-
-  function reportPlayers(players){
-    return _.just(players,
-      _.map(function(item){
-        var score = _.just(item.plays, _.map(_.get(_, "score"), _), _.sum);
-        return {
-          username: "[user=" + item.username + "]" + item.username + "[/user]",
-          score: _.str(score),
-          solomodes: _.str(item.solomodes.length),
-          plays: _.str(item.plays.length),
-          postdate: _.maybe(item.plays, _.last, _.get(_, "postdate"), dt)
-        }
-      }, _),
-      render([
-        column("username", "Player", rpad),
-        column("score", "VP", lpad),
-        column("postdate", "Date", rpad),
-        column("solomodes", "Games", lpad),
-        column("plays", "Plays", lpad)]));
-  }
 
   function minplaytimes(ids){
     return _.fmap(request("https://boardgamegeek.com/xmlapi2/thing?type=boardgame&id=" + _.join(",", ids)), repos.xml, function(el){
@@ -251,11 +279,14 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   function limited(articles, authors){
     return function(article){ //count only the last play of a contestant
-      return true;
       return _.includes(authors, article.username) ? _.just(articles, _.filter(function(a){
         return a.username === article.username;
       }, _), _.last, _.get(_, "id")) == article.id : true;
     }
+  }
+
+  function limited(articles, authors){
+    return _.constantly(true);
   }
 
   function unbiased(username){
@@ -296,7 +327,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
               tallyword: _.nth(tallyword(firstline), 1) || null
             });
           }, _)),
-          summary = _.just(articles, _.filtera(_.and(_.get(_, "tallyword"), params.timelyPlay, unbiased(topic.username)), _), function(articles){
+          summary = _.just(articles, _.filtera(_.and(_.get(_, "tallyword"), _.complement(_.get(_, "edited")), params.timelyPlay, unbiased(topic.username)), _), function(articles){
             return _.filtera(limited(articles, authors), articles);
           }, _.reduce(function(memo, play){
             var newPlayer = !_.includes(memo.players, play.username);
@@ -341,7 +372,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     timelyPlay: timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
     timelyRegistration: timelyRegistration(_.date("2021-01-02T05:00:00.000Z"))
   }), function(data){
-    dom.html(document.body, "[c]" + data.reportedPlayed + "\n\n" + data.reportedPlayers + "\n\n" + data.reportedPlays + "[/c]");
+    dom.html(document.body, "[c][u][b]SOLO MODE SCOREBOARD[/b][/u]\n" + data.reportedPlayed + "\n\n[u][b]PLAYER SCOREBOARD[/b][/u]\n" + data.reportedPlayers + "\n\n[u][b]VOTE REGISTRY[/b][/u]\n" + data.reportedPlays + "[/c]");
     window.results = data;
     _.log(data);
   });
