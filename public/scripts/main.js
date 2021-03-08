@@ -300,6 +300,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   //get the votes for the submission
   function thread(params, topic, authors, id){
+    var NEW_PLAYER_BONUS = 4, FIRST_PLAYER_BONUS = 3;
     return id ? _.fmap(request("https://boardgamegeek.com/xmlapi2/thread?id=" + id), repos.xml, function(el){
       var subject = _.just(el, dom.sel1("subject", _), dom.text),
           articles = _.just(el, dom.sel("article", _), _.mapa(function(el){
@@ -331,10 +332,10 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
             return _.filtera(limited(articles, authors), articles);
           }, _.reduce(function(memo, play){
             var newPlayer = !_.includes(memo.players, play.username);
-            var bonus = newPlayer ? 4 + memo.bonus : 0;
+            var bonus = newPlayer ? NEW_PLAYER_BONUS + memo.bonus : 0;
             var score = 1 + bonus;
             return _.just(memo, newPlayer ? _.update(_, "bonus", _.comp(_.max(0, _), _.dec)) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
-          }, {bonus: 3, plays: [], players: []}, _)),
+          }, {bonus: FIRST_PLAYER_BONUS, plays: [], players: []}, _)),
           plays = _.get(summary, "plays"),
           players = _.get(summary, "players"),
           score = _.just(plays, _.map(_.get(_, "score"), _), _.sum),
