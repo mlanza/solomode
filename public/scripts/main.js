@@ -71,8 +71,8 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           _.merge(data, _));
       },
       function(data){
-        var _played = _.just(data.items, _.filter(_.getIn(_, ["plays", "length"]), _), _.sort(_.desc(_.get(_, "score")), _.desc(_.get(_, "earliest")), _)),
-            _players = _.just(data.items, players, _.sort(_.desc(_.get(_, "score")), _.desc(_.get(_, "earliest")), _)),
+        var _played = _.just(data.items, _.filter(_.getIn(_, ["plays", "length"]), _), _.sort(_.desc(_.get(_, "score")), _.asc(_.get(_, "earliest")), _)),
+            _players = _.just(data.items, players, _.sort(_.desc(_.get(_, "score")), _.asc(_.get(_, "earliest")), _)),
             _plays = plays(_played),
             _unlinked = _.filtera(_.complement(_.get(_, "articles")), data.items),
             _reportedPlayed = reportPlayed(_played),
@@ -302,7 +302,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
             var newPlayer = !_.includes(memo.players, play.username);
             var bonus = newPlayer ? 4 + memo.bonus : 0;
             var score = 1 + bonus;
-            return _.just(memo, newPlayer ? _.update(_, "bonus", _.dec) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
+            return _.just(memo, newPlayer ? _.update(_, "bonus", _.comp(_.max(0, _), _.dec)) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
           }, {bonus: 3, plays: [], players: []}, _)),
           plays = _.get(summary, "plays"),
           players = _.get(summary, "players"),
@@ -337,7 +337,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
     id: 278904,
     hill: 13,
     simulate: _.identity,
-    selected: _.includes(["Catan", "Mexica", "Hyperborea"], _),
+    selected: _.constantly(true),
     timelyPlay: timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
     timelyRegistration: timelyRegistration(_.date("2021-01-02T05:00:00.000Z"))
   }), function(data){
