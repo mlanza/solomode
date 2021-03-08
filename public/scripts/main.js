@@ -29,7 +29,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
 
   function players(items){
     return _.just(items, _.mapcat(_.get(_, "plays"), _), _.toArray, _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, player, plays){
-      return _.conj(memo, {username: player, plays: plays, score: _.just(plays, _.map(_.get(_, "score"), _), _.sum), solomodes: _.just(plays, _.map(_.getIn(_, ["topic", "id"]), _), _.unique), earliest: _.just(plays, _.map(_.get(_, "earliest"), _), _.sort, _.first)});
+      return _.conj(memo, {username: player, plays: plays, score: _.just(plays, _.map(_.get(_, "score"), _), _.sum), solomodes: _.just(plays, _.map(_.getIn(_, ["topic", "id"]), _), _.unique), earliest: _.just(plays, _.map(_.get(_, "postdate"), _), _.sort, _.first)});
     }, [], _));
   }
 
@@ -94,8 +94,8 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           _.merge(data, _));
       },
       function(data){
-        var _played = _.just(data.items, _.filter(_.getIn(_, ["plays", "length"]), _), _.sort(_.desc(_.get(_, "score")), _.asc(_.get(_, "earliest")), _)),
-            _players = _.just(data.items, players, _.sort(_.desc(_.get(_, "score")), _.asc(_.get(_, "earliest")), _)),
+        var _played = _.just(data.items, _.filter(_.getIn(_, ["plays", "length"]), _), _.sort(_.desc(_.get(_, "score")), _.desc(_.getIn(_, ["players", "length"])), _.desc(_.getIn(_, ["plays", "length"])), _.asc(_.get(_, "earliest")), _)),
+            _players = _.just(data.items, players, _.sort(_.desc(_.get(_, "score")), _.desc(_.getIn(_, ["solomodes", "length"])), _.desc(_.getIn(_, ["plays", "length"])), _.asc(_.get(_, "earliest")), _)),
             _plays = plays(_played),
             _unlinked = _.filtera(_.complement(_.get(_, "articles")), data.items),
             _reportedPlayed = reportPlayed(_played),
@@ -185,7 +185,7 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           plays: _.str(item.plays.length),
           players: _.str(item.players.length),
           score: _.str(item.score),
-          postdate: dt(item.earliest)
+          earliest: dt(item.earliest)
         }
       }, _),
       render("SOLO MODE SCOREBOARD", [
@@ -193,9 +193,9 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
         column("username", "Author", rpad),
         column("submission", "Submission", rpad),
         column("score", "VP", lpad),
-        column("postdate", "Date", rpad),
         column("players", "Peeps", lpad),
-        column("plays", "Plays", lpad)]));
+        column("plays", "Plays", lpad),
+        column("earliest", "Date", rpad)]));
 
   var reportPlayers =
     _.pipe(
@@ -207,16 +207,16 @@ require(['atomic/core', 'atomic/dom', 'atomic/reactives', 'atomic/transducers', 
           score: _.str(score),
           solomodes: _.str(item.solomodes.length),
           plays: _.str(item.plays.length),
-          postdate: _.maybe(item.plays, _.last, _.get(_, "postdate"), dt)
+          earliest: dt(item.earliest)
         }
       }, _),
       render("PLAYER SCOREBOARD", [
         column("pos", "#", lpad),
         column("username", "Player", rpad),
         column("score", "VP", lpad),
-        column("postdate", "Date", rpad),
         column("solomodes", "Games", lpad),
-        column("plays", "Plays", lpad)]));
+        column("plays", "Plays", lpad),
+        column("earliest", "Date", rpad)]));
 
   var reportPlays =
     _.pipe(
