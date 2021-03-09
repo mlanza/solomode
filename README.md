@@ -1,8 +1,8 @@
 # Solomode
 
-Tabulates results for [Solomode](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest) a solo mode design contest hosted on BoardGameGeek.  Tested in Chromium browsers.
+[Solomode](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest) was a solo mode design contest hosted on [BoardGameGeek](https://www.boardgamegeek.com) beginning in 2020 and ending early 2021.  The next competition's rules have been overhauled and scoring simplified.  There is a working draft of role-based guides—[creators](./docs/creators-guide.md) and [players](./docs/players-guide.md)—for Solomode 2021.
 
-Working drafts for 2021 contest rules: [creators](./docs/creators-guide.md) and [players](./docs/players-guide.md).
+Included is an algorithm which queries BoardGameGeek's api to harvest and tabulate the contest scoreboards.  It has been tested in Chromium browsers.
 
 ## The MIT License (MIT)
 **Copyright © 2020 Mario T. Lanza**
