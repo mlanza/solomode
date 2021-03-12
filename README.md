@@ -1,6 +1,6 @@
 # Solomode
 
-[Solomode](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest) was a solo mode design contest hosted on [BoardGameGeek](https://www.boardgamegeek.com) beginning in 2020 and ending early 2021.  The next competition's rules have been overhauled and scoring simplified.  There is a working draft of role-based guides—[creators](./docs/creators-guide.md) and [players](./docs/players-guide.md)—for Solomode 2021.
+[Solomode](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest) was a solo mode design contest hosted on [BoardGameGeek](https://www.boardgamegeek.com) beginning in 2020 and ending early 2021.  The next competition's rules have been overhauled and scoring simplified.  The working draft includes role-based guides—[creators](./docs/creators-guide.md) and [players](./docs/players-guide.md)—for Solomode 2021.
 
 Included is an algorithm which queries BoardGameGeek's api to harvest and tabulate the contest scoreboards.  It has been tested in Chromium browsers.
 
