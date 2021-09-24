@@ -5,6 +5,8 @@ You want to create a solo mode.  This guide is tailored to solo mode creators.
 * Registration - **December 1 - December 14, 2021**
 * Derby - **January 2022** (plays are scored only in this month)
 
+<!-- specify how time is being measured -->
+
 ## Derby
 Solomode is a competition involving solo mode creators and players which culminates in **Solomode Derby**, a [scored race](./scoring-guide.md) over which which solo modes are spurred ahead by tallied solo mode plays.  The leaderboard is periodically updated so keen observers can watch it unfold until the final photo finish.
 
@@ -17,22 +19,18 @@ Over the course of the contest you
 * moderate plays recorded in your thread(s) during the **Derby**, and
 * win accolades once the **Derby** concludes.
 
-<!-- Also, subscribe to moderation thread if you want to be kept in the loop on important discussions, updates and reminders. -->
-
 ## What You Deliver
 For each solo mode you enter (1 per event at most) you must create a
 * thread,
 * rules, and
 * registration.
 
-Your solo mode (thread and rules) can be published and updated at any time.  This means—assuming you're exceptionally eager!—you could even begin today.  Be forewarned: the contest is for new solo modes.  Previously created solo modes (even if updated for the contest) will be disqualified.
+Your solo mode (thread and rules) can be published and updated at any time.  This means—for the exceptionally eager—you could even begin today.  Be forewarned: the contest is for new solo modes.  Previously created solo modes (even if updated for the contest) will be disqualified.
 
 While Derby is the big event, your means to scoring, Solomode is more journey than destination.  You're afforded an opportunity to create and iterate and to fold valuable feedback into your creative process.  Giving and getting feedback is perhaps the most rewarding aspect of participating.
 
-<!--Your thread and entry constitute a registration and **must** be created during the **Registration** period.  Once you've cleared registration all you have left is to publish your rules and await players.  Hopefully, they'd been eagerly awaiting your release and had already subscribed to your thread!  In the meantime, you're encouraged to play and review solo modes—the rule of thumb is twice as many entries as you entered.-->
-
 ### Thread
-Create a thread.  This is your PR channel.  You'll use it to share news and, ultimately, accept votes and audience feedback for your solo mode.
+Create a thread.  This is your public relations channel.  You'll use it to share news and, ultimately, accept votes and audience feedback for your solo mode.
 * It **must** be in the Variants forum of the board game your solo mode uses.
 * As a signpost to [players](https://gist.github.com/mlanza/87c496848d63a989b57e9d15a5f53795), its title should begin "[Solomode 2021]" and be followed by the working title (updated at will) of your solo mode (e.g. "[Solomode 2021] Ticket to a Roadtrip").  Conforming to this pattern reassures players they're in the right spot and helps ensure you earn every bit of credit you deserve.
 * The opening post should include a link to the Players' Guide.  You should direct players to this guide to ensure they understand how their votes are scored.
@@ -57,14 +55,30 @@ Add a geeklist item to a __single__ geeklist (event category).  The geeklists wi
 * The geeklist item **must** be of the `Thread` variety (a change from last year!)
 * The solo mode **must** abide the constraints posed by the category.  These are specified in the geeklist header for the chosen category.
 * The Description for the geeklist item should include an elevator pitch and an average playing time.
+* Your registration will be reviewed.  If you've heard no complaints by December 17, you're good to go.  If you do, please address them promptly.
 
-A bit more on rules.  Not only does a rulebook offer an experience, it is an experience.  Is it daunting?  Hard to digest?  Does it require hard-to-source components, necessitate a good amount of printing/assembly, or use odd paper sizes?
+The gap between the close of registration and Derby is only a couple weeks.  It may be obvious, but development should precede registration.  By the time you register, you should have something which is close to done if not done.
 
-This is a contest and, as such, involves more than just solo mode design.  You have to mind how your solo mode will be received and smooth away whatever rough edges which might disincline a player from learning it.
+## Competition Tip
+Solomode is more than design alone.  It involves presentation and communication as well.
 
-Your biggest challenge is getting rules into people's heads and getting them to want to get the rules into their heads.  Understand that would-be patrons may, after peeking in, meander over to the next shop if yours isn't warm and inviting.  I'm told baking cookies helps!
+And the rules are critical.  Not only do they equip a player for an experience, they are themselves an experience.  Do they look daunting?  Hard to digest?  Are there hard-to-source components?  Does it require time and resources to print/assemble?  Be mindful of every potential barrier and smooth away rough edges which might disincline a player from learning it.
+
+Your biggest challenge is getting rules into people's heads and getting them to want to get your rules into their heads.  Understand that would-be patrons may, after peeking in your shop, stroll to the next if yours isn't warm and inviting.  I'm told baking cookies helps!  And if not that, teach videos.
+
+## Design Tip
+While there are no rules for creating your solo mode, please read [Pedersen's advice](https://boardgamegeek.com/blogpost/37830/automa-approach-i-method-making-solitaire-modes-mu), especially his admonition to "Find the soul of the multiplayer experience."
+
+Some designers rather than create solo modes for existing games used them as a canvas on which to create unique, solitaire experiences.  While this is certainly allowed I suspect more players prefer solo modes.
+
+## Giving Feedback
+Target playing about twice as many solo modes as you enter.  What every creator wants is feedback.  Schedule some time to learn and play solo modes and help your fellow competitor.
+
+Early rulebook feedback is valuable too, even if end up not playing the game.  If a rulebook turns you away, it may be some help to explain why.
 
 ## Moderation
-To ensure a safe ride the host or a moderator will review entries and report issues.  Mind your geekmails.  As long as you respond and make corrections within **5 days** you have no need to worry about inadvertently being disqualified.  You'll get the guidance you need.
+To address issues the host or a moderator will review entries and report issues.  Most of the guidelines are there to help and foster participation.  Few of them are forceful enough to disqualify.
+
+Mind your geekmails.  As long as you respond to your registration feedback **within 5 days** you have no need to worry about inadvertently being disqualified.  You'll get the guidance you need.
 
 The contest host reserves the right to fix, interpret, clarify, arbitrate, and enforce the rules as he sees fit.
