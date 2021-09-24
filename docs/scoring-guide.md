@@ -1,27 +1,27 @@
 # Solomode 2021 Scoring Guide
-Solomode is divided into categories (e.g. different events/geeklists) in which a solo mode may compete.  Each category provides guidelines for an appropriate entry (at the top of the respective geeklist) and is scored separately.  
+Solomode is divided into categories (e.g. different events/geeklists) in which a solo mode may compete.  Each category provides guidelines for an appropriate entry (at the top of the respective geeklist) and is scored separately.
 
 ## Categories
-*These categories have not yet been determined, but there will be approximately 5.*
+*These categories have not yet been determined, but there will be approximately 6.*
 
 ## Scoring
-Registered plays earn points plus bonuses for both solo modes (added to the submission scoreboard) and players who registered  plays (added to the player scoreboard).
+Recorded plays earn points plus bonuses for both solo modes (added to the submission scoreboard) and players who record plays (added to the player scoreboard).
 
-Every registered play earns:
+Every recorded play earns:
 * 1 point
 
-Every registered play earns bonus points when new players play a solo mode:
+Every recorded play earns bonus points when new players play a solo mode:
 * 7 points - first new player
 * 6 points - second new player
 * 5 points - third new player
 * 4 points - every new player thereafter
 
-Read [Solomode Player's Guide](./players-guide.md) to understand registered plays.  Basically, the more a solo mode is played, the better its score.  *Solo mode players earn as many points and their plays garner the solo modes they played.*
+Read [Solomode Player's Guide](./players-guide.md) to understand recorded plays.  Basically, the more a solo mode is played, the better its score.  *Solo mode players earn as many points and their plays garner the solo modes they played.*
 
 ## Scoreboards
 Each category is scored separately and has its own publicly displayed, periodically updated scoreboard.  When the race concludes a final snapshot will immortalize the results and winners will receive whatever prizes were made available to the category.  Listed prizes will be awarded only in categories in which at least 5 entrants clear registration.
 
-*While plays can be registered anytime only those registered during the **Derby** are scored.*  Scoreboards, periodically, updated, will be posted giving a glimpse of the race as it progresses.  Ties favor the solo mode with the earliest registered play.
+*While plays can be recorded anytime only those recorded during the **Derby** are scored.*  Scoreboards, periodically, updated, will be posted giving a glimpse of the race as it progresses.  Ties favor the solo mode with the earliest play on record.
 
 ## Example
 Within the *45 Minutes Or Less* category are 7 submissions:
@@ -35,7 +35,7 @@ Within the *45 Minutes Or Less* category are 7 submissions:
 1. ..
 1. ..
 
-Here are the registered plays appearing in Martin's submission thread (points and bonuses denoted):
+Here are the plays recorded in Martin's submission thread (points and bonuses denoted):
 
 ### [Solomode 2021] Kandee Krush
 1. Sadie — 8 (1 + 7)
