@@ -24,3 +24,8 @@ Retailers or publishers wishing to sponsor prizes in exchange for an ad:
 * see Sponsors' Guide
 
 **Please don't direct questions and concerns to this thread, but to one of the linked guides.**  Each distinct guide offers a clue about its audience which keeps its thread focused.  It makes it easy for folks to subscribe only to the channel(s) of interest and keep abreast of updates.
+
+This thread may be used to announce and direct play testers into solo mode threads in advance of registration.  Solo mode players looking to discover works-in-progress have been directed here.
+
+**This thread will not be moderated.**
+

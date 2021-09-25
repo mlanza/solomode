@@ -2,54 +2,50 @@
 
 You want to play newly created solo modes.  This guide is tailored to solo mode players.
 
-Reading Time: 5 minutes
+## Bottom Line Up Front
+Solomode needs you to play solo modes.  The most important time for you to do this is Derby.  The most important thing for you to do is properly record these plays in variant threads, one discrete post per play.
 
-## Important Events
-* Line Up - **December 15, 2021** (contest registration is final)
-* Derby - **January 2022** (the time over which your efforts reap the greatest reward)
+## Important Dates
+* Line Up - **December 17, 2021**
+* Derby - **January 2022**
+
+If you're a board game and/or solo mode enthusiast please mark your calendars with these dates.  Alternately, if you subscribe to this thread you'll be kept up to date with developments.
 
 ## Solomode
-Solomode is a competition in which amateur designers create and share solo modes.  It culminates in Solomode Derby, a month over which recorded plays score points for solo mode authors.  This guide explains how to record plays.  But for these there would be no Solomode.
+Solomode is a competition in which fledgling or experienced designers create and share solo modes.  It culminates in Solomode Derby, a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.  But for your participation there would be no Solomode.
 
 ## What You Do
-Once the **Line Up** of solo modes goes up you
-* seek out those which interest you,
-* learn the rules,
-* play them, and
-* record the fact!
+From the **Line Up** you
+* seek out solo modes,
+* learn their rules,
+* play them (esp. during Derby!), and
+* record the fact.
 
-*Not owning a game may not necessarily be a hinderance.  Where possible games may be played on [Tabletop Simulator](https://www.tabletopsimulator.com).*
+Creators are free to use digital platforms to make their solo modes more widely available.  This may make available games you don't physically own.
 
-### Recorded Plays
+### Recording Plays
 When you play a solo mode it needs to be recorded so that, for contest purposes, it can be scored.  You register a play by making a post.  The post must contains a **tallyword**.  It may contain **comments**.
 
-A tallyword is any of LIKE, LUMP or LOVE in all caps and which appears by itself on the first line.  It signals enthusiam resulting from the play and, more importantly, helps a bot differentiate it from other chatter in the thread.  It's what enables points to be periodically added to public scoreboards.
+**A tallyword is any of LIKE, LUMP or LOVE in all caps and which appears by itself on the first line of your post.**  It signals your enthusiam and, more importantly, helps a bot differentiate it from other chatter in the thread.  It's what enables points to be periodically added to public scoreboards.
 
 If points are the mash, comments are the gravy.  You may (and should) use the remainder of the post to recap your experience and/or provide useful feedback.  It's your best means of expressing appreciation to solo mode creators.
 
-It can't be overstated.  Recorded plays are as the harvest to the farmer, the fuel on which the contest runs.  Please register discrete plays separately.  Every play matters and should be properly accounted for.
-
-*Solo mode authors may register plays for their own solo modes.  They won't be scored.*
+As recorded plays are Solomode's currency, they're eagerly anticipated, highly coveted and sincerely appreciated.  You can play a solo mode as many times as you like.  Just take care to record each play in a separate post.
 
 ### Where Matters
-Where you register a play determines who, if anyone at all, earns credit.  Take care to target Solomode threads.  Find threads for solo modes in the following categories/geeklists:
+Where you register a play determines who, if anyone at all, earns credit.  Take care to target Solomode threads.  They can be reached via [category geeklists](./categories.md) but ensure you're recording plays in the threads belonging to the solo mode you played.  When you land in one its opening post should make it crystal clear you're in the right place.
 
-*
-*
-
-These threads are hubs in which authors engage players.  They're used to announce updates, release rules and, most importantly, record plays.  To be kept in the loop, subscribe to those which interest you and once you've played a solo mode don't forget to register it.  Even if you have no comments to add it improves someone's score.
+These threads are hubs in which creators engage players.  They're used to announce updates, release rules and, most importantly, record your plays.  To be kept in the loop, subscribe to whichever threads interest you and once you've played a solo mode **please don't forget to record it**.  Even if you make no comments somebody's score depends on it.
 
 ### When Matters
-You may record plays anytime but only those recorded during **Derby** earn points for their creators so, to make the most of your effort, plan accordingly.
+You may record plays anytime but only those recorded during **Derby** earn points for creators so, to make the most of your effort, plan accordingly.
 
-Plays **must** be recorded in the month in which they actually occurred.  That is, if you record one in December the implication is it took place in December and not January.  The intent is to prevent play testers from carrying old plays forward as this'd afford a greater scoring window to creators who release early.  It would unintentionally pressure everyone else to do likewise.
+Plays **must** be recorded in the month in which they actually occurred.  That is, if you record one in December the implication is it took place in December and not January.  The intent is to prevent play testers from carrying old plays forward as this'd afford a greater scoring window to creators who release early.  It would unintentionally pressure others to do likewise.
 
-### Early Access
-Solo mode creators may announce works-in-progress (in this thread or elsewhere) and invite you to try versions well in advance of the official registration.  While your plays in the development stage may be recorded and are no doubt appreciated, they won't be scored.  Save some enthusiasm for Derby.
+### Corrections
+If you fail to properly record a play someone may prompt you to correct your post.  Please respond promptly to ensure your points are awarded to the creator.
 
-### Prompted Fixes
-If you mess up in registering your play a moderator or the creator may invite you to fix your post.  Please respond promptly to ensure your points are correctly recorded.
+### Players' Scoreboard
+If you're not interested in competing against other players skip this bit.
 
-### Recap
-A recorded play is a post to a solo mode thread whose first line is a tallyword (LIKE, LUMP or LOVE) and which may or may not have comments.  Each such post should correspond to a _single play_ which took place within the month in which it was recorded.  As recorded plays are Solomode's currency, they're eagerly anticipated, highly coveted and sincerely appreciated.
-
+In addition to tracking the scores of submissions during Derby, players will [earn scores](./scoring-guide.md) on a scoreboard maintained in this thread.  **If the Players' Scoreboard is sponsored** the winner and runner up will be awarded prizes.  Your score will be identical to the sum total of what your recorded plays earned creators.
