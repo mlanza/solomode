@@ -2,17 +2,12 @@
 
 You want to play newly created solo modes.  This guide is tailored to solo mode players.
 
-## Bottom Line Up Front
-Solomode needs you to play solo modes.  The most important time for you to do this is Derby.  The most important thing for you to do is properly record these plays in variant threads, one discrete post per play.
-
 ## Important Dates
 * Line Up - **December 17, 2021**
 * Derby - **January 2022**
 
-If you're a board game and/or solo mode enthusiast please mark your calendars with these dates.  Alternately, if you subscribe to this thread you'll be kept up to date with developments.
-
 ## Solomode
-Solomode is a competition in which fledgling or experienced designers create and share solo modes.  It culminates in Solomode Derby, a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.  But for your participation there would be no Solomode.
+Solomode is a competition in which fledgling or experienced designers create and share solo modes.  It culminates in Derby, a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.  But for your participation there would be no Solomode.
 
 ## What You Do
 From the **Line Up** you

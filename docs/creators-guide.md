@@ -1,9 +1,6 @@
 # Solomode 2021 Creators' Guide
 You want to create a solo mode.  This guide is tailored to solo mode creators.
 
-## Bottom Line Up Front
-Solomode needs your newly created solo modes.  They must be registered.  You can begin as soon as you like but only plays recorded over Derby will be scored.  Winners will be announced after Derby concludes.
-
 ## Important Dates
 * Registration - **December 1 - December 14, 2021**
 * Line Up - **December 17, 2021**
@@ -19,7 +16,7 @@ Take care to afford yourself a little buffer surrounding key dates.
 ## Derby
 Solomode is a competition involving solo mode creators and players which culminates in **Solomode Derby**, the [scored race](./scoring-guide.md) over which which solo modes are spurred ahead by recorded plays.  The leaderboard is periodically updated so keen observers can watch it unfold until the final photo finish.
 
-When the contest concludes accolades will be earned based on the final scores of submissions.  In each category there will be a winner and a runner up.  **If the category was sponsored and has at least 5 contestants** these individuals will be awarded prizes.  (Sponsorship will be clearly noted at the top of a category when and if it's sponsored.)
+When the contest concludes accolades will be earned based on the final scores of submissions.  In each category there will be a winner and a runner up.  **If the category was sponsored and has at least 5 contestants** these individuals will be awarded prizes.  (Sponsorship will be clearly noted at the top of a category when and if it's sponsored.  Please see the details on international shipping in [Sponsors' Guide] if you're outside USA.)
 
 Honorable mentions go to submissions played 5 or 10 times.  These will, respectively, appear on a nickel or a dime list.
 

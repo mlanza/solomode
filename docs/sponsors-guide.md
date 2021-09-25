@@ -14,6 +14,6 @@ If your venture, commercial or otherwise, is appropriate for this community, you
 
 In return for your sponsorship you may provide a short ad, the kind one would typically find on web sites embeded between content or in the sidebar.  It can be a graphic (or just plain text) and it can be linked to the website of your choice.  Please contact me via geekmail.  I will respond to offers in the order they are received.
 
-Solomode runs from now until end of January 2022 so that's a substantial advertising window for not much cost.
+Solomode runs from now until end of January 2022 so that's a substantial advertising window for not much cost.  And right around the holidays!
 
 Prizes need only be awared if at least 5 individuals compete in the sponsored category.
