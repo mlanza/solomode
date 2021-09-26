@@ -3,7 +3,7 @@
 You want to play newly created solo modes.  This guide is tailored to solo mode players.
 
 ## Important Dates
-* Line Up - **December 1 - 14, 2021**
+* Line Up - **December 1 - December 14, 2021**
 * Derby - **January 2022**
 
 ## Solomode
