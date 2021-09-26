@@ -1,3 +1,6 @@
+# Solomode 2021 Categories
+Each of the following categories is scored separately.  The solo modes submitted into each category constitues its Line Up.
+
 ## Chop Chop
 Submission requirements:
 * Minimum playing time is 30 minutes or less.
