@@ -1,4 +1,6 @@
-[Solomode](./announcement-solomode.md) needs you to play solo modes!  The most important time for you to do this is Derby.  The most important thing for you to do is properly record these plays in variant threads, one discrete post per play.
+![Derby](./../images/derby.png)
+
+[Solomode](./announcement-solomode.md) invites you to play solo modes!  The most important time to do this is Derby.  The most important thing for you to do is properly record yours plays.
 
 ## Important Dates
 * Line Up - **December 17, 2021**
@@ -7,7 +9,7 @@
 ## Derby
 Wait.  What's Derby?
 
-Derby is a drag race between solo modes.  Solo mode creators are building them.  Their racecars (solo modes, of course!) will be lined up and the race will begin in January 2022.  You have the entire month of January to record your solo mode plays to score creators' points needed to fuel the outcome!
+Derby is a drag race between solo modes.  Solo mode creators are building them.  Their race cars (solo modes, of course!) will be lined up and the gun fired January 1, 2022.  The race will ensue until the end of January when your your plays will be tallied and the winners decided!
 
 ## Line Up
 There are several [categories](./categories.md) to be filled will solo modes.  The line up will begin forming in December and finalize come the 17th.

@@ -1,3 +1,5 @@
+![Solomode](./../images/solomode.png)
+
 Solomode is back.
 
 It's time for content creators to roll up their sleeves and get to creating solo modes for their beloved games.
@@ -6,7 +8,7 @@ If you've ever pondered "could I make a board game," participation in Solomode i
 
 ## Important Events
 * Registration - **December 1 - December 14, 2021**
-* Derby - **January 2022** (plays are scored only in this month)
+* Derby - **January 2022**
 
 Hopefully this announcement whets your appetite for things to come and gives you [enough information](./creators-guide.md) to get started with the early stages of your design.
 
