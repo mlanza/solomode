@@ -4,7 +4,7 @@
 
 It's time for content creators to roll up their sleeves and get to creating solo modes for their beloved games.
 
-If you've ever pondered "could I make a board game," participation in Solomode is a small step in that direction.  Last year's participants agreed.  [Creating a solo mode](./creators-guide.md) is an ideal first step for budding and hopeful game designers.  It dramatically shortens prototyping by providing you with most of the materials you need in a single box!
+If you've ever pondered making a board game, participation in Solomode is a small step in that direction.  Last year's participants agreed.  [Creating a solo mode](./creators-guide.md) is an ideal first step for budding and hopeful game designers.  It dramatically shortens prototyping by providing you with most of the materials you need in a single box!
 
 Wait.  What's Solomode?  Well, as the name implies, it's about solo modes—ones you create and enter into friendly competition.  These solo modes are revealed in a [Line Up](./categories.md).  Solo mode enthusiasts will chose and learn them.  You'll earn points during [Derby](./announcement-derby.md) every time someone plays your solo mode.
 
