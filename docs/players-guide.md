@@ -3,7 +3,7 @@
 You want to play newly created solo modes.  This guide is tailored to solo mode players.
 
 ## Bottom Line Up Front
-Learn solo modes in early December in preparation for January 2022.  Play as few or as many solo modes as you like in January.  Record discrete plays as posts in the threads belonging to the solo modes you played.  Begin posts with LIKE, LOVE or LUMP, in caps on lines all by themselves.  Optionally, use the remainder of the posts to share thoughtful feedback.
+Learn solo modes in December in preparation for January 2022.  Play as few or as many solo modes as you like in January.  Record discrete plays as posts in the threads belonging to the solo modes you played.  Begin posts with LIKE, LOVE or LUMP, in caps on lines all by themselves.  Optionally, use the remainder of the posts to share thoughtful feedback.
 
 ## Important Dates
 * Line Up - **December 1 - December 14, 2021**
