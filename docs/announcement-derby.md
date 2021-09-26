@@ -3,7 +3,7 @@
 [Solomode](./announcement-solomode.md) invites you to play solo modes!  The most important time to do this is Derby.  The most important thing for you to do is properly record yours plays.
 
 ## Derby
-Wait.  What's Derby?
+Wait.  Derby?
 
 Derby is a drag race between solo modes.  Solo mode creators are building them.  Their race cars (solo modes, of course!) will be lined up and the gun fired January 1, 2022.  The race will ensue until the end of January when your your plays will be tallied and the winners decided!
 
