@@ -46,7 +46,7 @@ The gap between Registration and Derby is a couple weeks.  Your development can 
 Create a thread.  It's your public relations channel.  You'll use it to share news, record plays, and accept audience feedback for your solo mode.
 * It **must** be in the Variants forum of the board game your solo mode uses.
 * As a signpost to [players](https://gist.github.com/mlanza/87c496848d63a989b57e9d15a5f53795), its title should begin "[Solomode 2021]" and be followed by the working title (updated at will) of your solo mode (e.g. "[Solomode 2021] Dark Days").  Conforming to this pattern reassures players they're in the right spot and helps ensure you earn every bit of credit you deserve.
-* The opening post should include a link to the Players' Guide.  It reminds players how to properly record plays and why they should care.
+* The opening post should include a link to the [Players' Guide](./players-guide.md).  It reminds players how to properly record plays and why they should care.
 * If digital platforms like [Tabletop Simulator](https://www.tabletopsimulator.com) make playing your solo mode possible you can explain how.
 * You may record your own plays of your solo mode here if only to demonstrate what a properly recorded play looks like.  They won't be counted.
 * If you wish to wrangle more play testers that you can get from this thread alone, you may extend an invitation in the [Derby Announcement](./announcement-derby.md) thread.
@@ -62,7 +62,7 @@ Your solo mode rules
 * may include several files, and
 * may require components and printables not included in the base game.
 
-Reminding players in your rules to register their plays ensures this crucial detail won't be missed.  A game cannot be played, after all, without reading its rules.  As the Players' Guide describes the particulars of recording plays, linking to it saves you from offering a similiar explanation.
+Reminding players in your rules to register their plays improves the odds this crucial detail won't be forgotten.  A game cannot be played, after all, without reading its rules.  As the [Players' Guide](./players-guide.md) describes the particulars of recording plays, linking to it saves you from offering a similiar explanation.
 
 While you can publish rules anytime, take care as to when and how as a premature release might cause your most enthusiastic fans to peter out before scoring begins.  **Remember only plays recorded during Derby are scored.**
 
@@ -83,7 +83,7 @@ While there are no rules for creating your solo mode, please read [Pedersen's ad
 
 Some designers, rather than create solo modes, used existing games as a canvas on which to create new solitaire experiences.  While this is allowed I suspect more players will prefer solo modes.
 
-The benefit to solo modes is most of the base rules stand.  This helps keep solo mode rules shorter than new solitaire experiences.  And 2 pages of rules is certainly more inviting than 6.
+The benefit to solo modes is most of the base rules stand.  This helps keep solo mode rules shorter than new solitaire experiences.  And short rules are certainly more inviting.
 
 Community advice:
 * [Lessons from Designing a Solo Variant – Oakleaf Games](https://oakleafgames.wordpress.com/2016/07/07/lessons-from-designing-a-solo-variant/)
