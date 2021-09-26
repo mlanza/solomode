@@ -103,9 +103,9 @@ Your biggest challenge is getting rules into people's heads.  This is preceded b
 
 Patrons will peek in your shop and stroll to the next if it doesn't appear warm and inviting.  Baking cookies helps.  And if not that, teaching videos!
 
-As you will be moderating your own threads, you need to understand the contest from the player's perspective.  Ensure you mind and understand the [Players' Guide](./players-guide.md).  Furthermore you're asked to support other creators which means you're going to be a player too anyway.
+As you will be moderating your own threads, you need to understand the contest from the player's perspective.  Ensure you mind and understand the [Players' Guide](./players-guide.md).  Furthermore, since you're asked to support other creators, you're going to be a player too.
 
-## Supporting Other Creators
+## Supporting Fellow Creators
 Target playing about twice as many solo modes as you enter.  What every creator most covets is feedback.  Schedule time to learn and play solo modes and offer constructive feedback to your fellow competitors.
 
 Early rulebook feedback is valuable too, even if you end up not playing the game.  If a rulebook disinclines you, describing the rough edges from your perspective may be a help.
