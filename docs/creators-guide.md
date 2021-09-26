@@ -64,7 +64,7 @@ Your solo mode rules
 
 Reminding players in your rules to "record plays over Derby" improves the odds this crucial detail won't be forgotten.  A game cannot be played, after all, without reading its rules.  Cite and link the [Players' Guide](./players-guide.md) if you like.
 
-While you can publish rules anytime, take care as to when and how as a premature release might cause your most enthusiastic fans to peter out before scoring begins.  **Remember only plays over Derby are scored.**
+While you can publish rules anytime, take care to remind your audience that **only plays over Derby are scored**.  Ask them to conserve some enthusiasm and energy for the main event.
 
 Although your working rules can be hosted anywhere over the duration of the contest, Solomode aims to get creators thinking in terms of shipping and publishing.  Please support the BGG community by publishing your final rules to BGG's file section by the time Derby concludes.
 
@@ -106,9 +106,9 @@ As you will be moderating your own threads, you need to understand the contest f
 ## Supporting Other Creators
 Target playing about twice as many solo modes as you enter.  What every creator most covets is feedback.  Schedule time to learn and play solo modes and offer constructive feedback to your fellow competitors.
 
-Early rulebook feedback is valuable too, even if end up not playing the game.  If a rulebook disinclines you to play, it may be helpful to explain why.
+Early rulebook feedback is valuable too, even if you end up not playing the game.  If a rulebook disinclines you, describing the rough edges from your perspective may be a help.
 
 ## Disqualifications
 Most guidelines are meant to foster a consistent and positive user experience.  The critical rules include emboldened words like "**must**."  **All routes which might lead to disqualification will be initiated via geekmail.**  So mind your geekmail over other channels.
 
-The contest host reserves the right to fix, interpret, clarify, arbitrate, and enforce the contest rules as he sees fit.
+*The contest host reserves the right to fix, interpret, clarify, arbitrate, and enforce the contest rules as he sees fit.*
