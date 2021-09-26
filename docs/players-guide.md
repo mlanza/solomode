@@ -3,11 +3,11 @@
 You want to play newly created solo modes.  This guide is tailored to solo mode players.
 
 ## Important Dates
-* Line Up - **December 17, 2021**
+* Line Up - **December 1 - 17, 2021**
 * Derby - **January 2022**
 
 ## Solomode
-[Solomode](./announcement-solomode.md) is a competition in which fledgling or experienced designers create and share solo modes.  It culminates in [Derby](./announcement-derby.md), a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.
+[Solomode](./announcement-solomode.md) is a competition for fledgling or experienced designers to create and share solo modes.  It culminates in [Derby](./announcement-derby.md), a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.
 
 ## What You Do
 From the [Line Up](./categories.md) you
@@ -35,7 +35,7 @@ Where you register a play determines who, if anyone at all, earns credit.  Take 
 These threads are hubs in which creators engage players.  They're used to announce updates, release rules and, most importantly, record your plays.  To be kept in the loop, subscribe to whichever threads interest you and once you've played a solo mode **please don't forget to record it**.  Even if you make no comments somebody's score depends on it.
 
 ### When Matters
-You may record plays anytime but only those recorded during **Derby** earn points for creators so, to make the most of your effort, plan accordingly.
+You may record plays anytime but only those recorded during [Derby](./announcement-derby.md) earn points for creators so, to make the most of your effort, plan accordingly.
 
 Plays **must** be recorded in the month in which they actually occurred.  That is, if you record one in January the implication is it took place in January and not December.  The intent is to prevent play testers from carrying old plays forward as this'd afford a greater scoring window to creators who release early.  It would unintentionally pressure others to do likewise.
 

@@ -3,7 +3,6 @@ You want to create a solo mode.  This guide is tailored to solo mode creators.
 
 ## Important Dates
 * Registration - **December 1 - December 14, 2021**
-* Line Up - **December 17, 2021**
 * Derby - **January 2022**
 
 [Solomode](./announcement-solomode.md) is more journey than destination.  It affords an opportunity to wear your designer's cap.  You can create and iterate and fold valuable feedback into your creative process.
@@ -23,7 +22,7 @@ When the contest concludes accolades will be earned based on the final scores of
 Honorable mentions go to submissions played 5 or 10 times.  These will, respectively, appear on a nickel or a dime list.
 
 ## Line Up
-Shortly after **Registration** ends, the line up of solo modes will be announced.  The "line up" is just the list of competing solo modes, by category.  Each submission will race against other submissions in the same category.
+Shortly after **Registration** ends, the final line up of solo modes will be announced.  The "line up" is just the list of competing solo modes, by category.  Each submission will race against other submissions in the same category.
 
 ## What You Do
 Over the course of the contest you
@@ -78,6 +77,8 @@ Add your submission (a geeklist item) to the [Line Up](./categories.md).  These 
 * Your thread's title **must** conform to the prescribed pattern:  **[Solomode 2021] Dark Days**
 
 Your registration will be reviewed within **3 days** of entry.  **Mind your geekmail and respond promptly to ensure it clears.**  Your submission will be checked against all listed **musts**.  You'll be notified when it clears.  With that hurdle behind you, take a break and enjoy the holidays.
+
+I encourage you to register early as submissions will be listed in the order of addition and, as you know, in many a game there is an advantage to being the first player.  Furthermore, it increases your visibility.  Hopefully, solo mode enthusiasts will be eagerly watching the Line Up as it forms.
 
 ## Design Tips
 While you can create any kind of solo mode you like, consider [Pedersen's advice](https://boardgamegeek.com/blogpost/37830/automa-approach-i-method-making-solitaire-modes-mu), especially his admonition to "Find the soul of the multiplayer experience."
