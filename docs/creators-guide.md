@@ -23,7 +23,7 @@ When the contest concludes accolades will be earned based on the final scores of
 Honorable mentions go to submissions played 5 or 10 times.  These will, respectively, appear on a nickel or a dime list.
 
 ## Line Up
-Shortly after **Registration** ends, the line up of solo modes in each category will be confirmed.  The "line up" is just another way of saying "the competing solo mode submissions."
+Shortly after **Registration** ends, the line up of solo modes will be confirmed.  The "line up" is just a shorter way of saying "the confirmed solo mode submissions."  Each submission will race against all other submissions in its category.
 
 ## What You Do
 Over the course of the contest you
