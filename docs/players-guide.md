@@ -25,7 +25,7 @@ When you play a solo mode it needs to be recorded so that, for contest purposes,
 
 If points are the mash, comments are the gravy.  You may (and should) use the remainder of the post to recap your experience and/or provide useful feedback.  It's your best means of expressing appreciation to solo mode creators.
 
-As recorded plays are Solomode's currency, they're eagerly anticipated, highly coveted and sincerely appreciated.  You can play a solo mode as many times as you like.  Just take care to record each play in a separate post.
+As recorded plays are Solomode's currency, they're eagerly anticipated, highly coveted and sincerely appreciated.  **You can play a solo mode as many times as you like.**  This is the best way of supporting its creator and stating in the most meaningful terms, "this is favorite!"  Just take care to **record each play in a separate post**.
 
 ### Where Matters
 Where you register a play determines who, if anyone at all, earns credit.  Take care to target Solomode threads.  They can be reached via [category geeklists](./categories.md) but ensure you're recording plays in the threads belonging to the solo mode you played.  When you land in one its opening post should make it crystal clear you're in the right place.
