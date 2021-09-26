@@ -54,12 +54,12 @@ Create a thread.  It's your public relations channel.  You'll use it to share ne
 ### Rules
 Your solo mode rules
 * **must** not have been released prior to the date of [this announcement](./announcement-solomode.md),
-* **must** be yours (collaboration allowed),
 * **must** not violate copyrights/laws,
 * should be linked from your thread's opening post,
 * should include a solo mode title and playing time,
 * should remind players to record plays over Derby so you earn credit,
-* may include several files, and
+* may be the product of collaboration,
+* may include multiple files, and
 * may require components and printables not included in the base game.
 
 Reminding players in your rules to "record plays over Derby" improves the odds this crucial detail won't be forgotten.  A game cannot be played, after all, without reading its rules.  Cite and link the [Players' Guide](./players-guide.md) if you like.
@@ -74,10 +74,10 @@ Add your submission (a geeklist item) to the [Line Up](./categories.md).  These 
 * The submission **must** abide the requirements posed by the category.  The requirements appear in the category header.
 * The Description for the geeklist item <!-- create a model example -->
   * should include an elevator pitch, and
-  * **must** include its playing time as a range **in minutes**, all numbers in multiples of 5.   **Playing Time: 30-45 minutes**, for example.
+  * **must** include the playing time as a range **in minutes**, all numbers in multiples of 5.   **Playing Time: 30-45 minutes**, for example.
 * A submission may be eligible for multiple categories but it **must** not appear in more than one.  Your category is committed once you register.  If you're not sure which category you prefer, defer your decision.
-* If not already, your rules **must** be linked from your thread's opening post.
-* If not already, your thread title **must** conform to the prescribed pattern:  **[Solomode 2021] Dark Days**
+* Your rules **must** be linked from your thread's opening post.
+* Your thread's title **must** conform to the prescribed pattern:  **[Solomode 2021] Dark Days**
 
 Your registration will be reviewed within **3 days** of entry.  **Mind your geekmail and respond promptly to ensure your registration clears.**  Your submission will be checked against all listed **musts**.  Once it clears, that hurdle's behind you.  Take a break and enjoy the holidays.
 
