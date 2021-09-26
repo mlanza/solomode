@@ -7,8 +7,6 @@ You want to create a solo mode.  This guide is tailored to solo mode creators.
 
 [Solomode](./announcement-solomode.md) is more journey than destination.  It affords an opportunity to wear your designer's cap.  You can create and iterate and fold valuable feedback into your creative process.
 
-Mind your geekmail **especially in the gap between end of Registration and Line Up**.  Mark your calendars so you don't forget.  You must respond to issues within this critical window.  Once you clear this hurdle you can rest easy.  Your solo mode has been successfully entered into the Line Up!
-
 ## Measuring Time
 The host is monitoring time via the New York, EST time zone.  Recorded plays will be captured and measured via script in accord with the time of entries as appearing in BGG's api.
 
