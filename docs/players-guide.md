@@ -35,7 +35,7 @@ These threads are hubs in which creators engage players.  They're used to announ
 ### When Matters
 You may record plays anytime but only those recorded during **Derby** earn points for creators so, to make the most of your effort, plan accordingly.
 
-Plays **must** be recorded in the month in which they actually occurred.  That is, if you record one in December the implication is it took place in December and not January.  The intent is to prevent play testers from carrying old plays forward as this'd afford a greater scoring window to creators who release early.  It would unintentionally pressure others to do likewise.
+Plays **must** be recorded in the month in which they actually occurred.  That is, if you record one in January the implication is it took place in January and not December.  The intent is to prevent play testers from carrying old plays forward as this'd afford a greater scoring window to creators who release early.  It would unintentionally pressure others to do likewise.
 
 ### Corrections
 If you fail to properly record a play someone may prompt you to correct your post.  Please respond promptly to ensure your points are awarded to the creator.
