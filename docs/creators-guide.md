@@ -69,14 +69,14 @@ While you can publish rules anytime, take care as to when and how as a premature
 Although your working rules can be hosted anywhere over the duration of the contest, Solomode aims to get creators thinking in terms of shipping and publishing.  Please support the BGG community by publishing your final rules to BGG's file section by the time Derby concludes.
 
 ### Registration
-Add a geeklist item to the desired category's geeklist.  These geeklists will be editable only during the registration period.  The key aspects of your solo mode—the ones which determine your eligibility for a category, things like playing time and theme, for example—should be locked in at this point.
+Add your submission (a geeklist item) to the [Line Up](./categories.md).  These geeklists will be editable **only during the registration period**.
 * The geeklist item **must** be of the `Thread` variety (a change from last year!)
 * The submission **must** abide the constraints posed by the category (see its header).
 * The Description for the geeklist item <!-- create a model example -->
   * should include an elevator pitch, and
   * **must** include its playing time as a range **in minutes**, all numbers in multiples of 5.   **Playing Time: 30-45 minutes**, for example.
-* A submission may be eligible for multiple categories but it **must** not appear in more than one.  You are committing it to a category when you add to the list.  If you're not sure which category you prefer, wait.
-* All registrations will be reviewed no later than December 15.  **Mind your geekmail once you register and respond promptly to ensure yours clears.**  Once it does, you're in!
+* A submission may be eligible for multiple categories but it **must** not appear in more than one.  Your category is committed once you register.  If you're not sure which category you prefer, defer your decision.
+* All registrations will be reviewed within **3 days** of entry.  **Mind your geekmail once you register and respond promptly to ensure yours clears.**  Once it does, you're in!  Rest easy.
 
 ## Design Tips
 While there are no rules for creating your solo mode, please read [Pedersen's advice](https://boardgamegeek.com/blogpost/37830/automa-approach-i-method-making-solitaire-modes-mu), especially his admonition to "Find the soul of the multiplayer experience."
