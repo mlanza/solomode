@@ -8,6 +8,8 @@ You want to create a solo mode.  This guide is tailored to solo mode creators.
 
 Solomode is more journey than destination.  It affords an opportunity to wear your designer's cap.  You can create and iterate and fold valuable feedback into your creative process.
 
+Mind your geekmail **especially in the gap between end of Registration and Line Up**.  Mark your calendars so you don't forget.  You must respond to issues within this critical window.  Once you clear this hurdle you can rest easy.  You've made it!
+
 ## Measuring Time
 The host is monitoring time via the New York, EST time zone.  Recorded plays will be captured and measured via script in accord with the time of entries as appearing in BGG's api.
 
@@ -107,8 +109,6 @@ Target playing about twice as many solo modes as you enter.  What every creator 
 Early rulebook feedback is valuable too, even if end up not playing the game.  If a rulebook disinclines you to play, it may be helpful to explain why.
 
 ## Disqualifications
-Most guidelines are meant to foster a consistent and positive user experience.  The rules most likely to disqualify—and there are few—are **marked in bold**.  **All routes which could lead to disqualification will be initiated via geekmail.**
-
-Mind your geekmail especially in the gap between end of Registration and Line Up.  Mark your calendars so you don't forget.  You must respond to issues within this critical window.  Once you clear this hurdle you can rest easy.  You've made it!
+Most guidelines are meant to foster a consistent and positive user experience.  The rules most likely to disqualify—and there are few—are **marked in bold**.  **All routes which might lead to disqualification will be initiated via geekmail.**
 
 The contest host reserves the right to fix, interpret, clarify, arbitrate, and enforce the contest rules as he sees fit.
