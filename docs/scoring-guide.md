@@ -23,4 +23,4 @@ Each category is scored separately and has its own publicly displayed, periodica
 *While plays occuring outside **Derby** should be recorded as usual only those recorded during it are counted.*  Scoreboards, periodically, updated, will be posted giving a glimpse of the race as it progresses.
 
 ## Tiebreaking
-Ties are broken by the earliest Derby play on record.
+Ties are broken in favor of the earliest Derby play on record.
