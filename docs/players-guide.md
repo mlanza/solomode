@@ -27,6 +27,8 @@ If points are the mash, comments are the gravy.  You may (and should) use the re
 
 As recorded plays are Solomode's currency, they're eagerly anticipated, highly coveted and sincerely appreciated.  **You can play a solo mode as many times as you like.**  This is the best way of supporting its creator and stating in the most meaningful terms, "this is favorite!"  Just take care to **record each play in a separate post**.
 
+Here are a few examples of [correctly](https://www.boardgamegeek.com/thread/2554285/article/36891615#36891615) [recorded](https://www.boardgamegeek.com/thread/2554285/article/37000248#37000248) [plays](https://www.boardgamegeek.com/thread/2554285/article/37122326#37122326) from last year's contest.
+
 ### Where Matters
 Where you register a play determines who, if anyone at all, earns credit.  Take care to target Solomode threads.  They can be reached via [category geeklists](./categories.md) but ensure you're recording plays in the threads belonging to the solo mode you played.  When you land in one its opening post should make it crystal clear you're in the right place.
 
