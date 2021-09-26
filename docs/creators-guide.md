@@ -45,7 +45,7 @@ The gap between Registration and Derby is a couple weeks.  Your development can 
 ### Thread
 Create a thread.  It's your public relations channel.  You'll use it to share news, record plays, and accept audience feedback for your solo mode.
 * It **must** be in the Variants forum of the board game your solo mode uses.
-* Its title should begin "[Solomode 2021]" and be followed by the working title (updated at will) of your solo mode. [Solomode 2021] Dark Days", for example.  Conforming to this pattern is a signpost to players that they're in the right spot.  They're being instructed to find threads like this to vote in, so please follow this standard.  It'll ensure you to earn every bit of credit you deserve.
+* Its title should begin **[Solomode 2021]** and be followed by the working title (updated at will) of your solo mode. **[Solomode 2021] Dark Days**, for example.  Conforming to this pattern is a signpost to players that they're in the right spot.  They're being instructed to find threads like this to vote in, so please follow this standard.  It'll ensure you to earn every bit of credit you deserve.
 * The opening post should include a link to the [Players' Guide](./players-guide.md).  It reminds players how to properly record plays and why they should care.
 * If digital platforms like [Tabletop Simulator](https://www.tabletopsimulator.com) make playing your solo mode possible, explain how.
 * You may record your own plays of your solo mode here if only to demonstrate what a properly recorded play looks like.  They won't be counted.
