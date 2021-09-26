@@ -14,7 +14,7 @@ The host is monitoring time via the New York, EST time zone.  Recorded plays wil
 Take care to afford yourself a little buffer surrounding key dates.
 
 ## Derby
-Solomode is a competition involving solo mode creators and players which culminates in **Derby**, the [scored race](./scoring-guide.md) over which which solo modes are spurred ahead by recorded plays.  The leaderboard is periodically updated so keen observers can watch it unfold until the final photo finish.
+Solomode is a competition involving solo mode creators and players which culminates in [Derby](./announcement-derby.md), a [scored race](./scoring-guide.md) over which which solo modes are spurred ahead by recorded plays.  The leaderboard is periodically updated so keen observers can watch it unfold until the final photo finish.
 
 When the contest concludes accolades will be earned based on the final scores of submissions.  In each category there will be a winner and a runner up.  **If the category was sponsored and has at least 5 contestants** these individuals will be awarded prizes.  (Sponsorship will be clearly noted at the top of a category when and if it's sponsored.  Please see the details on international shipping in [Sponsors' Guide] if you're outside USA.)
 
