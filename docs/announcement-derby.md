@@ -19,3 +19,5 @@ To ensure your plays are credited to creators, if you participate, please read t
 
 Mark your calendars or subscribe to this thread.  Creators may invite you to play test early releases announced here.
 
+## Sponsorship
+[Sponsors can put up prizes](./sponsors-guide.md) for one or more categories in exchange for ads.
