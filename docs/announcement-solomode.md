@@ -12,9 +12,9 @@ Winners will be announced once Derby concludes.
 
 Hopefully this whets your appetite for things to come and gives you [enough information](./creators-guide.md) to get started with the early stages of your design.
 
-The contest is a two-sided coin:
-* Solomode — the back-end contest for creators (see [Creators' Guide](./creators-guide.md))
-* Derby — the front-end main event for players (see [Players' Guide](./players-guide.md))
+The contest is a coin:
+* Heads — Derby is for players (see [Players' Guide](./players-guide.md))
+* Tails — Solomode is for creators (see [Creators' Guide](./creators-guide.md))
 
 ## Important Dates
 * Registration - **December 1 - December 14, 2021**
