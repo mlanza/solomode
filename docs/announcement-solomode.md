@@ -1,6 +1,6 @@
 ![Solomode](./../images/solomode.png)
 
-[Solomode](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest) is back.
+[Solomode](https://www.boardgamegeek.com/thread/2540440/2020-solomode-design-contest) is back!
 
 It's time for content creators to roll up their sleeves and get to creating solo modes for their beloved games.
 
