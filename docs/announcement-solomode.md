@@ -18,7 +18,7 @@ The contest is a two-sided coin:
 
 ## Important Dates
 * Registration - **December 1 - December 14, 2021**
-* Derby - **January 2022**
+* Derby - **January 1 - January 31, 2022**
 
 ## Sponsorship
 [Sponsors can put up prizes](./sponsors-guide.md) for one or more categories in exchange for ads.
