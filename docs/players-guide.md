@@ -7,10 +7,10 @@ You want to play newly created solo modes.  This guide is tailored to solo mode 
 * Derby - **January 2022**
 
 ## Solomode
-Solomode is a competition in which fledgling or experienced designers create and share solo modes.  It culminates in [Derby](./announcement-derby.md), a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.
+[Solomode](./announcement-solomode.md) is a competition in which fledgling or experienced designers create and share solo modes.  It culminates in [Derby](./announcement-derby.md), a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.
 
 ## What You Do
-From the **Line Up** you
+From the [Line Up](./categories.md) you
 * seek out solo modes,
 * learn their rules,
 * play them (esp. during Derby!), and
