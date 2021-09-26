@@ -45,8 +45,8 @@ The gap between Registration and Derby is a couple weeks.  Your development can 
 ### Thread
 Create a thread.  It's your public relations channel.  You'll use it to share news, record plays, and accept audience feedback for your solo mode.
 * It **must** be in the Variants forum of the board game your solo mode uses.
-* Its title should begin **[Solomode 2021]** and be followed by the working title (updated at will) of your solo mode. **[Solomode 2021] Dark Days**, for example.  Conforming to this pattern is a signpost to players that they're in the right spot.  They're being instructed to find threads like this to vote in, so please follow this standard.  It'll ensure you to earn every bit of credit you deserve.
-* The opening post should include a link to the [Players' Guide](./players-guide.md).  It reminds players how to properly record plays and why they should care.
+* Its title should begin **[Solomode 2021]** and be followed by the working title (updated at will) of your solo mode. **[Solomode 2021] Dark Days**, for example.  Conforming to this pattern is a signpost to players that they're in the right spot to record their plays.  It aims to get you every bit of credit you deserve.
+* The opening post should request that visitors who want to support your solo mode review the [Players' Guide](./players-guide.md) in preparation for [Derby](./announcement-derby.md).  Note its dates as a reminder of the very important when.
 * If digital platforms like [Tabletop Simulator](https://www.tabletopsimulator.com) make playing your solo mode possible, explain how.
 * You may record your own plays of your solo mode here if only to demonstrate what a properly recorded play looks like.  They won't be counted.
 * If you wish to wrangle more play testers that you can get from this thread alone, you may extend an invitation in the [Derby Announcement](./announcement-derby.md) thread.
@@ -54,7 +54,7 @@ Create a thread.  It's your public relations channel.  You'll use it to share ne
 ### Rules
 Your solo mode rules
 * **must** be linked from your thread's opening post by **Registration** end,
-* **must** not have been released prior to Solomode 2021's announcement,
+* **must** not have been released prior to the date of [this announcement](./announcement-solomode.md),
 * **must** be yours (collaboration allowed),
 * **must** not violate copyrights/laws,
 * should include a solo mode title and playing time,
@@ -62,7 +62,7 @@ Your solo mode rules
 * may include several files, and
 * may require components and printables not included in the base game.
 
-Reminding players in your rules to register their plays improves the odds this crucial detail won't be forgotten.  A game cannot be played, after all, without reading its rules.  As the [Players' Guide](./players-guide.md) describes the particulars of recording plays, linking to it saves you from offering a similiar explanation.
+Reminding players in your rules to "record plays over Derby" improves the odds this crucial detail won't be forgotten.  A game cannot be played, after all, without reading its rules.
 
 While you can publish rules anytime, take care as to when and how as a premature release might cause your most enthusiastic fans to peter out before scoring begins.  **Remember only plays recorded during Derby are scored.**
 
