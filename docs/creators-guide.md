@@ -70,14 +70,16 @@ Although your working rules can be hosted anywhere over the duration of the cont
 
 ### Registration
 Add your submission (a geeklist item) to the [Line Up](./categories.md).  These geeklists will be editable **only during the registration period**.
-* If not already, your rules **must** be linked from your thread's opening post.
 * The geeklist item **must** be of the `Thread` variety.  This is a change from last year!
 * The submission **must** abide the requirements posed by the category.  The requirements appear in the category header.
 * The Description for the geeklist item <!-- create a model example -->
   * should include an elevator pitch, and
   * **must** include its playing time as a range **in minutes**, all numbers in multiples of 5.   **Playing Time: 30-45 minutes**, for example.
 * A submission may be eligible for multiple categories but it **must** not appear in more than one.  Your category is committed once you register.  If you're not sure which category you prefer, defer your decision.
-* All registrations will be reviewed within **3 days** of entry.  **Mind your geekmail once you register and respond promptly to ensure yours clears.**  Once it does, you're in!  Rest easy.
+* If not already, your rules **must** be linked from your thread's opening post.
+* If not already, your thread title **must** conform to the prescribed pattern:  **[Solomode 2021] Dark Days**
+
+Your registration will be reviewed within **3 days** of entry.  **Mind your geekmail and respond promptly to ensure your registration clears.**  Your submission will be checked against all listed **musts**.  Once it clears, that hurdle's behind you.  Take a break and enjoy the holidays.
 
 ## Design Tips
 While you can create any kind of solo mode you like, please read [Pedersen's advice](https://boardgamegeek.com/blogpost/37830/automa-approach-i-method-making-solitaire-modes-mu), especially his admonition to "Find the soul of the multiplayer experience."
