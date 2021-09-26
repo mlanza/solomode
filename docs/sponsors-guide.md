@@ -1,4 +1,4 @@
-# Solomode 2021 Sponsors' Guide
+# 2021 Solomode Sponsors' Guide
 [Solomode](./announcement-solomode.md) is a competition for solo mode creators which culminates in [Derby](./announcement-derby.md), a plays-fueled race over which their solo modes are scored.
 
 There are [6 categories](./categories.md) in which creators can compete as well as a separate Players' Scoreboard where players can compete.  So in total that's 7 sponsorship slots:

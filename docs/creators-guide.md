@@ -1,4 +1,4 @@
-# Solomode 2021 Creators' Guide
+# 2021 Solomode Creators' Guide
 You want to create a solo mode.  This guide is tailored to solo mode creators.
 
 ## Important Dates

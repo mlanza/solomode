@@ -1,4 +1,4 @@
-# Solomode 2021 Scoring Guide
+# 2021 Solomode Scoring Guide
 Solomode has [categories](./categories.md) in which solo modes may compete.  Each lists requirements for appropriate submissions and each is scored as a separate event.
 
 ## Scoring

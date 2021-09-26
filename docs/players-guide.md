@@ -1,4 +1,4 @@
-# Solomode 2021 Players' Guide
+# 2021 Solomode Players' Guide
 
 You want to play newly created solo modes.  This guide is tailored to solo mode players.
 

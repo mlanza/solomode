@@ -1,4 +1,4 @@
-# Solomode 2021 Categories
+# 2021 Solomode Line Up Categories
 Each of the following categories is scored separately.  The solo modes submitted into each category constitues its Line Up.
 
 ## Chop Chop
