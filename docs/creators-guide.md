@@ -48,8 +48,8 @@ Create a thread.  It's your public relations channel.  You'll use it to share ne
 * Its title should begin **[Solomode 2021]** and be followed by the working title (updated at will) of your solo mode. **[Solomode 2021] Dark Days**, for example.  Conforming to this pattern is a signpost to players that they're in the right spot to record their plays.  It aims to get you every bit of credit you deserve.
 * The opening post should request that visitors who want to support your solo mode review the [Players' Guide](./players-guide.md) in preparation for [Derby](./announcement-derby.md).  Note its dates as a reminder of the very important when.
 * If digital platforms like [Tabletop Simulator](https://www.tabletopsimulator.com) make playing your solo mode possible, explain how.
-* You may record your own plays of your solo mode here if only to demonstrate what a properly recorded play looks like.  They won't be counted.
-* If you wish to wrangle more play testers that you can get from this thread alone, you may extend an invitation in the [Derby Announcement](./announcement-derby.md) thread.
+* You may record your own plays of your solo mode here if only to demonstrate what properly recorded plays look like.  They won't be counted.
+* To wrangle early play testers via another channel, you may extend an invitation in the [Derby Announcement](./announcement-derby.md) thread directing them into your thread.
 
 ### Rules
 Your solo mode rules
@@ -62,7 +62,7 @@ Your solo mode rules
 * may include several files, and
 * may require components and printables not included in the base game.
 
-Reminding players in your rules to "record plays over Derby" improves the odds this crucial detail won't be forgotten.  A game cannot be played, after all, without reading its rules.
+Reminding players in your rules to "record plays over Derby" improves the odds this crucial detail won't be forgotten.  A game cannot be played, after all, without reading its rules.  Cite and link the [Players' Guide](./players-guide.md) if you like.
 
 While you can publish rules anytime, take care as to when and how as a premature release might cause your most enthusiastic fans to peter out before scoring begins.  **Remember only plays recorded during Derby are scored.**
 
@@ -74,9 +74,10 @@ Add a geeklist item to the desired category's geeklist.  These geeklists will be
 * The submission **must** abide the constraints posed by the category (see its header).
 * The Description for the geeklist item <!-- create a model example -->
   * should include an elevator pitch, and
-  * **must** include its playing time as a range in minutes, all numbers in multiples of 5 (e.g. Playing Time: 30-45 minutes).
-* While registrations will be given a final review once registration closes, you may receive official guidance via geekmail before then.  The host or a moderator will confirm your acceptance before the **Line Up** is announced.
-* A submission may be eligible for multiple categories but it **must** not appear in more than one.  It is permissible to reposition a submission into another category prior to the close of registration.
+  * **must** include its playing time as a range **in minutes**, all numbers in multiples of 5.   **Playing Time: 30-45 minutes**, for example.
+* A submission may be eligible for multiple categories but it **must** not appear in more than one.  You may **reposition** your submission into another appropriate category up until registration closes.
+* All registrations will be reviewed on December 15.  **Mind your geekmail and respond promptly to ensure your registration clears.**  Once it does, you're in!
+* If you wish to have your registration cleared early, send me a geekmail and I'll review it.  However, once I confirm it, it will not be eligible for repositioning.
 
 ## Design Tips
 While there are no rules for creating your solo mode, please read [Pedersen's advice](https://boardgamegeek.com/blogpost/37830/automa-approach-i-method-making-solitaire-modes-mu), especially his admonition to "Find the soul of the multiplayer experience."
