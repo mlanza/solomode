@@ -3,7 +3,7 @@ You want to create a solo mode.  This guide is tailored to solo mode creators.
 
 ## Important Dates
 * Registration - **December 1 - December 14, 2021**
-* Derby - **January 2022**
+* Derby - **January 1 - January 31, 2022**
 
 [Solomode](./announcement-solomode.md) is more journey than destination.  It affords an opportunity to wear your designer's cap.  You can create and iterate and fold valuable feedback into your creative process.
 

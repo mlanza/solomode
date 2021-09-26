@@ -4,7 +4,7 @@ You want to play newly created solo modes.  This guide is tailored to solo mode 
 
 ## Important Dates
 * Line Up - **December 1 - December 14, 2021**
-* Derby - **January 2022**
+* Derby - **January 1 - January 31, 2022**
 
 ## Solomode
 [Solomode](./announcement-solomode.md) is a competition for fledgling or experienced designers to create and share solo modes.  It culminates in [Derby](./announcement-derby.md), a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.

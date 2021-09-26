@@ -17,7 +17,7 @@ See the [Players' Guide](./players-guide.md) for more detail on what you need to
 
 ## Important Dates
 * Line Up - **December 1 - December 14, 2021**
-* Derby - **January 2022**
+* Derby - **January 1 - January 31, 2022**
 
 Mark your calendars or subscribe to this thread.  Creators may invite you to play test early releases announced here.
 
