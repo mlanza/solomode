@@ -69,7 +69,7 @@ While you can publish rules anytime, take care as to when and how as a premature
 Although your working rules can be hosted anywhere over the duration of the contest, Solomode aims to get creators thinking in terms of shipping and publishing.  Please support the BGG community by publishing your final rules to BGG's file section by the time Derby concludes.
 
 ### Registration
-Add a geeklist item to the desired category's geeklist.  These geeklists will be editable only during the registration period.  The key aspects of your solo mode—the ones which determine your eligibility for a category, things like playing time and theme, for example—should be locked in this point.
+Add a geeklist item to the desired category's geeklist.  These geeklists will be editable only during the registration period.  The key aspects of your solo mode—the ones which determine your eligibility for a category, things like playing time and theme, for example—should be locked in at this point.
 * The geeklist item **must** be of the `Thread` variety (a change from last year!)
 * The submission **must** abide the constraints posed by the category (see its header).
 * The Description for the geeklist item <!-- create a model example -->
