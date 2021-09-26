@@ -10,7 +10,7 @@ Last year's Solomode saw the advantage of games with short playing times.  Recor
 
 ## Chronobot
 Submission requirements:
-* Has a board-driven automa.  See Anachrony for inspiration.
+* Has a board-driven automa.  See [Anachrony's Chronobot](https://boardgamegeek.com/image/3037431/anachrony) for inspiration.
 * Minimum playing time is 35 minutes or more.
 * Creators can have one submission in this category.
 
