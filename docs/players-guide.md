@@ -28,7 +28,7 @@ When you play a solo mode it needs to be recorded so that, for contest purposes,
 
 If points are the mash, comments are the gravy.  You may (and should) use the remainder of the post to recap your experience and/or provide useful feedback.  It's your best means of expressing appreciation to solo mode creators.
 
-As recorded plays are Solomode's currency, they're eagerly anticipated, highly coveted and sincerely appreciated.  **You can play a solo mode as many times as you like.**  This is the best way of supporting its creator and stating in the most meaningful terms, "this is favorite!"  Just take care to **record each play in a separate post**.
+As recorded plays are Solomode's currency, they're eagerly anticipated, highly coveted and sincerely appreciated.  **You can play a solo mode as many times as you like.**  This is the best way of supporting its creator and meaningfully stating just how fabulous you think it is.  Just take care to **record each play in a separate post**.
 
 Here are a few examples of [correctly](https://www.boardgamegeek.com/thread/2554285/article/36891615#36891615) [recorded](https://www.boardgamegeek.com/thread/2554285/article/37000248#37000248) [plays](https://www.boardgamegeek.com/thread/2554285/article/37122326#37122326) from last year's contest.
 
