@@ -53,10 +53,10 @@ Create a thread.  It's your public relations channel.  You'll use it to share ne
 
 ### Rules
 Your solo mode rules
-* **must** be linked from your thread's opening post once you register,
 * **must** not have been released prior to the date of [this announcement](./announcement-solomode.md),
 * **must** be yours (collaboration allowed),
 * **must** not violate copyrights/laws,
+* should be linked from your thread's opening post,
 * should include a solo mode title and playing time,
 * should remind players to record plays over Derby so you earn credit,
 * may include several files, and
@@ -70,8 +70,9 @@ Although your working rules can be hosted anywhere over the duration of the cont
 
 ### Registration
 Add your submission (a geeklist item) to the [Line Up](./categories.md).  These geeklists will be editable **only during the registration period**.
-* The geeklist item **must** be of the `Thread` variety (a change from last year!)
-* The submission **must** abide the constraints posed by the category (see its header).
+* If not already, your rules **must** be linked from your thread's opening post.
+* The geeklist item **must** be of the `Thread` variety.  This is a change from last year!
+* The submission **must** abide the requirements posed by the category.  The requirements appear in the category header.
 * The Description for the geeklist item <!-- create a model example -->
   * should include an elevator pitch, and
   * **must** include its playing time as a range **in minutes**, all numbers in multiples of 5.   **Playing Time: 30-45 minutes**, for example.
