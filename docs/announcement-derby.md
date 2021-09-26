@@ -2,10 +2,6 @@
 
 [Solomode](./announcement-solomode.md) invites you to play solo modes!  The most important time to do this is Derby.  The most important thing for you to do is properly record yours plays.
 
-## Important Dates
-* Line Up - **December 17, 2021**
-* Derby - **January 2022**
-
 ## Derby
 Wait.  What's Derby?
 
@@ -16,6 +12,10 @@ There are several [categories](./categories.md) to be filled will solo modes.  T
 
 ## Participation
 To ensure your plays are credited to creators, if you participate, please read the [Players' Guide](./players-guide.md).
+
+## Important Dates
+* Line Up - **December 17, 2021**
+* Derby - **January 2022**
 
 Mark your calendars or subscribe to this thread.  Creators may invite you to play test early releases announced here.
 
