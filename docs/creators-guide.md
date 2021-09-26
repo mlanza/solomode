@@ -53,7 +53,7 @@ Create a thread.  It's your public relations channel.  You'll use it to share ne
 
 ### Rules
 Your solo mode rules
-* **must** be linked from your thread's opening post by **Registration** end,
+* **must** be linked from your thread's opening post once you register,
 * **must** not have been released prior to the date of [this announcement](./announcement-solomode.md),
 * **must** be yours (collaboration allowed),
 * **must** not violate copyrights/laws,
@@ -64,7 +64,7 @@ Your solo mode rules
 
 Reminding players in your rules to "record plays over Derby" improves the odds this crucial detail won't be forgotten.  A game cannot be played, after all, without reading its rules.  Cite and link the [Players' Guide](./players-guide.md) if you like.
 
-While you can publish rules anytime, take care as to when and how as a premature release might cause your most enthusiastic fans to peter out before scoring begins.  **Remember only plays recorded during Derby are scored.**
+While you can publish rules anytime, take care as to when and how as a premature release might cause your most enthusiastic fans to peter out before scoring begins.  **Remember only plays over Derby are scored.**
 
 Although your working rules can be hosted anywhere over the duration of the contest, Solomode aims to get creators thinking in terms of shipping and publishing.  Please support the BGG community by publishing your final rules to BGG's file section by the time Derby concludes.
 
@@ -79,9 +79,9 @@ Add your submission (a geeklist item) to the [Line Up](./categories.md).  These 
 * All registrations will be reviewed within **3 days** of entry.  **Mind your geekmail once you register and respond promptly to ensure yours clears.**  Once it does, you're in!  Rest easy.
 
 ## Design Tips
-While there are no rules for creating your solo mode, please read [Pedersen's advice](https://boardgamegeek.com/blogpost/37830/automa-approach-i-method-making-solitaire-modes-mu), especially his admonition to "Find the soul of the multiplayer experience."
+While you can create any kind of solo mode you like, please read [Pedersen's advice](https://boardgamegeek.com/blogpost/37830/automa-approach-i-method-making-solitaire-modes-mu), especially his admonition to "Find the soul of the multiplayer experience."
 
-Some designers, rather than create solo modes, used existing games as a canvas on which to create new solitaire experiences.  While this is allowed I suspect more players will prefer solo modes.
+Some designers, rather than create solo modes, used existing games as a canvas on which to create solitaire experiences.  While this is allowed I suspect more players will prefer solo modes.
 
 The benefit to solo modes is most of the base rules stand.  This helps keep solo mode rules shorter than new solitaire experiences.  And short rules are certainly more inviting.
 
@@ -93,11 +93,11 @@ Community advice:
 * [‎Board Game Design Lab: What Makes a Great Solo Game with Jeremy Howard on Apple Podcasts](https://podcasts.apple.com/us/podcast/what-makes-a-great-solo-game-with-jeremy-howard/id1186199709?i=1000499292710)
 
 ## Competition Tips
-Successfully competing is more than design.  It's presentation, communication, and public relations as well.
+Successfully competing is more than design.  It's presentation and communication as well.
 
-Most important perhaps are your solo mode's rules.  Not only do they equip a player for an experience, they are themselves an experience.  Mind every potential barrier and smooth away rough edges which might disincline a player from learning it.
+Most important perhaps are your rules.  Not only do they equip a player for an experience, they are themselves an experience.  Mind every potential barrier and smooth away rough edges which might disincline a player from learning it.
 
-Your biggest challenge is getting rules into people's heads.  This is preceded by the challenge of their wanting to get your rules into their heads.  If anything turned away would-be patrons last year, I suspect it was cumbersome rules, some of which resulted from creating solitaire experiences which did not preserve the soul of the multiplayer experience (mine made this blunder).
+Your biggest challenge is getting rules into people's heads.  This is preceded by the challenge of their wanting to get your rules into their heads.  Those who provide the best on ramp will have a distinct advantage.  If anything turned away would-be patrons last year, I suspect it was cumbersome rules, some of which resulted from creating solitaire experiences which did not preserve the soul of the multiplayer experience.  I made this blunder myself.
 
 Patrons will peek in your shop and stroll to the next if it doesn't appear warm and inviting.  Baking cookies helps.  And if not that, teaching videos!
 
