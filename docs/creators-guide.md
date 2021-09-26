@@ -76,7 +76,7 @@ Add a geeklist item to the desired category's geeklist.  These geeklists will be
   * should include an elevator pitch, and
   * **must** include its playing time as a range in minutes, all numbers in multiples of 5 (e.g. Playing Time: 30-45 minutes).
 * While registrations will be given a final review once registration closes, you may receive official guidance via geekmail before then.  The host or a moderator will confirm your acceptance before the **Line Up** is announced.
-* A submission may be eligible for multiple categories but a submission **must** not appear in more than one.  It is permissible to reposition a submission into another category prior to the close of registration.
+* A submission may be eligible for multiple categories but it **must** not appear in more than one.  It is permissible to reposition a submission into another category prior to the close of registration.
 
 ## Design Tips
 While there are no rules for creating your solo mode, please read [Pedersen's advice](https://boardgamegeek.com/blogpost/37830/automa-approach-i-method-making-solitaire-modes-mu), especially his admonition to "Find the soul of the multiplayer experience."
