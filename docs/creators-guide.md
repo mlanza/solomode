@@ -23,7 +23,7 @@ When the contest concludes accolades will be earned based on the final scores of
 Honorable mentions go to submissions played 5 or 10 times.  These will, respectively, appear on a nickel or a dime list.
 
 ## Line Up
-Shortly after **Registration** ends, the line up of solo modes will be confirmed.  The "line up" is just the list of competing solo modes, by category.  Each submission will race against the other submissions in its category.
+Shortly after **Registration** ends, the line up of solo modes will be announced.  The "line up" is just the list of competing solo modes, by category.  Each submission will race against other submissions in the same category.
 
 ## What You Do
 Over the course of the contest you
@@ -40,7 +40,7 @@ For each solo mode you enter you must create a
 * rules, and
 * registration.
 
-The gap between Registration and Derby is a couple weeks.  Your development can and should precede all this.  In fact, except for Registration and Derby, nothing is bound by dates.  **You can create your thread and rules anytime after reading this notice**.  This enables you to be nearly done before any of the key dates—or holidays!—arrive.
+The gap between Registration and Derby is a couple week.  Don't dilly dally. **You can create your thread and rules anytime after reading this notice**.  This way your submissions will be approaching done by the time Registration—and the holidays!—arrive.
 
 ### Thread
 Create a thread.  It's your public relations channel.  You'll use it to share news, record plays, and accept audience feedback for your solo mode.
