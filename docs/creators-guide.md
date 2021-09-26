@@ -109,6 +109,6 @@ Target playing about twice as many solo modes as you enter.  What every creator 
 Early rulebook feedback is valuable too, even if end up not playing the game.  If a rulebook disinclines you to play, it may be helpful to explain why.
 
 ## Disqualifications
-Most guidelines are meant to foster a consistent and positive user experience.  The rules most likely to disqualify—and there are few—are **marked in bold**.  **All routes which might lead to disqualification will be initiated via geekmail.**
+Most guidelines are meant to foster a consistent and positive user experience.  The critical rules include emboldened words like "**must**."  **All routes which might lead to disqualification will be initiated via geekmail.**  So mind your geekmail over other channels.
 
 The contest host reserves the right to fix, interpret, clarify, arbitrate, and enforce the contest rules as he sees fit.
