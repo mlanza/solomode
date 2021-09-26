@@ -2,6 +2,9 @@
 
 You want to play newly created solo modes.  This guide is tailored to solo mode players.
 
+## Bottom Line Up Front
+Learn solo modes released to the [Line Up](./categories.md) in early December in preparation for January 2022.  Play as few or as many solo modes as you like over the month of January.  Record each discrete play as a post in thread belonging to the solo mode you played.  The first line will be LIKE, LOVE or LUMP, in caps.  Use subsequent lines to share constructive feedback with the solo mode creator.
+
 ## Important Dates
 * Line Up - **December 1 - December 14, 2021**
 * Derby - **January 1 - January 31, 2022**
