@@ -69,7 +69,7 @@ Submission requirements:
 * Creators can have one submission in this category.
 
 Bonus:
-* Games whose minimum playing time is 180 minutes or more (think 18xx!) earn 1 additional point per recorded play.
+* Games whose minimum playing time is 180 minutes or more earn 1 additional point per recorded play.  This was done to encourage longer games like 18xx.
 
 If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).
 
