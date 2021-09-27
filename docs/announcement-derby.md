@@ -8,7 +8,7 @@ Wait.  Derby?
 Derby is a drag race between solo modes.  Solo mode creators are building them.  Their race cars (solo modes, of course!) will be lined up and the gun fired January 1, 2022.  The race will ensue until the end of January when your your plays will be tallied and the winners decided!
 
 ## Line Up
-The [line up](./categories.md) will begin filling with solo modes in December and gun will fire **January 1, 2022**.  You should be learning rules for the solo modes which look interesting to you in December so you're ready to play them come January.
+The [line up](./categories.md) will begin filling with solo modes in December and gun will fire **January 1, 2022**.  In preparation you should be looking over solo modes and learning rules for the ones you want to play.
 
 ## Participation
 The race cars are fueled by your participation.   Solo mode creators covet and appreciate your support.
