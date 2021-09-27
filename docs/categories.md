@@ -1,5 +1,5 @@
 # 2021 Solomode Line Up Categories
-Following is a list of categories for [Solomode](./announcement-solomode.md).  Each is scored separately.  The solo modes submitted into these categories constitutes the contest Line Up.
+The [Solomode](./announcement-solomode.md) line up is for 6 separate categories, each scored separately.  The solo modes submitted into these categories constitutes the contest the "line up."
 
 Solo modes will be registered into these lists between **December 1** and **December 14, 2021** in preparation for Derby.
 
