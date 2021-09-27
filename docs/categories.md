@@ -1,7 +1,7 @@
 # 2021 Solomode Line Up Categories
-[Solomode](./announcement-solomode.md) is divided into 6 separate categories, each scored separately.  The solo modes submitted into these categories constitutes the contest's *line up*.
+[Solomode](./announcement-solomode.md) is divided into 6 separate categories, each scored separately.  The solo modes submitted into these geeklists constitutes the contest's *line up*.
 
-Solo modes will be registered into these lists between **December 1** and **December 14, 2021** in preparation for Derby.
+Solo modes will be registered into the line up between **December 1** and **December 14, 2021** in preparation for Derby.
 
 [Derby](./announcement-derby.md) will run the entire month of **January 2022**.
 
