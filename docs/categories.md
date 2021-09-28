@@ -24,6 +24,8 @@ Last year's Solomode saw the advantage of games with short playing times.  Recor
 
 *If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
+*This category has not yet been [sponsored](./sponsors-guide.md).  Should you sponsor it, your ad will appear here.*
+
 ---
 
 ## Chronobot
@@ -40,6 +42,8 @@ Submission requirements:
 
 *If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
+*This category has not yet been [sponsored](./sponsors-guide.md).  Should you sponsor it, your ad will appear here.*
+
 ---
 
 ## Write-ins
@@ -55,6 +59,8 @@ Submission requirements:
 * Creators can have one submission in this category.
 
 *If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
+
+*This category has not yet been [sponsored](./sponsors-guide.md).  Should you sponsor it, your ad will appear here.*
 
 ---
 
@@ -75,6 +81,8 @@ Bonus:
 
 *If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
+*This category has not yet been [sponsored](./sponsors-guide.md).  Should you sponsor it, your ad will appear here.*
+
 ---
 
 ## Toddler
@@ -91,6 +99,8 @@ Submission requirements:
 
 *If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
+*This category has not yet been [sponsored](./sponsors-guide.md).  Should you sponsor it, your ad will appear here.*
+
 ---
 
 ## Freestyle
@@ -105,3 +115,5 @@ Submission requirements:
 * Creators can have one submission in this category.
 
 *If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
+
+*This category has not yet been [sponsored](./sponsors-guide.md).  Should you sponsor it, your ad will appear here.*
