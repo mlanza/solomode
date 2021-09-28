@@ -10,7 +10,7 @@ Solo modes will be registered into the line up between **December 1** and **Dece
 ---
 
 ## Chop Chop
-This category is one [of several](./categories.md) for [Solomode](./announcement-solomode.md).
+This category is [one of several](./categories.md) for [Solomode](./announcement-solomode.md).
 
 Solo modes will be registered here between **December 1** and **December 14, 2021** in preparation for Derby.  Subscribe here and you'll be notified the minute this line up starts
 
@@ -29,7 +29,7 @@ Last year's Solomode saw the advantage of games with short playing times.  Recor
 ---
 
 ## Chronobot
-This category is one [of several](./categories.md) for [Solomode](./announcement-solomode.md).
+This category is [one of several](./categories.md) for [Solomode](./announcement-solomode.md).
 
 Solo modes will be registered here between **December 1** and **December 14, 2021** in preparation for Derby.
 
@@ -47,7 +47,7 @@ Submission requirements:
 ---
 
 ## Write-ins
-This category is one [of several](./categories.md) for [Solomode](./announcement-solomode.md).
+This category is [one of several](./categories.md) for [Solomode](./announcement-solomode.md).
 
 Solo modes will be registered here between **December 1** and **December 14, 2021** in preparation for Derby.
 
@@ -65,7 +65,7 @@ Submission requirements:
 ---
 
 ## Choo Choo
-This category is one [of several](./categories.md) for [Solomode](./announcement-solomode.md).
+This category is [one of several](./categories.md) for [Solomode](./announcement-solomode.md).
 
 Solo modes will be registered here between **December 1** and **December 14, 2021** in preparation for Derby.
 
@@ -86,7 +86,7 @@ Bonus:
 ---
 
 ## Toddler
-This category is one [of several](./categories.md) for [Solomode](./announcement-solomode.md).
+This category is [one of several](./categories.md) for [Solomode](./announcement-solomode.md).
 
 Solo modes will be registered here between **December 1** and **December 14, 2021** in preparation for Derby.
 
@@ -104,7 +104,7 @@ Submission requirements:
 ---
 
 ## Freestyle
-This category is one [of several](./categories.md) for [Solomode](./announcement-solomode.md).
+This category is [one of several](./categories.md) for [Solomode](./announcement-solomode.md).
 
 Solo modes will be registered here between **December 1** and **December 14, 2021** in preparation for Derby.
 
