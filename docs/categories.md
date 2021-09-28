@@ -1,16 +1,18 @@
-# 2021 Solomode Line Up Categories
-[Solomode](./announcement-solomode.md) is divided into 6 separate categories, each scored separately.  The solo modes submitted into these geeklists constitutes the contest's *line up*
+# 2021 Solomode Line Up
+[Solomode](./announcement-solomode.md) is divided into 6 categories, each scored separately.  The solo modes submitted into these geeklists constitutes the contest's *line up*.
 
 Solo modes will be registered into the line up between **December 1** and **December 14, 2021** in preparation for Derby.
 
 [Derby](./announcement-derby.md) will run the entire month of **January 2022**.
+
+*Subscribe to any or all of these geeklists and you'll be notified the minute the line up starts forming.*
 
 ---
 
 ## Chop Chop
 This category is one [of several](./categories.md) for [Solomode](./announcement-solomode.md).
 
-Solo modes will be registered here between **December 1** and **December 14, 2021** in preparation for Derby.
+Solo modes will be registered here between **December 1** and **December 14, 2021** in preparation for Derby.  Subscribe here and you'll be notified the minute this line up starts
 
 [Derby](./announcement-derby.md) will run the entire month of **January 2022**.
 
@@ -20,7 +22,7 @@ Submission requirements:
 
 Last year's Solomode saw the advantage of games with short playing times.  Recorded plays could be racked up in quick succession.  This category exists to mitigate that advantage and to force quick games to compete against one another.
 
-If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).
+*If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
 ---
 
@@ -36,7 +38,7 @@ Submission requirements:
 * Minimum playing time is 35 minutes or more.
 * Creators can have one submission in this category.
 
-If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).
+*If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
 ---
 
@@ -52,7 +54,7 @@ Submission requirements:
 * Minimum playing time is 35 minutes or more.
 * Creators can have one submission in this category.
 
-If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).
+*If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
 ---
 
@@ -71,7 +73,7 @@ Submission requirements:
 Bonus:
 * Games whose minimum playing time is 180 minutes or more earn 1 additional point per recorded play.  This was done to encourage solo modes for longer games like 18xx.
 
-If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).
+*If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
 ---
 
@@ -87,7 +89,7 @@ Submission requirements:
 * Minimum playing time is 35 minutes or more.
 * Creators can have one submission in this category.
 
-If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).
+*If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
 
 ---
 
@@ -102,4 +104,4 @@ Submission requirements:
 * Minimum playing time is 35 minutes or more.
 * Creators can have one submission in this category.
 
-If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).
+*If you want to learn about or play works-in-progress prior to their appearance in the official line up, see or subscribe to the [Derby annoucement thread](./announcement-derby.md).  Or, if you'd rather wait for nearly completed solo modes, subscribe here and you'll be notified the minute this line up starts forming.*
