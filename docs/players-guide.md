@@ -10,10 +10,10 @@ Learn solo modes in December in preparation for January 2022.  Play as few or as
 * Derby - **January 1 - January 31, 2022**
 
 ## Solomode
-[Solomode](./announcement-solomode.md) is a competition for fledgling or experienced designers to create and share solo modes.  It culminates in [Derby](./announcement-derby.md), a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.
+[Solomode](https://urlday.cc/fgdvt) is a competition for fledgling or experienced designers to create and share solo modes.  It culminates in [Derby](https://urlday.cc/z1luy), a month over which recorded plays score points for solo mode creators.  This guide explains how to record plays.
 
 ## What You Do
-From the [Line Up](./categories.md) you
+From the [Line Up](https://urlday.cc/l3abt) you
 * seek out solo modes,
 * learn their rules,
 * play them (esp. during Derby!), and
@@ -33,12 +33,12 @@ As recorded plays are Solomode's currency, they're eagerly anticipated, highly c
 Here are a few examples of [correctly](https://www.boardgamegeek.com/thread/2554285/article/36891615#36891615) [recorded](https://www.boardgamegeek.com/thread/2554285/article/37000248#37000248) [plays](https://www.boardgamegeek.com/thread/2554285/article/37122326#37122326) from last year's contest.
 
 ### Where Matters
-Where you register a play determines who, if anyone at all, earns credit.  Take care to target Solomode threads.  They can be reached via [category geeklists](./categories.md) but ensure you're recording plays in the threads belonging to the solo mode you played.  When you land in one its opening post should make it crystal clear you're in the right place.
+Where you register a play determines who, if anyone at all, earns credit.  Take care to target Solomode threads.  They can be reached via [category geeklists](https://urlday.cc/l3abt) but ensure you're recording plays in the threads belonging to the solo mode you played.  When you land in one its opening post should make it crystal clear you're in the right place.
 
 These threads are hubs in which creators engage players.  They're used to announce updates, release rules and, most importantly, record your plays.  To be kept in the loop, subscribe to whichever threads interest you and once you've played a solo mode **please don't forget to record it**.  Even if you make no comments somebody's score depends on it.
 
 ### When Matters
-You may record plays anytime but only those recorded during [Derby](./announcement-derby.md) earn points for creators so, to make the most of your effort, plan accordingly.
+You may record plays anytime but only those recorded during [Derby](https://urlday.cc/z1luy) earn points for creators so, to make the most of your effort, plan accordingly.
 
 Plays **must** be recorded in the month in which they actually occurred.  That is, if you record one in January the implication is it took place in January and not December.  The intent is to prevent play testers from carrying old plays forward as this'd afford a greater scoring window to creators who release early.  It would unintentionally pressure others to do likewise.
 
@@ -48,4 +48,4 @@ If you fail to properly record a play you may be prompted you to correct your po
 ### Players' Scoreboard
 If you're not interested in competing against other players skip this bit.
 
-In addition to tracking the scores of submissions during Derby, players will [earn scores](./scoring-guide.md) on a scoreboard maintained in this thread.  **If the Players' Scoreboard is sponsored** the winner and runner up will be awarded prizes.  Your score will be identical to the sum total of what your recorded plays earned creators.
+In addition to tracking the scores of submissions during Derby, players will [earn scores](https://urlday.cc/px9wj) on a scoreboard maintained in this thread.  **If the Players' Scoreboard is sponsored** the winner and runner up will be awarded prizes.  Your score will be identical to the sum total of what your recorded plays earned creators.

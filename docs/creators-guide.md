@@ -5,7 +5,7 @@ You want to create a solo mode.  This guide is tailored to solo mode creators.
 * Registration - **December 1 - December 14, 2021**
 * Derby - **January 1 - January 31, 2022**
 
-[Solomode](./announcement-solomode.md) is more journey than destination.  It affords an opportunity to wear your designer's cap.  You can create and iterate and fold valuable feedback into your creative process.
+[Solomode](https://urlday.cc/fgdvt) is more journey than destination.  It affords an opportunity to wear your designer's cap.  You can create and iterate and fold valuable feedback into your creative process.
 
 ## Measuring Time
 The host is monitoring time via the New York, EST time zone.  Recorded plays will be captured and measured via script in accord with the time of entries as appearing in BGG's api.
@@ -13,9 +13,9 @@ The host is monitoring time via the New York, EST time zone.  Recorded plays wil
 Take care to afford yourself a little buffer surrounding key dates.
 
 ## Derby
-Solomode is a competition involving solo mode creators and players which culminates in [Derby](./announcement-derby.md), a [scored race](./scoring-guide.md) over which which solo modes are spurred ahead by recorded plays.  The leaderboard is periodically updated so keen observers can watch it unfold until the final photo finish.
+Solomode is a competition involving solo mode creators and players which culminates in [Derby](https://urlday.cc/z1luy), a [scored race](https://urlday.cc/px9wj) over which which solo modes are spurred ahead by recorded plays.  The leaderboard is periodically updated so keen observers can watch it unfold until the final photo finish.
 
-When the contest concludes accolades will be earned based on the final scores of submissions.  In each category there will be a winner and a runner up.  **If the category was sponsored and has at least 5 contestants** these individuals will be awarded prizes.  (Sponsorship will be clearly noted at the top of a category when and if it's sponsored.  Please see the details on international shipping in the [Sponsors' Guide](./sponsors-guide.md) if you're outside USA.)
+When the contest concludes accolades will be earned based on the final scores of submissions.  In each category there will be a winner and a runner up.  **If the category was sponsored and has at least 5 contestants** these individuals will be awarded prizes.  (Sponsorship will be clearly noted at the top of a category when and if it's sponsored.  Please see the details on international shipping in the [Sponsors' Guide](https://urlday.cc/i0p4m) if you're outside USA.)
 
 Honorable mentions go to submissions played 5 or 10 times.  These will, respectively, appear on a nickel or a dime list.
 
@@ -43,14 +43,14 @@ The gap between Registration and Derby is a couple week.  Don't dilly dally. **Y
 Create a thread.  It's your public relations channel.  You'll use it to share news, record plays, and accept audience feedback for your solo mode.
 * It **must** be in the Variants forum of the board game your solo mode uses.
 * Its title should begin **[2021 Solomode]** and be followed by the working title (updated at will) of your solo mode. **[2021 Solomode] Dark Days**, for example.  Conforming to this pattern is a signpost to players that they're in the right spot to record their plays.  It aims to get you every bit of credit you deserve.
-* The opening post should request that visitors who want to support your solo mode review the [Players' Guide](./players-guide.md) in preparation for [Derby](./announcement-derby.md).  Note its dates as a reminder of the very important when.
+* The opening post should request that visitors who want to support your solo mode review the [Players' Guide](https://urlday.cc/1cdof) in preparation for [Derby](https://urlday.cc/z1luy).  Note its dates as a reminder of the very important when.
 * If digital platforms like [Tabletop Simulator](https://www.tabletopsimulator.com) make playing your solo mode possible, explain how.
 * You may record your own plays of your solo mode here if only to demonstrate what properly recorded plays look like.  They won't be counted.
-* To wrangle early play testers via another channel, you may extend an invitation in the [Derby Announcement](./announcement-derby.md) thread directing them into your thread.
+* To wrangle early play testers via another channel, you may extend an invitation in the [Derby Announcement](https://urlday.cc/z1luy) thread directing them into your thread.
 
 ### Rules
 Your solo mode rules
-* **must** not have been released prior to the date of [this announcement](./announcement-solomode.md),
+* **must** not have been released prior to the date of [this announcement](https://urlday.cc/fgdvt),
 * **must** not violate copyrights/laws,
 * should be linked from your thread's opening post,
 * should include a solo mode title and playing time,
@@ -59,12 +59,12 @@ Your solo mode rules
 * may include multiple files, and
 * may require components and printables not included in the base game.
 
-Remind players about the importance of Derby and correctly recorded plays.  Link to the [Players' Guide](./players-guide.md).  This guide was created to save you from having to explain the particulars.  Nudging players toward understanding, even in the rules themselves, improves the odds plays are recorded in the right manner and at the right time.  A game cannot be played, after all, without consulting its rules.
+Remind players about the importance of Derby and correctly recorded plays.  Link to the [Players' Guide](https://urlday.cc/1cdof).  This guide was created to save you from having to explain the particulars.  Nudging players toward understanding, even in the rules themselves, improves the odds plays are recorded in the right manner and at the right time.  A game cannot be played, after all, without consulting its rules.
 
 Although your working rules can be hosted anywhere over the duration of the contest, Solomode aims to get creators thinking in terms of shipping and publishing.  Please support the BGG community by publishing your final rules to BGG's file section by the time Derby concludes.
 
 ### Registration
-Add your submission (a geeklist item) to the [Line Up](./categories.md).  These geeklists will be editable **only during the registration period**.
+Add your submission (a geeklist item) to the [Line Up](https://urlday.cc/l3abt).  These geeklists will be editable **only during the registration period**.
 * The geeklist item **must** be of the `Thread` variety.  This differs from last year!
 * The submission **must** abide the requirements posed by the category.  The requirements appear in the category header.
 * The Description for the geeklist item <!-- create a model example -->
@@ -101,7 +101,7 @@ Your biggest challenge is getting rules into people's heads.  This is preceded b
 
 Patrons will peek in your shop and stroll to the next if it doesn't appear warm and inviting.  Baking cookies helps.  And if not that, teaching videos!
 
-As you will be moderating your own threads, you need to understand the contest from the player's perspective.  Ensure you mind and understand the [Players' Guide](./players-guide.md).  Furthermore, since you're asked to support your fellow creators, you're going to be a player too.
+As you will be moderating your own threads, you need to understand the contest from the player's perspective.  Ensure you mind and understand the [Players' Guide](https://urlday.cc/1cdof).  Furthermore, since you're asked to support your fellow creators, you're going to be a player too.
 
 ## Supporting Fellow Creators
 Target playing about twice as many solo modes as you enter.  What every creator most covets is feedback.  Schedule time to learn and play solo modes and offer constructive feedback to your fellow competitors.

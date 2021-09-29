@@ -1,7 +1,7 @@
 # 2021 Solomode Sponsors' Guide
-[Solomode](./announcement-solomode.md) is a competition for solo mode creators which culminates in [Derby](./announcement-derby.md), a plays-fueled race over which their solo modes are scored.
+[Solomode](https://urlday.cc/fgdvt) is a competition for solo mode creators which culminates in [Derby](https://urlday.cc/z1luy), a plays-fueled race over which their solo modes are scored.
 
-There are [6 categories](./categories.md) in which creators can compete as well as a separate Players' Scoreboard where players can compete.  So in total that's 7 sponsorship slots:
+There are [6 categories](https://urlday.cc/l3abt) in which creators can compete as well as a separate Players' Scoreboard where players can compete.  So in total that's 7 sponsorship slots:
 * Chop Chop Category
 * Chronobot Category
 * Write-ins Category
