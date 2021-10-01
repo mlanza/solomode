@@ -1,0 +1,15 @@
+{
+  "imports": {
+     "symbol": "./polyfills/symbol.js",
+     "promise": "./polyfills/promise.js",
+     "weak-map": "./polyfills/weak-map.js",
+     "set": "./polyfills/set.js",
+     "fetch": "./polyfills/fetch.js",
+     "atomic/core": "./vendor/atomic/core.js",
+     "atomic/reactives": "./vendor/atomic/reactives.js",
+     "atomic/dom": "./vendor/atomic/dom.js",
+     "atomic/transducers": "./vendor/atomic/transducers.js",
+     "atomic/transients": "./vendor/atomic/transients.js",
+     "atomic/repos": "./vendor/atomic/repos.js"
+  }
+}

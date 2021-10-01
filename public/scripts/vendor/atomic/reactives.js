@@ -1,1250 +1,1179 @@
-define(['exports', 'atomic/core', 'atomic/transients', 'symbol', 'atomic/transducers'], function (exports, _$1, mut, _Symbol, t) { 'use strict';
+import * as _ from 'atomic/core';
+import { protocol, implement, IMergable, IReduce, does } from 'atomic/core';
+import * as t from 'atomic/transducers';
+import 'symbol';
+import Promise$1 from 'promise';
+import * as mut from 'atomic/transients';
 
-  _Symbol = _Symbol && _Symbol.hasOwnProperty('default') ? _Symbol['default'] : _Symbol;
+function on2(self, f) {
+  f(self);
+}
 
-  var IDispatch = _$1.protocol({
-    dispatch: null
+function on3(self, pred, f) {
+  if (pred(self)) {
+    f(self);
+  }
+}
+
+var on$1 = _.overload(null, null, on2, on3);
+
+var IEvented = _.protocol({
+  on: on$1,
+  off: null,
+  trigger: null
+});
+
+var on = IEvented.on;
+var off = IEvented.off;
+var trigger = IEvented.trigger;
+
+function one3(self, key, callback) {
+  function cb(e) {
+    off(self, key, ctx.cb);
+    callback.call(this, e);
+  }
+
+  var ctx = {
+    cb: cb
+  };
+  return on(self, key, cb);
+}
+
+function one4(self, key, selector, callback) {
+  function cb(e) {
+    off(self, key, ctx.cb);
+    callback.call(this, e);
+  }
+
+  var ctx = {
+    cb: cb
+  };
+  return on(self, key, selector, cb);
+}
+
+var one = _.overload(null, null, null, one3, one4);
+
+var IPublish = _.protocol({
+  pub: null,
+  err: null,
+  complete: null,
+  closed: null
+});
+
+var pub$3 = IPublish.pub;
+var err$3 = IPublish.err;
+var complete$3 = IPublish.complete;
+var closed$3 = IPublish.closed;
+
+var ISubscribe = protocol({
+  sub: null,
+  unsub: null,
+  subscribed: null
+});
+
+function _toConsumableArray$1(arr) { return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$2(arr) || _nonIterableSpread$1(); }
+
+function _nonIterableSpread$1() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+
+function _iterableToArray$1(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles$1(arr) { if (Array.isArray(arr)) return _arrayLikeToArray$2(arr); }
+
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function sub3(source, xf, sink) {
+  return ISubscribe.transducing(source, xf, sink); //TODO import transducing logic directly
+}
+
+function subN(source) {
+  var sink = arguments[arguments.length - 1],
+      xfs = _.slice(arguments, 1, arguments.length - 1);
+
+  return sub3(source, _.comp.apply(_, _toConsumableArray$1(xfs)), sink);
+}
+
+var sub$5 = _.overload(null, null, ISubscribe.sub, sub3, subN);
+var unsub$4 = _.overload(null, null, ISubscribe.unsub);
+var subscribed$4 = ISubscribe.subscribed;
+
+var p = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  on: on,
+  off: off,
+  trigger: trigger,
+  one: one,
+  pub: pub$3,
+  err: err$3,
+  complete: complete$3,
+  closed: closed$3,
+  sub: sub$5,
+  unsub: unsub$4,
+  subscribed: subscribed$4
+});
+
+function Observable(subscribe) {
+  this.subscribe = subscribe;
+}
+function observable(subscribe) {
+  return new Observable(subscribe);
+}
+
+function merge(self, other) {
+  return observable(function (observer) {
+    var _observer, _p$pub, _p;
+
+    var handle = (_p = p, _p$pub = _p.pub, _observer = observer, function pub(_argPlaceholder) {
+      return _p$pub.call(_p, _observer, _argPlaceholder);
+    });
+    return does(sub$5(self, handle), sub$5(other, handle));
   });
+}
 
-  var dispatch = IDispatch.dispatch;
+function reduce(self, f, init) {
+  var _self, _f;
 
-  function on2(self, f) {
-    on3(self, _$1.identity, f);
-  }
-
-  function on3(self, pred, f) {
-    if (pred(self)) {
-      f(self);
-    }
-  }
-
-  var on = _$1.overload(null, null, on2, on3);
-  var IEvented = _$1.protocol({
-    on: on,
-    off: null,
-    trigger: null
-  });
-
-  var on$1 = IEvented.on;
-  var off = IEvented.off;
-  var trigger = IEvented.trigger;
-
-  function one3(self, key, callback) {
-    function cb(e) {
-      off(self, key, ctx.cb);
-      callback.call(this, e);
-    }
-
-    var ctx = {
-      cb: cb
-    };
-    return on$1(self, key, cb);
-  }
-
-  function one4(self, key, selector, callback) {
-    function cb(e) {
-      off(self, key, ctx.cb);
-      callback.call(this, e);
-    }
-
-    var ctx = {
-      cb: cb
-    };
-    return on$1(self, key, selector, cb);
-  }
-
-  var one = _$1.overload(null, null, null, one3, one4);
-
-  var IEventProvider = _$1.protocol({
-    raise: null,
-    release: null
-  });
-
-  var raise = IEventProvider.raise;
-  var release = IEventProvider.release;
-
-  var IMiddleware = _$1.protocol({
-    handle: null
-  });
-
-  function handle2(self, message) {
-    return IMiddleware.handle(self, message, _$1.noop);
-  }
-
-  var handle = _$1.overload(null, null, handle2, IMiddleware.handle);
-
-  var IPublish = _$1.protocol({
-    pub: null
-  });
-
-  var pub = IPublish.pub;
-
-  function deref(self) {
-    return _$1.IDeref.deref(self.source);
-  }
-
-  function Readonly(source) {
-    this.source = source;
-  }
-  function readonly(source) {
-    var obj = new Readonly(source);
-
-    if (_$1.satisfies(_$1.IDeref, source)) {
-      _$1.specify(_$1.IDeref, {
-        deref: deref
-      }, obj);
-    }
-
-    return obj;
-  }
-
-  var ISubscribe = _$1.protocol({
-    sub: null,
-    unsub: null,
-    subscribed: null
-  });
-
-  function into2(sink, source) {
-    return into3(sink, _$1.identity, source);
-  }
-
-  function into3(sink, xf, source) {
-    return into4(readonly, sink, xf, source);
-  }
-
-  function into4(decorate, sink, xf, source) {
-    var observer = _$1.partial(xf(pub), sink);
-    ISubscribe.sub(source, observer);
-
-    function dispose(_) {
-      ISubscribe.unsub(source, observer);
-    }
-
-    return _$1.doto(decorate(sink), _$1.specify(_$1.IDisposable, {
-      dispose: dispose
-    }));
-  }
-
-  function sub3(source, xf, sink) {
-    return into4(_$1.identity, sink, xf, source);
-  }
-
-  var into = _$1.overload(null, null, into2, into3, into4);
-  var sub = _$1.overload(null, null, ISubscribe.sub, sub3);
-  var unsub = _$1.overload(null, null, ISubscribe.unsub);
-  var subscribed = ISubscribe.subscribed;
-
-  var ITimeTraveler = _$1.protocol({
-    undo: null,
-    redo: null,
-    flush: null,
-    undoable: null,
-    redoable: null
-  });
-
-  var undo = ITimeTraveler.undo;
-  var undoable = ITimeTraveler.undoable;
-  var redo = ITimeTraveler.redo;
-  var redoable = ITimeTraveler.redoable;
-  var flush = ITimeTraveler.flush;
-
-  function Broadcast(observers) {
-    this.observers = observers;
-  }
-  function broadcast(observers) {
-    return new Broadcast(observers || []);
-  }
-
-  function Cell(state, observer, validate) {
-    this.state = state;
-    this.observer = observer;
-    this.validate = validate;
-  }
-
-  function cell0() {
-    return cell1(null);
-  }
-
-  function cell1(init) {
-    return cell2(init, broadcast());
-  }
-
-  function cell2(init, observer) {
-    return cell3(init, observer, null);
-  }
-
-  function cell3(init, observer, validate) {
-    return new Cell(init, observer, validate);
-  }
-
-  var cell = _$1.overload(cell0, cell1, cell2, cell3);
-
-  function deref$1(self) {
-    return self.state;
-  }
-
-  function reset(self, value) {
-    if (value !== self.state) {
-      if (!self.validate || self.validate(value)) {
-        self.state = value;
-        IPublish.pub(self.observer, value);
-      } else {
-        throw new Error("Cell update failed - invalid value.");
-      }
-    }
-  }
-
-  function swap(self, f) {
-    reset(self, f(self.state));
-  }
-
-  function sub$1(self, observer) {
-    IPublish.pub(observer, self.state); //to prime subscriber state
-
-    ISubscribe.sub(self.observer, observer);
-  }
-
-  function unsub$1(self, observer) {
-    ISubscribe.unsub(self.observer, observer);
-  }
-
-  function subscribed$1(self) {
-    return ISubscribe.subscribed(self.observer);
-  }
-
-  function dispose(self) {
-    _$1.satisfies(_$1.IDisposable, self.observer) && _$1.IDisposable.dispose(self.observer);
-  }
-
-  var behaveAsCell = _$1.does(_$1.implement(_$1.IDisposable, {
-    dispose: dispose
-  }), _$1.implement(_$1.IDeref, {
-    deref: deref$1
-  }), _$1.implement(ISubscribe, {
-    sub: sub$1,
-    unsub: unsub$1,
-    subscribed: subscribed$1
-  }), _$1.implement(IPublish, {
-    pub: reset
-  }), _$1.implement(_$1.IReset, {
-    reset: reset
-  }), _$1.implement(_$1.ISwap, {
-    swap: swap
+  return sub$5(init, (_f = f, _self = self, function f(_argPlaceholder2) {
+    return _f(_self, _argPlaceholder2);
   }));
-
-  behaveAsCell(Cell);
-
-  function deref$2(self) {
-    if (subscribed(self) === 0) {
-      //force refresh of sink state
-      sub(self, _$1.noop);
-      unsub(self, _$1.noop);
-    }
-
-    return _$1.IDeref.deref(self.sink);
-  }
-
-  function AudienceDetector(sink, state) {
-    this.sink = sink;
-    this.state = state;
-  }
-
-  function audienceDetector2(sink, detected) {
-    var init = subscribed(sink) === 0 ? "idle" : "active";
-    var $state = cell(_$1.fsm(init, {
-      idle: {
-        activate: "active"
-      },
-      active: {
-        deactivate: "idle"
-      }
-    }));
-    sub($state, _$1.comp(detected, _$1.state));
-    var result = new AudienceDetector(sink, $state);
-
-    if (_$1.satisfies(_$1.IDeref, sink)) {
-      _$1.specify(_$1.IDeref, {
-        deref: deref$2
-      }, result);
-    }
-
-    return result;
-  }
-
-  function audienceDetector3(sink, xf, source) {
-    var observer = _$1.partial(xf(pub), sink);
-    return audienceDetector2(sink, function (state) {
-      var f = state === "active" ? sub : unsub;
-      f(source, observer);
-    });
-  }
-
-  var audienceDetector = _$1.overload(null, null, audienceDetector2, audienceDetector3);
-
-  function sub$2(self, observer) {
-    if (subscribed$2(self) === 0) {
-      _$1.swap(self.state, function (_arg) {
-        return _$1.transition(_arg, "activate");
-      });
-    }
-
-    ISubscribe.sub(self.sink, observer);
-  }
-
-  function unsub$2(self, observer) {
-    ISubscribe.unsub(self.sink, observer);
-
-    if (subscribed$2(self) === 0) {
-      _$1.swap(self.state, function (_arg2) {
-        return _$1.transition(_arg2, "deactivate");
-      });
-    }
-  }
-
-  function subscribed$2(self) {
-    return ISubscribe.subscribed(self.sink);
-  }
-
-  function dispose$1(self) {
-    _$1.swap(self.state, function (_arg3) {
-      return _$1.transition(_arg3, "deactivate");
-    });
-  }
-
-  function state(self) {
-    return _$1.IStateMachine.state(IDeref.deref(self.state));
-  }
-
-  var behaveAsAudienceDetector = _$1.does(_$1.implement(_$1.IDisposable, {
-    dispose: dispose$1
-  }), _$1.implement(_$1.IStateMachine, {
-    state: state
-  }), _$1.implement(ISubscribe, {
-    sub: sub$2,
-    unsub: unsub$2,
-    subscribed: subscribed$2
-  }));
-
-  behaveAsAudienceDetector(AudienceDetector);
-
-  function Bus(state, handler) {
-    this.state = state;
-    this.handler = handler;
-  }
-  function bus(state, handler) {
-    return new Bus(state, handler);
-  }
-
-  function dispatch$1(self, command) {
-    IMiddleware.handle(self.handler, command);
-  }
-
-  function dispose$2(self) {
-    satisfies(_$1.IDisposable, self.state) && _$1.IDisposable.dispose(self.state);
-    satisfies(_$1.IDisposable, self.handler) && _$1.IDisposable.dispose(self.handler);
-  }
-
-  var forward = _$1.forwardTo("state");
-  var sub$3 = forward(ISubscribe.sub);
-  var unsub$3 = forward(ISubscribe.unsub);
-  var subscribed$3 = forward(ISubscribe.subscribed);
-  var deref$3 = forward(_$1.IDeref.deref);
-  var reset$1 = forward(_$1.IReset.reset);
-  var swap$1 = forward(_$1.ISwap.swap);
-  var behaveAsBus = _$1.does(_$1.implement(_$1.IDeref, {
-    deref: deref$3
-  }), _$1.implement(_$1.IReset, {
-    reset: reset$1
-  }), _$1.implement(_$1.ISwap, {
-    swap: swap$1
-  }), _$1.implement(ISubscribe, {
-    sub: sub$3,
-    unsub: unsub$3,
-    subscribed: subscribed$3
-  }), _$1.implement(IDispatch, {
-    dispatch: dispatch$1
-  }), _$1.implement(_$1.IDisposable, {
-    dispose: dispose$2
-  }));
-
-  behaveAsBus(Bus);
-
-  function sub$4(self, observer) {
-    self.observers.push(observer);
-  }
-
-  function unsub$4(self, observer) {
-    var pos = self.observers.indexOf(observer);
-    pos === -1 || self.observers.splice(pos, 1);
-  }
-
-  function subscribed$4(self) {
-    return self.observers.length;
-  }
-
-  function pub$1(self, message) {
-    _$1.each(function (_arg) {
-      return IPublish.pub(_arg, message);
-    }, self.observers);
-  }
-
-  var behaveAsBroadcast = _$1.does(_$1.implement(ISubscribe, {
-    sub: sub$4,
-    unsub: unsub$4,
-    subscribed: subscribed$4
-  }), _$1.implement(IPublish, {
-    pub: pub$1
-  }));
-
-  behaveAsBroadcast(Broadcast);
-
-  function Cursor(source, path, callbacks) {
-    this.source = source;
-    this.path = path;
-    this.callbacks = callbacks;
-  }
-  function cursor(source, path) {
-    return new Cursor(source, path, _$1.weakMap());
-  }
-
-  function path(self) {
-    return self.path;
-  }
-
-  function deref$4(self) {
-    return _$1.getIn(_$1.deref(self.source), self.path);
-  }
-
-  function reset$2(self, value) {
-    _$1.swap(self.source, function (state) {
-      return _$1.assocIn(state, self.path, value);
-    });
-  }
-
-  function swap$2(self, f) {
-    _$1.swap(self.source, function (state) {
-      return _$1.updateIn(state, self.path, f);
-    });
-  }
-
-  function sub$5(self, observer) {
-    function observe(state) {
-      IPublish.pub(observer, _$1.getIn(state, self.path));
-    }
-
-    self.callbacks.set(observer, observe);
-
-    sub(self.source, observe);
-  }
-
-  function unsub$5(self, observer) {
-    var observe = self.callbacks.get(observer);
-
-    unsub(self.source, observe);
-
-    observe && self.callbacks["delete"](observer);
-  }
-
-  function subscribed$5(self) {
-    return _$1.ICounted.count(self.callbacks);
-  }
-
-  function dispatch$2(self, command) {
-    IDispatch.dispatch(self.source, _$1.update(command, "path", function (path) {
-      return _$1.apply(_$1.conj, self.path, path || []);
-    }));
-  }
-
-  var behaveAsCursor = _$1.does( //implement(IDisposable, {dispose}), TODO
-  _$1.implement(_$1.IPath, {
-    path: path
-  }), _$1.implement(IDispatch, {
-    dispatch: dispatch$2
-  }), _$1.implement(_$1.IDeref, {
-    deref: deref$4
-  }), _$1.implement(ISubscribe, {
-    sub: sub$5,
-    unsub: unsub$5,
-    subscribed: subscribed$5
-  }), _$1.implement(IPublish, {
-    pub: reset$2
-  }), _$1.implement(_$1.IReset, {
-    reset: reset$2
-  }), _$1.implement(_$1.ISwap, {
-    swap: swap$2
-  }));
-
-  behaveAsCursor(Cursor);
-
-  function Events(queued) {
-    this.queued = queued;
-  }
-  function events() {
-    return new Events([]);
-  }
-
-  function raise$1(self, event) {
-    self.queued.push(event);
-  }
-
-  function release$1(self) {
-    var released = self.queued;
-    self.queued = [];
-    return released;
-  }
-
-  var behaveAsEvents = _$1.does(_$1.implement(IEventProvider, {
-    raise: raise$1,
-    release: release$1
-  }));
-
-  behaveAsEvents(Events);
-
-  function EventDispatcher(events, bus, observer) {
-    this.events = events;
-    this.bus = bus;
-    this.observer = observer;
-  }
-  function eventDispatcher(events, bus, observer) {
-    return new EventDispatcher(events, bus, observer);
-  }
-
-  function handle$1(self, command, next) {
-    next(command);
-    _$1.each(function (event) {
-      handle(self.bus, event);
-
-      pub(self.observer, event);
-    }, release(self.events));
-  }
-
-  var behaveAsEventDispatcher = _$1.does(_$1.implement(IMiddleware, {
-    handle: handle$1
-  }));
-
-  behaveAsEventDispatcher(EventDispatcher);
-
-  function MessageHandler(handlers, fallback) {
-    this.handlers = handlers;
-    this.fallback = fallback;
-  }
-  function messageHandler(handlers, fallback) {
-    return new MessageHandler(handlers, fallback);
-  }
-
-  function handle$2(self, command, next) {
-    var type = _$1.ILookup.lookup(command, "type");
-    var handler = _$1.ILookup.lookup(self.handlers, type) || self.fallback;
-    IMiddleware.handle(handler, command, next);
-  }
-
-  var behaveAsMessageHandler = _$1.does(_$1.implement(IMiddleware, {
-    handle: handle$2
-  }));
-
-  behaveAsMessageHandler(MessageHandler);
-
-  function MessageProcessor(action) {
-    this.action = action;
-  }
-  function messageProcessor(action) {
-    return new MessageProcessor(action);
-  }
-
-  function handle$3(self, message, next) {
-    self.action(message);
-    next(message);
-  }
-
-  var behaveAsMessageProcessor = _$1.does(_$1.implement(IMiddleware, {
-    handle: handle$3
-  }));
-
-  behaveAsMessageProcessor(MessageProcessor);
-
-  function Middleware(handlers) {
-    this.handlers = handlers;
-  }
-  function middleware(handlers) {
-    return _$1.doto(new Middleware(handlers || []), function (_arg) {
-      return _$1.apply(_$1.conj, _arg, handlers);
-    });
-  }
-
-  function handles(handle) {
-    return _$1.doto({}, _$1.specify(IMiddleware, {
-      handle: handle
-    }));
-  }
-
-  function accepts(events$$1, type) {
-    var raise = _$1.partial(IEventProvider.raise, events$$1);
-    return handles(function (_, command, next) {
-      raise(_$1.assoc(command, "type", type));
-      next(command);
-    });
-  }
-
-  function raises(events$$1, bus$$1, callback) {
-    var raise = _$1.partial(IEventProvider.raise, events$$1);
-    return handles(function (_, command, next) {
-      callback(bus$$1, command, next, raise);
-    });
-  }
-
-  function affects3(bus$$1, f, react) {
-    return handles(function (_, event, next) {
-      var _ref = event.path;
-      var past = _$1.deref(bus$$1),
-          present = event.path ? _$1.apply(_$1.updateIn, past, event.path, f, event.args) : _$1.apply(f, past, event.args),
-          scope = event.path ? function (_arg) {
-        return _$1.getIn(_arg, _ref);
-      } : _$1.identity;
-      _$1.reset(bus$$1, present);
-      react(bus$$1, event, scope(present), scope(past));
-      next(event);
-    });
-  }
-
-  function affects2(bus$$1, f) {
-    return affects3(bus$$1, f, _$1.noop);
-  }
-
-  var affects = _$1.overload(null, null, affects2, affects3);
-
-  function component2(state, callback) {
-    var evts = events(),
-        ware = middleware(),
-        observer = broadcast();
-    return _$1.doto(bus(state, ware), function ($bus) {
-      var maps = callback(_$1.partial(accepts, evts), _$1.partial(raises, evts, $bus), _$1.partial(affects, $bus));
-      var commandMap = maps[0],
-          eventMap = maps[1];
-      mut.conj(ware, messageHandler(commandMap), eventDispatcher(evts, messageHandler(eventMap), observer));
-    });
-  }
-
-  function component1(state) {
-    return component2(state, function () {
-      return [{}, {}]; //static components may lack commands that drive state change.
-    });
-  }
-
-  var component = _$1.overload(null, component1, component2);
-
-  function conj(self, handler) {
-    self.handlers = _$1.ICollection.conj(self.handlers, handler);
-    self.handler = combine(self.handlers);
-  }
-
-  function combine(handlers) {
-    var f = _$1.reduce(function (memo, handler) {
-      return function (command) {
-        return IMiddleware.handle(handler, command, memo);
-      };
-    }, _$1.noop, _$1.reverse(handlers));
-
-    function handle(_, command) {
-      return f(command);
-    }
-
-    return _$1.doto({}, _$1.specify(IMiddleware, {
-      handle: handle
-    }));
-  }
-
-  function handle$4(self, command, next) {
-    IMiddleware.handle(self.handler, command, next);
-  }
-
-  var behaveAsMiddleware = _$1.does(_$1.implement(mut.ITransientCollection, {
-    conj: conj
-  }), _$1.implement(IMiddleware, {
-    handle: handle$4
-  }));
-
-  behaveAsMiddleware(Middleware);
-
-  function sub$6(self, observer) {
-    ISubscribe.sub(self.source, observer);
-  }
-
-  function unsub$6(self, observer) {
-    ISubscribe.unsub(self.source, observer);
-  }
-
-  function subscribed$6(self) {
-    return ISubscribe.subscribed(self.source);
-  }
-
-  var behaveAsReadonly = _$1.does(_$1.implement(ISubscribe, {
-    sub: sub$6,
-    unsub: unsub$6,
-    subscribed: subscribed$6
-  }));
-
-  behaveAsReadonly(Readonly);
-
-  function Router(fallback, handlers, receives) {
-    this.fallback = fallback;
-    this.handlers = handlers;
-    this.receives = receives;
-  }
-
-  function router3(fallback, handlers, receives) {
-    return new Router(fallback, handlers, receives);
-  }
-
-  function router2(fallback, handlers) {
-    return router3(fallback, handlers, _$1.first);
-  }
-
-  function router1(fallback) {
-    return router2(fallback, []);
-  }
-
-  function router0() {
-    return router1(null);
-  }
-
-  var router = _$1.overload(router0, router1, router2, router3);
-  Router.from = router;
-
-  function handler3(pred, callback, how) {
-    return handler2(function (_arg) {
-      return how(pred, _arg);
-    }, function (_arg2) {
-      return how(callback, _arg2);
-    });
-  }
-
-  function handler2(pred, callback) {
-    function matches(_, message) {
-      return pred(message);
-    }
-
-    function dispatch(_, message) {
-      return callback(message);
-    }
-
-    return _$1.doto({
-      pred: pred,
-      callback: callback
-    }, _$1.specify(_$1.IMatchable, {
-      matches: matches
-    }), _$1.specify(IDispatch, {
-      dispatch: dispatch
-    }));
-  }
-
-  var handler = _$1.overload(null, null, handler2, handler3);
-
-  function on$2(self, pred, callback) {
-    conj$1(self, _$1.handler(pred, callback));
-  }
-
-  function dispatch$3(self, message) {
-    var receiver = self.receives(matches(self, message));
-
-    if (!receiver) {
-      throw new Error("No receiver for message.");
-    }
-
-    return IDispatch.dispatch(receiver, message);
-  }
-
-  function matches(self, message) {
-    var xs = _$1.filter(function (_arg) {
-      return _$1.IMatchable.matches(_arg, message);
-    }, self.handlers);
-    return _$1.ISeqable.seq(xs) ? xs : self.fallback ? [self.fallback] : [];
-  }
-
-  function conj$1(self, handler) {
-    self.handlers = _$1.IAppendable.append(self.handlers, handler);
-  }
-
-  var behaveAsRouter = _$1.does(_$1.implement(IEvented, {
-    on: on$2
-  }), _$1.implement(IDispatch, {
-    dispatch: dispatch$3
-  }), _$1.implement(_$1.IMatchable, {
-    matches: matches
-  }), _$1.implement(mut.ITransientCollection, {
-    conj: conj$1
-  }));
-
-  behaveAsRouter(Router);
-
-  function TimeTraveler(pos, max, history, cell) {
-    this.pos = pos;
-    this.max = max;
-    this.history = history;
-    this.cell = cell;
-  }
-
-  function timeTraveler2(max, cell) {
-    return new TimeTraveler(0, max, [_$1.deref(cell)], cell);
-  }
-
-  function timeTraveler1(cell) {
-    return timeTraveler2(Infinity, cell);
-  }
-
-  var timeTraveler = _$1.overload(null, timeTraveler1, timeTraveler2);
-
-  function deref$5(self) {
-    return _$1.IDeref.deref(self.cell);
-  }
-
-  function reset$3(self, state) {
-    var history = self.pos ? self.history.slice(self.pos) : self.history;
-    history.unshift(state);
-
-    while (_$1.ICounted.count(history) > self.max) {
-      history.pop();
-    }
-
-    self.history = history;
-    self.pos = 0;
-    _$1.IReset.reset(self.cell, state);
-  }
-
-  function swap$3(self, f) {
-    reset$3(self, f(_$1.IDeref.deref(self.cell)));
-  }
-
-  function sub$7(self, observer) {
-    ISubscribe.sub(self.cell, observer);
-  }
-
-  function unsub$7(self, observer) {
-    ISubscribe.unsub(self.cell, observer);
-  }
-
-  function subscribed$7(self) {
-    return ISubscribe.subscribed(self.cell);
-  }
-
-  function undo$1(self) {
-    if (undoable$1(self)) {
-      self.pos += 1;
-      _$1.IReset.reset(self.cell, self.history[self.pos]);
-    }
-  }
-
-  function redo$1(self) {
-    if (redoable$1(self)) {
-      self.pos -= 1;
-      _$1.IReset.reset(self.cell, self.history[self.pos]);
-    }
-  }
-
-  function flush$1(self) {
-    self.history = [self.history[self.pos]];
-    self.pos = 0;
-  }
-
-  function undoable$1(self) {
-    return self.pos < _$1.ICounted.count(self.history);
-  }
-
-  function redoable$1(self) {
-    return self.pos > 0;
-  }
-
-  var behaveAsTimeTraveler = _$1.does(_$1.implement(ITimeTraveler, {
-    undo: undo$1,
-    redo: redo$1,
-    flush: flush$1,
-    undoable: undoable$1,
-    redoable: redoable$1
-  }), _$1.implement(_$1.IDeref, {
-    deref: deref$5
-  }), _$1.implement(_$1.IReset, {
-    reset: reset$3
-  }), _$1.implement(_$1.ISwap, {
-    swap: swap$3
-  }), _$1.implement(ISubscribe, {
-    sub: sub$7,
-    unsub: unsub$7,
-    subscribed: subscribed$7
-  }));
-
-  behaveAsTimeTraveler(TimeTraveler);
-
-  //TODO that promises could potentially return out of order is a problem!
-  function then2(f, source) {
-    var sink = cell(null);
-
-    function observe(value) {
-      _$1.IFunctor.fmap(_$1.Promise.resolve(f(value)), _$1.partial(pub, sink));
-    }
-
-    function dispose(self) {
-      ISubscribe.unsub(source, observe);
-    }
-
-    ISubscribe.sub(source, observe);
-    return _$1.doto(readonly(sink), _$1.specify(_$1.IDisposable, {
-      dispose: dispose
-    }));
-  }
-
-  function thenN(f) {
-    for (var _len = arguments.length, sources = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      sources[_key - 1] = arguments[_key];
-    }
-
-    return then2(_$1.spread(f), latest(sources));
-  }
-
-  var then = _$1.overload(null, null, then2, thenN);
-
-  function signal1(source) {
-    return signal2(t.map(_$1.identity), source);
-  }
-
-  function signal2(xf, source) {
-    return signal3(xf, null, source);
-  }
-
-  function signal3(xf, init, source) {
-    return signal4(audienceDetector, xf, init, source);
-  }
-
-  function signal4(into$$1, xf, init, source) {
-    return into$$1(cell(init), xf, source);
-  }
-
-  var signal = _$1.overload(null, signal1, signal2, signal3, signal4);
-
-  function sink(source) {
-    return _$1.satisfies(_$1.IDeref, source) ? cell() : broadcast();
-  }
-
-  function via2(xf, source) {
-    return into(sink(source), xf, source);
-  }
-
-  function viaN(xf) {
-    for (var _len2 = arguments.length, sources = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-      sources[_key2 - 1] = arguments[_key2];
-    }
-
-    return via2(_$1.spread(xf), latest(sources));
-  }
-
-  var via = _$1.overload(null, null, via2, viaN);
-
-  function map2(f, source) {
-    return via2(_$1.comp(t.map(f), t.dedupe()), source);
-  }
-
-  function mapN(f) {
-    for (var _len3 = arguments.length, sources = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-      sources[_key3 - 1] = arguments[_key3];
-    }
-
-    return map2(_$1.spread(f), latest(sources));
-  }
-
-  var map = _$1.overload(null, null, map2, mapN);
-  function computed(f, source) {
-    var sink = cell(f(source));
-
-    function callback() {
-      _$1.IReset.reset(sink, f(source));
-    }
-
-    function pub$$1(self, value) {
-      IPublish.pub(source, value);
-    }
-
-    return _$1.doto(audienceDetector(sink, function (state) {
-      var f = state == "active" ? ISubscribe.sub : ISubscribe.unsub;
-      f(source, callback);
-    }), _$1.specify(IPublish, {
-      pub: pub$$1
-    }));
-  }
-
-  function fmap(source, f) {
-    return map(f, source);
-  }
-
-  _$1.each(_$1.implement(_$1.IFunctor, {
-    fmap: fmap
-  }), [AudienceDetector, Cell, Broadcast]);
-  function mousemove(el) {
-    return signal(t.map(function (e) {
-      return [e.clientX, e.clientY];
-    }), [], event(el, "mouseenter mousemove"));
-  }
-  function keydown(el) {
-    return signal(event(el, "keydown"));
-  }
-  function keyup(el) {
-    return signal(event(el, "keyup"));
-  }
-  function keypress(el) {
-    return signal(event(el, "keypress"));
-  }
-  function scan(f, init, source) {
-    var memo = init;
-    return signal(t.map(function (value) {
-      memo = f(memo, value);
+}
+
+var imergable = implement(IMergable, {
+  merge: merge
+});
+var ireduce = implement(IReduce, {
+  reduce: reduce
+});
+
+function Subject(observers, terminated) {
+  this.observers = observers;
+  this.terminated = terminated;
+}
+function subject(observers) {
+  return new Subject(mut["transient"](observers || []), null);
+}
+var broadcast = _.called(subject, "`broadcast` deprecated - use `subject` instead.");
+
+function Cell(state, observer, validate) {
+  this.state = state;
+  this.observer = observer;
+  this.validate = validate;
+}
+
+function cell0() {
+  return cell1(null);
+}
+
+function cell1(init) {
+  return cell2(init, subject());
+}
+
+function cell2(init, observer) {
+  return cell3(init, observer, null);
+}
+
+function cell3(init, observer, validate) {
+  return new Cell(init, observer, validate);
+}
+
+var cell = _.overload(cell0, cell1, cell2, cell3);
+
+function Observer(pub, err, complete, terminated) {
+  this.pub = pub;
+  this.err = err;
+  this.complete = complete;
+  this.terminated = terminated;
+}
+function observer(pub, err, complete) {
+  return new Observer(pub || _.noop, err || _.noop, complete || _.noop, null);
+}
+
+var _time, _tick, _time2, _when, _hist;
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function pipeN(source) {
+  for (var _len = arguments.length, xforms = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    xforms[_key - 1] = arguments[_key];
+  }
+
+  return pipe2(source, _.comp.apply(_, xforms));
+}
+
+function pipe2(source, xform) {
+  return observable(function (obs) {
+    var step = xform(_.overload(null, _.reduced, function (memo, value) {
+      pub$3(memo, value);
       return memo;
-    }), init, source);
-  }
-  function pressed(el) {
-    return signal(t.dedupe(), [], scan(function (memo, value) {
-      if (value.type === "keyup") {
-        memo = _$1.filtera(_$1.partial(_$1.notEq, value.key), memo);
-      } else if (memo.indexOf(value.key) === -1) {
-        memo = _$1.ICollection.conj(memo, value.key);
+    }));
+    var sink = observer(function (value) {
+      var memo = step(obs, value);
+
+      if (_.isReduced(memo)) {
+        complete$3(sink);
       }
-
-      return memo;
-    }, [], join(broadcast(), keydown(el), keyup(el))));
-  }
-  function hashchange(window) {
-    return signal(t.map(function () {
-      return location.hash;
-    }), location.hash, event(window, "hashchange"));
-  }
-
-  function fromPromise1(promise) {
-    return fromPromise2(promise, null);
-  }
-
-  function fromPromise2(promise, init) {
-    var sink = cell(init);
-    _$1.IFunctor.fmap(promise, function (_arg) {
-      return IPublish.pub(sink, _arg);
+    }, function (error) {
+      err$3(obs, error);
+      unsub && unsub();
+    }, function () {
+      step(obs);
+      complete$3(obs);
+      unsub && unsub();
     });
-    return sink;
-  }
+    var unsub = sub$5(source, sink); //might complete before returning `unsub` fn
 
-  var fromPromise = _$1.overload(null, fromPromise1, fromPromise2);
-  function fromElement(events$$1, f, el) {
-    return signal(t.map(function () {
-      return f(el);
-    }), f(el), event(el, events$$1));
-  }
-  function focus(el) {
-    return join(cell(el === document.activeElement), via(t.map(_$1.constantly(true)), event(el, "focus")), via(t.map(_$1.constantly(false)), event(el, "blur")));
-  }
-  function join(sink) {
-    for (var _len4 = arguments.length, sources = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
-      sources[_key4 - 1] = arguments[_key4];
+    if (closed$3(sink)) {
+      unsub();
+      return _.noop;
     }
 
-    var callback = function callback(_arg2) {
-      return IPublish.pub(sink, _arg2);
-    };
+    return unsub;
+  });
+}
 
-    return audienceDetector(sink, function (state) {
-      var f = state === "active" ? ISubscribe.sub : ISubscribe.unsub;
-      _$1.each(function (_arg3) {
-        return f(_arg3, callback);
-      }, sources);
-    });
-  }
-  var fixed = _$1.comp(readonly, cell);
-  function latest(sources) {
-    var sink = cell(_$1.mapa(_$1.constantly(null), sources));
-    var fs = _$1.memoize(function (idx) {
-      return function (value) {
-        _$1.ISwap.swap(sink, function (_arg4) {
-          return _$1.IAssociative.assoc(_arg4, idx, value);
-        });
-      };
-    }, _$1.str);
-    return audienceDetector(sink, function (state) {
-      var f = state === "active" ? ISubscribe.sub : ISubscribe.unsub;
-      _$1.doall(_$1.mapIndexed(function (idx, source) {
-        f(source, fs(idx));
-      }, sources));
-    });
-  }
+var pipe = _.overload(null, _.identity, pipe2, pipeN);
 
-  function hist2(size, source) {
-    var sink = cell([]);
-    var history = [];
-    ISubscribe.sub(source, function (value) {
-      history = _$1.slice(history);
-      history.unshift(value);
+function share1(source) {
+  return share2(source, subject());
+}
 
-      if (history.length > size) {
-        history.pop();
+function share2(source, sink) {
+  var disconnect = _.noop,
+      refs = 0;
+  return observable(function (observer) {
+    if (refs === 0) {
+      disconnect = sub$5(source, sink);
+    }
+
+    refs++;
+    var unsub = sub$5(sink, observer);
+    return _.once(function () {
+      refs--;
+
+      if (refs === 0) {
+        disconnect();
+        disconnect = _.noop;
       }
 
-      IPublish.pub(sink, history);
+      unsub();
     });
-    return sink;
-  }
+  });
+}
 
-  var hist = _$1.overload(null, _$1.partial(hist2, 2), hist2);
+var share = _.overload(null, share1, share2);
+function sharing(source, init) {
+  return share(source, init());
+}
 
-  function event2(el, key) {
-    var sink = broadcast(),
-        callback = _$1.partial(IPublish.pub, sink);
-    return audienceDetector(sink, function (status) {
-      var f = status === "active" ? on$1 : off;
-      f(el, key, callback);
+function seed2(init, source) {
+  return observable(function (observer) {
+    var _observer, _pub;
+
+    var handle = (_pub = pub$3, _observer = observer, function pub(_argPlaceholder) {
+      return _pub(_observer, _argPlaceholder);
     });
-  }
+    handle(init());
+    return sub$5(source, handle);
+  });
+}
 
-  function event3(el, key, selector) {
-    var sink = broadcast(),
-        callback = _$1.partial(IPublish.pub, sink);
-    return audienceDetector(sink, function (status) {
-      if (status === "active") {
-        on$1(el, key, selector, callback);
-      } else {
-        off(el, key, callback);
-      }
+function seed1(source) {
+  return seed2(_.constantly(null), source);
+} //adds an immediate value upon subscription as with cells.
+
+
+var seed = _.overload(null, seed1, seed2);
+
+function fromEvent2(el, key) {
+  return observable(function (observer) {
+    var _observer2, _pub2;
+
+    var handler = (_pub2 = pub$3, _observer2 = observer, function pub(_argPlaceholder2) {
+      return _pub2(_observer2, _argPlaceholder2);
     });
-  }
-
-  var event = _$1.overload(null, null, event2, event3);
-  function click(el) {
-    return event(el, "click");
-  } //enforce sequential nature of operations
-
-  function isolate(f) {
-    //TODO treat operations as promises
-    var queue = [];
+    el.addEventListener(key, handler);
     return function () {
-      var ready = queue.length === 0;
-      queue.push(arguments);
+      el.removeEventListener(key, handler);
+    };
+  });
+}
 
-      if (ready) {
-        while (queue.length) {
-          var args = _$1.first(queue);
+function fromEvent3(el, key, selector) {
+  return observable(function (observer) {
+    var _observer3, _pub3;
 
-          try {
-            f.apply(null, args);
-            IEvented.trigger(args[0], "mutate", {
-              bubbles: true
-            });
-          } finally {
-            queue.shift();
-          }
+    var handler = (_pub3 = pub$3, _observer3 = observer, function pub(_argPlaceholder3) {
+      return _pub3(_observer3, _argPlaceholder3);
+    });
+
+    function delegate(e) {
+      if (_.matches(e.target, selector)) {
+        handler(observer, e);
+      } else {
+        var found = _.closest(e.target, selector);
+
+        if (found && el.contains(found)) {
+          handler(observer, Object.assign(Object.create(e), {
+            target: found
+          }));
         }
       }
-    };
-  }
-
-  function mutate3(self, state, f) {
-    ISubscribe.sub(state, _$1.partial(isolate(f), self));
-    return self;
-  }
-
-  function mutate2(state, f) {
-    return function (_arg5) {
-      return mutate3(_arg5, state, f);
-    };
-  }
-
-  var mutate = _$1.overload(null, null, mutate2, mutate3);
-
-  (function () {
-    function dispatch$$1(self, args) {
-      return _$1.apply(self, args);
     }
 
-    function pub$$1(self, msg) {
-      self(msg);
+    el.addEventListener(key, delegate);
+    return function () {
+      el.removeEventListener(key, delegate);
+    };
+  });
+}
+
+function fromEvents2(el, keys) {
+  var _el, _fromEvent;
+
+  return _.apply(_.merge, _.map((_fromEvent = fromEvent2, _el = el, function fromEvent2(_argPlaceholder4) {
+    return _fromEvent(_el, _argPlaceholder4);
+  }), _.split(keys, ' ')));
+}
+
+function fromEvents3(el, keys, selector) {
+  var _el2, _selector, _fromEvent2;
+
+  return _.apply(_.merge, _.map((_fromEvent2 = fromEvent3, _el2 = el, _selector = selector, function fromEvent3(_argPlaceholder5) {
+    return _fromEvent2(_el2, _argPlaceholder5, _selector);
+  }), _.split(keys, ' ')));
+}
+
+var fromEvent$1 = _.overload(null, null, fromEvents2, fromEvents3);
+
+function computed$1(f, source) {
+  return seed(f, pipe(source, t.map(f)));
+}
+
+function fromElement$1(key, f, el) {
+  return computed$1(function () {
+    return f(el);
+  }, fromEvent$1(el, key));
+}
+
+function hash$1(window) {
+  return computed$1(function (e) {
+    return window.location.hash;
+  }, fromEvent$1(window, "hashchange"));
+}
+
+function indexed(sources) {
+  return observable(function (observer) {
+    var _param, _$mapIndexed, _ref;
+
+    return _.just(sources, (_ref = _, _$mapIndexed = _ref.mapIndexed, _param = function _param(key, source) {
+      return sub$5(source, function (value) {
+        pub$3(observer, {
+          key: key,
+          value: value
+        });
+      });
+    }, function mapIndexed(_argPlaceholder6) {
+      return _$mapIndexed.call(_ref, _param, _argPlaceholder6);
+    }), _.toArray, _.spread(_.does));
+  });
+}
+
+function splay1(sources) {
+  return splay2(sources, null);
+}
+
+function splay2(sources, blank) {
+  var source = indexed(sources);
+  return observable(function (observer) {
+    var state = _.mapa(_.constantly(blank), sources);
+
+    return sub$5(source, function (msg) {
+      state = _.assoc(state, msg.key, msg.value);
+      pub$3(observer, state);
+    });
+  });
+}
+
+var splay$1 = _.overload(null, splay1, splay2); //sources must publish an initial value immediately upon subscription as cells do.
+
+
+function latest$1(sources) {
+  var nil = {},
+      source = splay2(sources, nil);
+  return observable(function (observer) {
+    var init = false;
+    return sub$5(source, function (state) {
+      if (init) {
+        pub$3(observer, state);
+      } else if (!_.includes(state, nil)) {
+        init = true;
+        pub$3(observer, state);
+      }
+    });
+  });
+}
+
+function toggles$1(el, on, off, init) {
+  return seed(init, _.merge(pipe(fromEvent$1(el, on), t.constantly(true)), pipe(fromEvent$1(el, off), t.constantly(false))));
+}
+
+function focus$1(el) {
+  return toggles$1(el, "focus", "blur", function () {
+    return el === el.ownerDocument.activeElement;
+  });
+}
+
+function click$1(el) {
+  return fromEvent$1(el, "click");
+}
+
+function hover$1(el) {
+  return toggles$1(el, "mouseover", "mouseout", _.constantly(false));
+}
+
+function fixed$1(value) {
+  return observable(function (observer) {
+    pub$3(observer, value);
+    complete$3(observer);
+  });
+}
+
+function time() {
+  return _.date().getTime();
+}
+
+function tick2(interval, f) {
+  return observable(function (observer) {
+    var iv = setInterval(function () {
+      pub$3(observer, f());
+    }, interval);
+    return function () {
+      clearInterval(iv);
+    };
+  });
+}
+
+var tick$1 = _.overload(null, (_tick = tick2, _time = time, function tick2(_argPlaceholder7) {
+  return _tick(_argPlaceholder7, _time);
+}), tick2);
+
+function when2(interval, f) {
+  return seed(f, tick$1(interval, f));
+}
+
+var when$1 = _.overload(null, (_when = when2, _time2 = time, function when2(_argPlaceholder8) {
+  return _when(_argPlaceholder8, _time2);
+}), when2);
+
+function map2(f, source) {
+  return pipe(source, t.map(f), t.dedupe());
+}
+
+function mapN(f) {
+  for (var _len2 = arguments.length, sources = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+    sources[_key2 - 1] = arguments[_key2];
+  }
+
+  return map2(_.spread(f), latest$1(sources));
+}
+
+var map$1 = _.overload(null, null, map2, mapN);
+
+function resolve(source) {
+  return observable(function (observer) {
+    return sub$5(source, function (value) {
+      var _observer4, _pub4;
+
+      Promise$1.resolve(value).then((_pub4 = pub$3, _observer4 = observer, function pub(_argPlaceholder9) {
+        return _pub4(_observer4, _argPlaceholder9);
+      }));
+    });
+  });
+}
+
+function depressed$1(el) {
+  return seed(_.constantly([]), pipe(fromEvent$1(el, "keydown keyup"), t.scan(function (memo, e) {
+    if (e.type === "keyup") {
+      var _e$key, _$notEq, _ref2;
+
+      memo = _.filtera((_ref2 = _, _$notEq = _ref2.notEq, _e$key = e.key, function notEq(_argPlaceholder10) {
+        return _$notEq.call(_ref2, _e$key, _argPlaceholder10);
+      }), memo);
+    } else if (!_.includes(memo, e.key)) {
+      memo = _.conj(memo, e.key);
     }
 
-    _$1.doto(Function, _$1.implement(IPublish, {
-      pub: pub$$1
-    }), _$1.implement(IDispatch, {
-      dispatch: dispatch$$1
-    }));
-  })();
+    return memo;
+  }, []), t.dedupe()));
+}
 
-  exports.then2 = then2;
-  exports.then = then;
-  exports.signal = signal;
-  exports.via = via;
-  exports.map = map;
-  exports.computed = computed;
-  exports.mousemove = mousemove;
-  exports.keydown = keydown;
-  exports.keyup = keyup;
-  exports.keypress = keypress;
-  exports.scan = scan;
-  exports.pressed = pressed;
-  exports.hashchange = hashchange;
-  exports.fromPromise = fromPromise;
-  exports.fromElement = fromElement;
-  exports.focus = focus;
-  exports.join = join;
-  exports.fixed = fixed;
-  exports.latest = latest;
-  exports.hist = hist;
-  exports.event = event;
-  exports.click = click;
-  exports.mutate = mutate;
-  exports.AudienceDetector = AudienceDetector;
-  exports.audienceDetector = audienceDetector;
-  exports.Bus = Bus;
-  exports.bus = bus;
-  exports.Broadcast = Broadcast;
-  exports.broadcast = broadcast;
-  exports.Cell = Cell;
-  exports.cell = cell;
-  exports.Cursor = Cursor;
-  exports.cursor = cursor;
-  exports.Events = Events;
-  exports.events = events;
-  exports.EventDispatcher = EventDispatcher;
-  exports.eventDispatcher = eventDispatcher;
-  exports.MessageHandler = MessageHandler;
-  exports.messageHandler = messageHandler;
-  exports.MessageProcessor = MessageProcessor;
-  exports.messageProcessor = messageProcessor;
-  exports.Middleware = Middleware;
-  exports.middleware = middleware;
-  exports.handles = handles;
-  exports.affects = affects;
-  exports.component = component;
-  exports.Readonly = Readonly;
-  exports.readonly = readonly;
-  exports.Router = Router;
-  exports.router = router;
-  exports.handler = handler;
-  exports.TimeTraveler = TimeTraveler;
-  exports.timeTraveler = timeTraveler;
-  exports.IDispatch = IDispatch;
-  exports.IEvented = IEvented;
-  exports.IEventProvider = IEventProvider;
-  exports.IMiddleware = IMiddleware;
-  exports.IPublish = IPublish;
-  exports.ISubscribe = ISubscribe;
-  exports.ITimeTraveler = ITimeTraveler;
-  exports.dispatch = dispatch;
-  exports.on = on$1;
-  exports.off = off;
-  exports.trigger = trigger;
-  exports.one = one;
-  exports.raise = raise;
-  exports.release = release;
-  exports.handle = handle;
-  exports.pub = pub;
-  exports.into = into;
-  exports.sub = sub;
-  exports.unsub = unsub;
-  exports.subscribed = subscribed;
-  exports.undo = undo;
-  exports.undoable = undoable;
-  exports.redo = redo;
-  exports.redoable = redoable;
-  exports.flush = flush;
+function hist2(size, source) {
+  return pipe(source, t.hist(size));
+}
 
-  Object.defineProperty(exports, '__esModule', { value: true });
+var hist$1 = _.overload(null, (_hist = hist2, function hist2(_argPlaceholder11) {
+  return _hist(2, _argPlaceholder11);
+}), hist2);
 
+function fromCollection(coll) {
+  return observable(function (observer) {
+    var _iterator = _createForOfIteratorHelper(coll),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var item = _step.value;
+        pub$3(observer, item);
+
+        if (closed$3(observer)) {
+          return;
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    complete$3(observer);
+  });
+}
+
+function fromPromise$1(promise) {
+  return observable(function (observer) {
+    var _observer5, _pub5, _observer6, _err;
+
+    promise.then((_pub5 = pub$3, _observer5 = observer, function pub(_argPlaceholder12) {
+      return _pub5(_observer5, _argPlaceholder12);
+    }), (_err = err$3, _observer6 = observer, function err(_argPlaceholder13) {
+      return _err(_observer6, _argPlaceholder13);
+    })).then(function () {
+      complete$3(observer);
+    });
+  });
+}
+
+function fromSource(source) {
+  var _source, _sub;
+
+  //can be used to cover a source making it readonly
+  return observable((_sub = sub$5, _source = source, function sub(_argPlaceholder14) {
+    return _sub(_source, _argPlaceholder14);
+  }));
+}
+
+function toObservable(self) {
+  var f = _.satisfies(_.ICoercible, "toObservable", self);
+
+  if (f) {
+    return f(self);
+  } else if (_.satisfies(ISubscribe, "sub", self)) {
+    return fromSource(self);
+  } else if (_.satisfies(_.ISequential, self)) {
+    return fromCollection(self);
+  }
+}
+
+_.extend(_.ICoercible, {
+  toObservable: null
 });
+
+_.doto(Observable, _.implement(_.ICoercible, {
+  toObservable: _.identity
+}));
+
+_.doto(Promise$1, _.implement(_.ICoercible, {
+  toObservable: fromPromise$1
+}));
+
+Object.assign(Observable, {
+  latest: latest$1,
+  map: map$1,
+  hist: hist$1,
+  splay: splay$1,
+  indexed: indexed,
+  computed: computed$1,
+  fromSource: fromSource,
+  fromEvent: fromEvent$1,
+  fromPromise: fromPromise$1,
+  fromElement: fromElement$1,
+  fixed: fixed$1,
+  hash: hash$1,
+  tick: tick$1,
+  when: when$1,
+  resolve: resolve,
+  depressed: depressed$1,
+  toggles: toggles$1,
+  focus: focus$1,
+  click: click$1,
+  hover: hover$1
+});
+
+function sub$4(self, observer) {
+  var unsub = self.subscribe(observer) || _.noop;
+
+  return closed$3(observer) ? (unsub(), _.noop) : unsub;
+}
+
+var deref$3 = _.called(function deref(self) {
+  var value = null;
+  sub$5(self, function (val) {
+    value = val;
+  })(); //immediate unsubscribe
+
+  return value;
+}, "Prefer to subscribe to observables rather than `deref` them.");
+
+var behave$5 = _.does(ireduce, imergable, _.implement(_.IDeref, {
+  deref: deref$3
+}), _.implement(ISubscribe, {
+  sub: sub$4,
+  unsub: _.noop,
+  subscribed: _.constantly(1)
+})); //TODO  `unsub` and `subscribed` mock implementations are for cross compatibility and may be removed post migration
+
+behave$5(Observable);
+
+function pub$2(self, value) {
+  if (value !== self.state) {
+    if (!self.validate || self.validate(value)) {
+      self.state = value;
+      pub$3(self.observer, value);
+    } else {
+      throw new Error("Cell update failed - invalid value.");
+    }
+  }
+}
+
+function err$2(self, observer) {
+  err$3(self.observer, observer);
+}
+
+var complete$2 = _.noop; //if completed, future subscribes to get the last known value would fail.
+
+function closed$2(self) {
+  return closed$3(self.observer);
+}
+
+function sub$3(self, observer) {
+  pub$3(observer, self.state); //to prime subscriber state
+
+  return sub$5(self.observer, observer); //return unsubscribe fn
+}
+
+function unsub$3(self, observer) {
+  unsub$4(self.observer, observer);
+}
+
+function subscribed$3(self) {
+  return subscribed$4(self.observer);
+}
+
+function deref$2(self) {
+  return self.state;
+}
+
+function swap$2(self, f) {
+  pub$2(self, f(self.state));
+}
+
+function dispose(self) {
+  _.satisfies(_.IDisposable, self.observer) && _.dispose(self.observer);
+}
+
+var behave$4 = _.does(ireduce, imergable, _.implement(_.IDisposable, {
+  dispose: dispose
+}), _.implement(_.IDeref, {
+  deref: deref$2
+}), _.implement(_.IReset, {
+  reset: pub$2
+}), _.implement(_.ISwap, {
+  swap: swap$2
+}), _.implement(ISubscribe, {
+  sub: sub$3,
+  unsub: unsub$3,
+  subscribed: subscribed$3
+}), _.implement(IPublish, {
+  pub: pub$2,
+  err: err$2,
+  complete: complete$2,
+  closed: closed$2
+}));
+
+behave$4(Cell);
+
+function Cursor(source, path, callbacks) {
+  this.source = source;
+  this.path = path;
+  this.callbacks = callbacks;
+}
+function cursor(source, path) {
+  return new Cursor(source, path, _.weakMap());
+}
+
+function path(self) {
+  return self.path;
+}
+
+function deref$1(self) {
+  return _.getIn(_.deref(self.source), self.path);
+}
+
+function reset$1(self, value) {
+  _.swap(self.source, function (state) {
+    return _.assocIn(state, self.path, value);
+  });
+}
+
+function swap$1(self, f) {
+  _.swap(self.source, function (state) {
+    return _.updateIn(state, self.path, f);
+  });
+}
+
+function sub$2(self, observer) {
+  function observe(state) {
+    pub$3(observer, _.getIn(state, self.path));
+  }
+
+  self.callbacks.set(observer, observe);
+  sub$5(self.source, observe);
+}
+
+function unsub$2(self, observer) {
+  var observe = self.callbacks.get(observer);
+  unsub$4(self.source, observe);
+  observe && self.callbacks["delete"](observer);
+}
+
+function subscribed$2(self) {
+  return _.count(self.callbacks);
+}
+
+var behave$3 = _.does( //_.implement(_.IDisposable, {dispose}), TODO
+_.implement(_.IPath, {
+  path: path
+}), _.implement(_.IDeref, {
+  deref: deref$1
+}), _.implement(_.IReset, {
+  reset: reset$1
+}), _.implement(_.ISwap, {
+  swap: swap$1
+}), _.implement(ISubscribe, {
+  sub: sub$2,
+  unsub: unsub$2,
+  subscribed: subscribed$2
+}), _.implement(IPublish, {
+  pub: reset$1
+}));
+
+behave$3(Cursor);
+
+function Journal(pos, max, history, cell) {
+  this.pos = pos;
+  this.max = max;
+  this.history = history;
+  this.cell = cell;
+}
+
+function journal2(max, cell) {
+  return new Journal(0, max, [_.deref(cell)], cell);
+}
+
+function journal1(cell) {
+  return journal2(Infinity, cell);
+}
+
+var journal = _.called(_.overload(null, journal1, journal2), "`journal` is deprecated — use persistent `journal` from `core` and a `cell`.");
+
+function deref(self) {
+  return _.deref(self.cell);
+}
+
+function reset(self, state) {
+  var history = self.pos ? self.history.slice(self.pos) : self.history;
+  history.unshift(state);
+
+  while (_.count(history) > self.max) {
+    history.pop();
+  }
+
+  self.history = history;
+  self.pos = 0;
+
+  _.reset(self.cell, state);
+}
+
+function swap(self, f) {
+  reset(self, f(_.deref(self.cell)));
+}
+
+function sub$1(self, observer) {
+  sub$5(self.cell, observer);
+}
+
+function unsub$1(self, observer) {
+  unsub$4(self.cell, observer);
+}
+
+function subscribed$1(self) {
+  return subscribed$4(self.cell);
+}
+
+function undo(self) {
+  if (undoable(self)) {
+    self.pos += 1;
+
+    _.reset(self.cell, self.history[self.pos]);
+  }
+}
+
+function redo(self) {
+  if (redoable(self)) {
+    self.pos -= 1;
+
+    _.reset(self.cell, self.history[self.pos]);
+  }
+}
+
+function flush(self) {
+  self.history = [self.history[self.pos]];
+  self.pos = 0;
+}
+
+function undoable(self) {
+  return self.pos < _.count(self.history);
+}
+
+function redoable(self) {
+  return self.pos > 0;
+}
+
+var behave$2 = _.does(_.implement(_.IDeref, {
+  deref: deref
+}), _.implement(_.IReset, {
+  reset: reset
+}), _.implement(_.ISwap, {
+  swap: swap
+}), _.implement(_.IRevertible, {
+  undo: undo,
+  redo: redo,
+  flush: flush,
+  undoable: undoable,
+  redoable: redoable
+}), _.implement(ISubscribe, {
+  sub: sub$1,
+  unsub: unsub$1,
+  subscribed: subscribed$1
+}));
+
+behave$2(Journal);
+
+function pub$1(self, message) {
+  if (!self.terminated) {
+    return self.pub(message); //unusual for a command but required by transducers
+  }
+}
+
+function err$1(self, error) {
+  if (!self.terminated) {
+    self.terminated = {
+      how: "error",
+      error: error
+    };
+    self.err(error);
+  }
+}
+
+function complete$1(self) {
+  if (!self.terminated) {
+    self.terminated = {
+      how: "complete"
+    };
+    self.complete();
+  }
+}
+
+function closed$1(self) {
+  return self.terminated;
+}
+
+var behave$1 = _.does(_.implement(IPublish, {
+  pub: pub$1,
+  err: err$1,
+  complete: complete$1,
+  closed: closed$1
+}));
+
+behave$1(Observer);
+
+function sub(self, observer) {
+  if (!self.terminated) {
+    mut.conj(self.observers, observer);
+    return _.once(function () {
+      unsub(self, observer);
+    });
+  } else {
+    throw new Error("Cannot subscribe to a terminated Subject.");
+  }
+}
+
+function unsub(self, observer) {
+  mut.unconj(self.observers, observer);
+}
+
+function subscribed(self) {
+  return _.count(self.observers);
+}
+
+function pub(self, message) {
+  if (!self.terminated) {
+    var _message, _p$pub, _p;
+
+    notify(self, (_p = p, _p$pub = _p.pub, _message = message, function pub(_argPlaceholder) {
+      return _p$pub.call(_p, _argPlaceholder, _message);
+    }));
+  }
+}
+
+function err(self, error) {
+  if (!self.terminated) {
+    var _error, _p$err, _p2;
+
+    self.terminated = {
+      how: "error",
+      error: error
+    };
+    notify(self, (_p2 = p, _p$err = _p2.err, _error = error, function err(_argPlaceholder2) {
+      return _p$err.call(_p2, _argPlaceholder2, _error);
+    }));
+    self.observers = null; //release references
+  }
+}
+
+function complete(self) {
+  if (!self.terminated) {
+    self.terminated = {
+      how: "complete"
+    };
+    notify(self, complete$3);
+    self.observers = null; //release references
+  }
+}
+
+function closed(self) {
+  return self.terminated;
+} //copying prevents midstream changes to observers
+
+
+function notify(self, f) {
+  _.each(f, _.clone(self.observers));
+}
+
+var behave = _.does(ireduce, imergable, _.implement(ISubscribe, {
+  sub: sub,
+  unsub: unsub,
+  subscribed: subscribed
+}), _.implement(IPublish, {
+  pub: pub,
+  err: err,
+  complete: complete,
+  closed: closed
+}));
+
+behave(Subject);
+
+var _cell, _sharing, _subject, _sharing2, _fromPromise;
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+var c = (_sharing = sharing, _cell = cell, function sharing(_argPlaceholder) {
+  return _sharing(_argPlaceholder, _cell);
+}),
+    s = (_sharing2 = sharing, _subject = subject, function sharing(_argPlaceholder2) {
+  return _sharing2(_argPlaceholder2, _subject);
+});
+function collect(cell) {
+  return function (value) {
+    var _value, _$conj, _ref;
+
+    //return observer
+    _.swap(cell, (_ref = _, _$conj = _ref.conj, _value = value, function conj(_argPlaceholder3) {
+      return _$conj.call(_ref, _argPlaceholder3, _value);
+    }));
+  };
+}
+
+function connect2(source, sink) {
+  return sub$5(source, sink);
+}
+
+function connect3(source, xform, sink) {
+  return sub$5(pipe(source, xform), sink);
+}
+
+function connectN(source) {
+  var sink = arguments[arguments.length - 1],
+      xforms = _.slice(arguments, 1, arguments.length - 1);
+
+  return sub$5(pipe.apply(void 0, [source].concat(_toConsumableArray(xforms))), sink);
+}
+
+ISubscribe.transducing = connect3;
+var connect = _.overload(null, null, connect2, connect3, connectN); //returns `unsub` fn
+
+var map = _.comp(c, Observable.map);
+var then = _.comp(c, Observable.resolve, Observable.map);
+var fromElement = _.comp(c, Observable.fromElement);
+var fromEvent = _.comp(s, Observable.fromEvent);
+var event = _.called(fromEvent, "`event` is deprecated — use `fromEvent` instead.");
+var interact = _.called(fromElement, "`interact` is deprecated — use `fromElement` instead.");
+var computed = _.comp(c, Observable.computed);
+var fixed = _.comp(c, Observable.fixed);
+var latest = _.comp(c, Observable.latest);
+var splay = _.comp(c, Observable.splay);
+var tick = _.comp(s, Observable.tick);
+var when = _.comp(c, Observable.when);
+var depressed = _.comp(c, Observable.depressed);
+var toggles = _.comp(c, Observable.toggles);
+var focus = _.comp(c, Observable.focus);
+var click = _.comp(s, Observable.click);
+var hover = _.comp(c, Observable.hover);
+var hist = _.comp(c, Observable.hist);
+var hash = _.comp(c, Observable.hash);
+var hashchange = _.called(hash, "`hashchange` is deprecated — use `hash` instead.");
+var readonly = _.called(_.identity, "`readonly` is deprecated.");
+
+function fmap(source, f) {
+  return map(f, source);
+}
+
+_.each(_.implement(_.IFunctor, {
+  fmap: fmap
+}), [Cell, Subject, Observable]);
+
+function fromPromise2(promise, init) {
+  return share(Observable.fromPromise(promise), cell(init));
+}
+
+var fromPromise = _.overload(null, (_fromPromise = fromPromise2, function fromPromise2(_argPlaceholder4) {
+  return _fromPromise(_argPlaceholder4, null);
+}), fromPromise2);
+var join = _.called(function join(sink) {
+  for (var _len = arguments.length, sources = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    sources[_key - 1] = arguments[_key];
+  }
+
+  return share(_.merge.apply(_, sources), sink);
+}, "`join` is deprecated — use `merge` instead."); //enforce sequential nature of operations
+
+function isolate(f) {
+  //TODO treat operations as promises
+  var queue = [];
+  return function () {
+    var ready = queue.length === 0;
+    queue.push(arguments);
+
+    if (ready) {
+      while (queue.length) {
+        var args = _.first(queue);
+
+        try {
+          f.apply(null, args);
+          trigger(args[0], "mutate", {
+            bubbles: true
+          });
+        } finally {
+          queue.shift();
+        }
+      }
+    }
+  };
+}
+
+function mutate3(self, state, f) {
+  sub$5(state, _.partial(isolate(f), self));
+  return self;
+}
+
+function mutate2(state, f) {
+  var _state, _f, _mutate;
+
+  return _mutate = mutate3, _state = state, _f = f, function mutate3(_argPlaceholder5) {
+    return _mutate(_argPlaceholder5, _state, _f);
+  };
+}
+
+var mutate = _.called(_.overload(null, null, mutate2, mutate3), "`mutate` is deprecated — use `render` instead.");
+
+function render3(el, obs, f) {
+  return sub$5(obs, t.isolate(), function (state) {
+    f(el, state);
+    trigger(el, "mutate", {
+      bubbles: true
+    }); //TODO rename
+  });
+}
+
+function render2(state, f) {
+  var _state2, _f2, _render;
+
+  return _render = render3, _state2 = state, _f2 = f, function render3(_argPlaceholder6) {
+    return _render(_argPlaceholder6, _state2, _f2);
+  };
+}
+
+var render = _.overload(null, null, render2, render3);
+
+function renderDiff3(el, obs, f) {
+  return sub$5(obs, t.isolate(), t.hist(2), function (history) {
+    var args = [el].concat(history);
+    f.apply(this, args); //overload arity 2 & 3 for initial and diff rendering
+
+    trigger(el, "mutate", {
+      bubbles: true
+    }); //TODO rename
+  });
+}
+
+function renderDiff2(state, f) {
+  var _state3, _f3, _renderDiff;
+
+  return _renderDiff = renderDiff3, _state3 = state, _f3 = f, function renderDiff3(_argPlaceholder7) {
+    return _renderDiff(_argPlaceholder7, _state3, _f3);
+  };
+} //TODO replace render after migration
+
+
+var renderDiff = _.overload(null, null, renderDiff2, renderDiff3);
+
+(function () {
+
+  function pub(self, msg) {
+    self(msg);
+  }
+
+  _.doto(Function, ireduce, //makes fns work as observers like `cell`, e.g. `$.connect($.tick(3000), _.see("foo"))`
+  _.implement(IPublish, {
+    pub: pub,
+    err: _.noop,
+    complete: _.noop,
+    closed: _.noop
+  }));
+})();
+
+export { Cell, Cursor, IEvented, IPublish, ISubscribe, Journal, Observable, Observer, Subject, broadcast, cell, click, closed$3 as closed, collect, complete$3 as complete, computed, connect, cursor, depressed, err$3 as err, event, fixed, focus, fromElement, fromEvent, fromPromise, hash, hashchange, hist, hover, interact, join, journal, latest, map, mutate, observable, observer, off, on, one, pipe, pub$3 as pub, readonly, render, renderDiff, seed, share, sharing, splay, sub$5 as sub, subject, subscribed$4 as subscribed, then, tick, toObservable, toggles, trigger, unsub$4 as unsub, when };

@@ -1,410 +1,399 @@
-define(['exports', 'atomic/core', 'fetch', 'promise'], function (exports, _$1, fetch, Promise$1) { 'use strict';
-
-  fetch = fetch && fetch.hasOwnProperty('default') ? fetch['default'] : fetch;
-  var Promise$1__default = 'default' in Promise$1 ? Promise$1['default'] : Promise$1;
-
-  function Request(url, options, config, interceptors, handlers) {
-    this.url = url;
-    this.options = options;
-    this.config = config;
-    this.interceptors = interceptors;
-    this.handlers = handlers;
-  }
-  function request(url, config) {
-    return new Request(url, {}, config || {}, [filling], []);
-  }
-
-  var filling = function filling(_arg) {
-    return _$1.fmap(_arg, function (self) {
-      return _$1.fill(self, self.config);
-    });
-  };
-
-  var IAddress = _$1.protocol({
-    addr: _$1.identity
-  });
-
-  var IIntercept = _$1.protocol({
-    intercept: null
-  });
-
-  var IOptions = _$1.protocol({
-    options: null
-  });
-
-  var IParams = _$1.protocol({
-    params: null
-  });
-
-  function demand(self, keys) {
-    return IIntercept.intercept(self, function (req) {
-      var params = _$1.remove(function (_arg) {
-        return _$1.contains(req, _arg);
-      }, keys);
-
-      if (_$1.seq(params)) {
-        throw new TypeError("Missing required params — " + _$1.join(", ", _$1.map(function (_arg2) {
-          return _$1.str("`", _arg2, "`");
-        }, params)) + ".");
-      }
-
-      return req;
-    });
-  }
-
-  function query(self, plan) {
-    var _ref3, _ref4, _self;
-
-    var keys = _$1.filter(function (_arg) {
-      return _$1.startsWith(_arg, "$");
-    }, _$1.keys(plan));
-
-    var _ref = _$1.apply(_$1.dissoc, plan, keys);
-
-    var _ref2 = _$1.selectKeys(plan, keys);
-
-    return _ref3 = (_ref4 = (_self = self, function (_arg2) {
-      return _$1.merge(_arg2, _ref);
-    }(_self)), function (_arg3) {
-      return IParams.params(_arg3, _ref2);
-    }(_ref4)), _$1.fromTask(_ref3);
-  }
-
-  function fill(self, params) {
-    var _ref5, _self2;
-
-    return _ref5 = (_self2 = self, function (_arg4) {
-      return _$1.edit(_arg4, "url", function (_arg5) {
-        return _$1.fill(_arg5, params);
-      });
-    }(_self2)), function (_arg6) {
-      return _$1.edit(_arg6, "options", function (_arg7) {
-        return _$1.fill(_arg7, params);
-      });
-    }(_ref5);
-  }
-
-  function clone(self) {
-    return new self.constructor(self.url, self.options, self.config, self.interceptors, self.handlers);
-  }
-
-  function addr(self) {
-    return _$1.fill(_$1.str(self.url), self.config);
-  }
-
-  function assoc(self, key, value) {
-    return _$1.edit(self, "config", function (_arg8) {
-      return _$1.IAssociative.assoc(_arg8, key, value);
-    });
-  }
-
-  function contains(self, key) {
-    return _$1.IAssociative.contains(self.config, key);
-  }
-
-  function keys$1(self) {
-    return _$1.IMap.keys(self.config);
-  }
-
-  function lookup(self, key) {
-    return _$1.ILookup.lookup(self.config, key);
-  }
-
-  function params(self, params) {
-    return _$1.edit(self, "url", function (_arg9) {
-      return IParams.params(_arg9, params);
-    });
-  }
-
-  function options(self, options) {
-    return _$1.edit(self, "options", _$1.isFunction(options) ? options : function (_arg10) {
-      return _$1.absorb(_arg10, options);
-    });
-  }
-
-  function intercept(self, interceptor) {
-    return prepend(self, function (_arg11) {
-      return _$1.fmap(_arg11, interceptor);
-    });
-  }
-
-  function fmap(self, handler) {
-    return append(self, function (_arg12) {
-      return _$1.fmap(_arg12, handler);
-    });
-  }
-
-  function prepend(self, xf) {
-    return _$1.edit(self, "interceptors", function (_arg13) {
-      return _$1.prepend(_arg13, xf);
-    });
-  }
-
-  function append(self, xf) {
-    return _$1.edit(self, "handlers", function (_arg14) {
-      return _$1.append(_arg14, xf);
-    });
-  }
-
-  function fork(self, reject, resolve) {
-    var _ref6, _ref7, _self3;
-
-    return _ref6 = (_ref7 = (_self3 = self, Promise$1__default.resolve(_self3)), _$1.apply(_$1.pipe, self.interceptors)(_ref7)), function (_arg15) {
-      return _$1.fmap(_arg15, function (self) {
-        var _ref8, _fetch;
-
-        return _ref8 = (_fetch = fetch(self.url, self.options), _$1.apply(_$1.pipe, self.handlers)(_fetch)), function (_arg16) {
-          return _$1.fork(_arg16, reject, resolve);
-        }(_ref8);
-      });
-    }(_ref6);
-  }
-
-  var behaveAsRequest = _$1.does(_$1.implement(_$1.ITemplate, {
-    fill: fill
-  }), _$1.implement(_$1.ICloneable, {
-    clone: clone
-  }), _$1.implement(_$1.ICoerceable, {
-    toPromise: _$1.fromTask
-  }), _$1.implement(_$1.IAppendable, {
-    append: append
-  }), _$1.implement(_$1.IPrependable, {
-    prepend: prepend
-  }), _$1.implement(_$1.IForkable, {
-    fork: fork
-  }), _$1.implement(_$1.IQueryable, {
-    query: query
-  }), _$1.implement(_$1.IAssociative, {
-    assoc: assoc,
-    contains: contains
-  }), _$1.implement(_$1.ILookup, {
-    lookup: lookup
-  }), _$1.implement(_$1.IMap, {
-    keys: keys$1
-  }), _$1.implement(IAddress, {
-    addr: addr
-  }), _$1.implement(IOptions, {
-    options: options
-  }), _$1.implement(IParams, {
-    params: params
-  }), _$1.implement(IIntercept, {
-    intercept: intercept
-  }), _$1.implement(_$1.IFunctor, {
-    fmap: fmap
-  }));
-
-  behaveAsRequest(Request);
-
-  function Routed(requests) {
-    this.requests = requests;
-  }
-  var routed = _$1.constructs(Routed);
-
-  function xform(xf) {
-    return function (self) {
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      return _$1.edit(self, "requests", function (_arg2) {
-        return _$1.mapa(function (_arg) {
-          return _$1.apply(xf, _arg, args);
-        }, _arg2);
-      });
-    };
-  }
-
-  function clone$1(self) {
-    return new self.constructor(self.requests);
-  }
-
-  function filled(self) {
-    return _$1.maybe(self, IAddress.addr, function (_arg3) {
-      return _$1.test(/\{[^{}]+\}/, _arg3);
-    }, _$1.not);
-  }
-
-  function fork$1(self, reject, resolve) {
-    return _$1.IForkable.fork(_$1.detect(filled, self.requests), reject, resolve);
-  }
-
-  function addr$1(self) {
-    return IAddress.addr(_$1.detect(filled, self.requests));
-  }
-
-  function first(self) {
-    return _$1.first(self.requests);
-  }
-
-  function rest(self) {
-    return _$1.rest(self.requests);
-  }
-
-  var behaveAsRouted = _$1.does(_$1.implement(_$1.ICloneable, {
-    clone: clone$1
-  }), _$1.implement(_$1.ICoerceable, {
-    toPromise: _$1.fromTask
-  }), _$1.implement(_$1.IForkable, {
-    fork: fork$1
-  }), _$1.implement(_$1.IQueryable, {
-    query: query
-  }), _$1.implement(_$1.ISeq, {
-    first: first,
-    rest: rest
-  }), _$1.implement(IAddress, {
-    addr: addr$1
-  }), _$1.implement(_$1.ITemplate, {
-    fill: xform(_$1.ITemplate.fill)
-  }), _$1.implement(_$1.ICollection, {
-    conj: xform(_$1.ICollection.conj)
-  }), _$1.implement(IIntercept, {
-    intercept: xform(IIntercept.intercept)
-  }), _$1.implement(_$1.IFunctor, {
-    fmap: xform(_$1.IFunctor.fmap)
-  }), _$1.implement(_$1.IAssociative, {
-    assoc: xform(_$1.IAssociative.assoc)
-  }), _$1.implement(_$1.IMap, {
-    dissoc: xform(_$1.IMap.dissoc)
-  }), _$1.implement(IParams, {
-    params: xform(IParams.params)
-  }), _$1.implement(IOptions, {
-    options: xform(IOptions.options)
-  }));
-
-  behaveAsRouted(Routed);
-
-  function URL(url, xfq) {
-    this.url = url;
-    this.xfq = xfq;
-  }
-
-  URL.prototype.toString = function () {
-    return this.url;
-  };
-
-  function url1(url) {
-    return url2(url, _$1.identity);
-  }
-
-  var url2 = _$1.constructs(URL);
-  var url = _$1.overload(null, url1, url2);
-
-  function params$1(self, obj) {
-    var _ref, _self$url, _ref2, _ref3, _ref4, _self$url2;
-
-    var f = _$1.isFunction(obj) ? obj : function (_arg) {
-      return _$1.merge(_arg, obj);
-    };
-    return new self.constructor(_$1.str((_ref = (_self$url = self.url, function (_arg2) {
-      return _$1.split(_arg2, "?");
-    }(_self$url)), _$1.first(_ref)), (_ref2 = (_ref3 = (_ref4 = (_self$url2 = self.url, _$1.fromQueryString(_self$url2)), f(_ref4)), self.xfq(_ref3)), _$1.toQueryString(_ref2))), self.xfq);
-  }
-
-  function fill$1(self, params) {
-    return _$1.ITemplate.fill(_$1.str(self), params);
-  }
-
-  var behaveAsURL = _$1.does(_$1.implement(IParams, {
-    params: params$1
-  }), _$1.implement(_$1.ITemplate, {
-    fill: fill$1
-  }));
-
-  behaveAsURL(URL);
-
-  var addr$2 = IAddress.addr;
-
-  var intercept$1 = IIntercept.intercept;
-
-  var options$1 = IOptions.options;
-  function json(req) {
-    var _ref, _req;
-
-    return _ref = (_req = req, function (_arg) {
-      return IOptions.options(_arg, {
-        credentials: "same-origin",
-        headers: {
-          "Accept": "application/json;odata=verbose",
-          "Content-Type": "application/json;odata=verbose"
-        }
-      });
-    }(_req)), function (_arg2) {
-      return _$1.fmap(_arg2, function (resp) {
-        return resp.json();
-      });
-    }(_ref);
-  }
-  function method(req, method) {
-    return IOptions.options(req, {
-      method: method
-    });
-  }
-
-  var params$2 = IParams.params;
-
-  function text(req) {
-    return _$1.fmap(req, function (resp) {
-      return resp.text();
-    });
-  }
-  function xml(req) {
-    var parser = new DOMParser();
-    return _$1.fmap(text(req), function (text) {
-      return parser.parseFromString(text, "text/xml");
-    });
-  }
-  function raise(req) {
-    return _$1.fmap(req, function (resp) {
-      return new Promise$1__default(function (resolve, reject) {
-        return resp.ok ? resolve(resp) : reject(resp);
-      });
-    });
-  }
-  function suppress(req, f) {
-    return _$1.fmap(req, function (resp) {
-      return new Promise$1__default(function (resolve, reject) {
-        return resp.ok ? resolve(resp) : resolve(f(resp));
-      });
-    });
-  }
-
-  function params$3(self, obj) {
-    var _ref, _self, _ref2, _ref3, _self2;
-
-    var f = _$1.isFunction(obj) ? obj : function (_arg) {
-      return _$1.merge(_arg, obj);
-    };
-    return _$1.str((_ref = (_self = self, function (_arg2) {
-      return _$1.split(_arg2, "?");
-    }(_self)), _$1.first(_ref)), (_ref2 = (_ref3 = (_self2 = self, _$1.fromQueryString(_self2)), f(_ref3)), _$1.toQueryString(_ref2)));
-  }
-
-  _$1.implement(IParams, {
-    params: params$3
-  }, String);
-
-  exports.text = text;
-  exports.xml = xml;
-  exports.raise = raise;
-  exports.suppress = suppress;
-  exports.Request = Request;
-  exports.request = request;
-  exports.demand = demand;
-  exports.Routed = Routed;
-  exports.routed = routed;
-  exports.URL = URL;
-  exports.url = url;
-  exports.IAddress = IAddress;
-  exports.IIntercept = IIntercept;
-  exports.IOptions = IOptions;
-  exports.IParams = IParams;
-  exports.addr = addr$2;
-  exports.intercept = intercept$1;
-  exports.options = options$1;
-  exports.json = json;
-  exports.method = method;
-  exports.params = params$2;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
-
+import Promise$1 from 'promise';
+import * as _ from 'atomic/core';
+import { ITemplate, ICoercible, IAppendable, IPrependable, IForkable, IAssociative, ILookup, IMap, IFunctor } from 'atomic/core';
+import fetch from 'fetch';
+
+var _param, _$fmap, _ref;
+function Request(url, options, config, interceptors, handlers) {
+  this.url = url;
+  this.options = options;
+  this.config = config;
+  this.interceptors = interceptors;
+  this.handlers = handlers;
+}
+function request(url, config) {
+  return new Request(url, {}, config || {}, [filling], []);
+}
+var filling = (_ref = _, _$fmap = _ref.fmap, _param = function _param(self) {
+  return _.fill(self, self.config);
+}, function fmap(_argPlaceholder) {
+  return _$fmap.call(_ref, _argPlaceholder, _param);
 });
+
+var IAddress = _.protocol({
+  addr: _.identity
+});
+
+var addr$2 = IAddress.addr;
+
+var IIntercept = _.protocol({
+  intercept: null
+});
+
+var intercept$1 = IIntercept.intercept;
+
+var IOptions = _.protocol({
+  options: null
+});
+
+var options$1 = IOptions.options;
+function json(req) {
+  var _ref, _req, _credentials$headers, _IOptions$options, _IOptions, _param, _$fmap, _ref2;
+
+  return _ref = (_req = req, (_IOptions = IOptions, _IOptions$options = _IOptions.options, _credentials$headers = {
+    credentials: "same-origin",
+    headers: {
+      "Accept": "application/json;odata=verbose",
+      "Content-Type": "application/json;odata=verbose"
+    }
+  }, function options(_argPlaceholder) {
+    return _IOptions$options.call(_IOptions, _argPlaceholder, _credentials$headers);
+  })(_req)), (_ref2 = _, _$fmap = _ref2.fmap, _param = function _param(resp) {
+    return resp.json();
+  }, function fmap(_argPlaceholder2) {
+    return _$fmap.call(_ref2, _argPlaceholder2, _param);
+  })(_ref);
+}
+function method(req, method) {
+  return IOptions.options(req, {
+    method: method
+  });
+}
+
+var IParams = _.protocol({
+  params: null
+});
+
+var params$3 = IParams.params;
+
+var IQueryable = _.protocol({
+  query: null
+});
+
+var query$1 = IQueryable.query;
+
+function demand(self, keys) {
+  return intercept$1(self, function (req) {
+    var _req, _$contains, _ref;
+
+    var params = _.remove((_ref = _, _$contains = _ref.contains, _req = req, function contains(_argPlaceholder) {
+      return _$contains.call(_ref, _req, _argPlaceholder);
+    }), keys);
+
+    if (_.seq(params)) {
+      var _$str, _ref2;
+
+      throw new TypeError("Missing required params — " + _.join(", ", _.map((_ref2 = _, _$str = _ref2.str, function str(_argPlaceholder2) {
+        return _$str.call(_ref2, "`", _argPlaceholder2, "`");
+      }), params)) + ".");
+    }
+
+    return req;
+  });
+}
+
+function query(self, plan) {
+  var _$startsWith, _ref, _ref2, _ref3, _self, _$apply, _$merge, _ref4, _$selectKeys, _IParams$params, _IParams;
+
+  var keys = _.filter((_ref = _, _$startsWith = _ref.startsWith, function startsWith(_argPlaceholder) {
+    return _$startsWith.call(_ref, _argPlaceholder, "$");
+  }), _.keys(plan));
+
+  return _ref2 = (_ref3 = (_self = self, (_ref4 = _, _$merge = _ref4.merge, _$apply = _.apply(_.dissoc, plan, keys), function merge(_argPlaceholder2) {
+    return _$merge.call(_ref4, _argPlaceholder2, _$apply);
+  })(_self)), (_IParams = IParams, _IParams$params = _IParams.params, _$selectKeys = _.selectKeys(plan, keys), function params(_argPlaceholder3) {
+    return _IParams$params.call(_IParams, _argPlaceholder3, _$selectKeys);
+  })(_ref3)), _.fromTask(_ref2);
+}
+
+function fill$1(self, params) {
+  var _ref5, _self2, _$fill, _$edit, _ref6, _params, _$fill2, _ref7, _$fill3, _$edit2, _ref8, _params2, _$fill4, _ref9;
+
+  return _ref5 = (_self2 = self, (_ref6 = _, _$edit = _ref6.edit, _$fill = (_ref7 = _, _$fill2 = _ref7.fill, _params = params, function fill(_argPlaceholder5) {
+    return _$fill2.call(_ref7, _argPlaceholder5, _params);
+  }), function edit(_argPlaceholder4) {
+    return _$edit.call(_ref6, _argPlaceholder4, "url", _$fill);
+  })(_self2)), (_ref8 = _, _$edit2 = _ref8.edit, _$fill3 = (_ref9 = _, _$fill4 = _ref9.fill, _params2 = params, function fill(_argPlaceholder7) {
+    return _$fill4.call(_ref9, _argPlaceholder7, _params2);
+  }), function edit(_argPlaceholder6) {
+    return _$edit2.call(_ref8, _argPlaceholder6, "options", _$fill3);
+  })(_ref5);
+}
+
+function addr$1(self) {
+  return _.fill(_.str(self.url), self.config);
+}
+
+function assoc(self, key, value) {
+  var _key, _value, _IAssociative$assoc, _IAssociative;
+
+  return _.edit(self, "config", (_IAssociative = IAssociative, _IAssociative$assoc = _IAssociative.assoc, _key = key, _value = value, function assoc(_argPlaceholder8) {
+    return _IAssociative$assoc.call(_IAssociative, _argPlaceholder8, _key, _value);
+  }));
+}
+
+function contains(self, key) {
+  return IAssociative.contains(self.config, key);
+}
+
+function keys(self) {
+  return IMap.keys(self.config);
+}
+
+function lookup(self, key) {
+  return ILookup.lookup(self.config, key);
+}
+
+function params$2(self, params) {
+  var _params3, _IParams$params2, _IParams2;
+
+  return _.edit(self, "url", (_IParams2 = IParams, _IParams$params2 = _IParams2.params, _params3 = params, function params(_argPlaceholder9) {
+    return _IParams$params2.call(_IParams2, _argPlaceholder9, _params3);
+  }));
+}
+
+function options(self, options) {
+  var _options, _$absorb, _ref10;
+
+  return _.edit(self, "options", _.isFunction(options) ? options : (_ref10 = _, _$absorb = _ref10.absorb, _options = options, function absorb(_argPlaceholder10) {
+    return _$absorb.call(_ref10, _argPlaceholder10, _options);
+  }));
+}
+
+function intercept(self, interceptor) {
+  var _interceptor, _$fmap, _ref11;
+
+  return prepend(self, (_ref11 = _, _$fmap = _ref11.fmap, _interceptor = interceptor, function fmap(_argPlaceholder11) {
+    return _$fmap.call(_ref11, _argPlaceholder11, _interceptor);
+  }));
+}
+
+function fmap(self, handler) {
+  var _handler, _$fmap2, _ref12;
+
+  return append(self, (_ref12 = _, _$fmap2 = _ref12.fmap, _handler = handler, function fmap(_argPlaceholder12) {
+    return _$fmap2.call(_ref12, _argPlaceholder12, _handler);
+  }));
+}
+
+function prepend(self, xf) {
+  var _xf, _$prepend, _ref13;
+
+  return _.edit(self, "interceptors", (_ref13 = _, _$prepend = _ref13.prepend, _xf = xf, function prepend(_argPlaceholder13) {
+    return _$prepend.call(_ref13, _argPlaceholder13, _xf);
+  }));
+}
+
+function append(self, xf) {
+  var _xf2, _$append, _ref14;
+
+  return _.edit(self, "handlers", (_ref14 = _, _$append = _ref14.append, _xf2 = xf, function append(_argPlaceholder14) {
+    return _$append.call(_ref14, _argPlaceholder14, _xf2);
+  }));
+}
+
+function fork$1(self, reject, resolve) {
+  var _ref15, _ref16, _self3, _param, _$fmap3, _ref17;
+
+  return _ref15 = (_ref16 = (_self3 = self, Promise$1.resolve(_self3)), _.apply(_.pipe, self.interceptors)(_ref16)), (_ref17 = _, _$fmap3 = _ref17.fmap, _param = function _param(self) {
+    var _ref18, _fetch, _reject, _resolve, _$fork, _ref19;
+
+    return _ref18 = (_fetch = fetch(self.url, self.options), _.apply(_.pipe, self.handlers)(_fetch)), (_ref19 = _, _$fork = _ref19.fork, _reject = reject, _resolve = resolve, function fork(_argPlaceholder16) {
+      return _$fork.call(_ref19, _argPlaceholder16, _reject, _resolve);
+    })(_ref18);
+  }, function fmap(_argPlaceholder15) {
+    return _$fmap3.call(_ref17, _argPlaceholder15, _param);
+  })(_ref15);
+}
+
+var behave$2 = _.does(_.implement(ITemplate, {
+  fill: fill$1
+}), _.implement(ICoercible, {
+  toPromise: _.fromTask
+}), _.implement(IAppendable, {
+  append: append
+}), _.implement(IPrependable, {
+  prepend: prepend
+}), _.implement(IForkable, {
+  fork: fork$1
+}), _.implement(IQueryable, {
+  query: query
+}), _.implement(IAssociative, {
+  assoc: assoc,
+  contains: contains
+}), _.implement(ILookup, {
+  lookup: lookup
+}), _.implement(IMap, {
+  keys: keys
+}), _.implement(IAddress, {
+  addr: addr$1
+}), _.implement(IOptions, {
+  options: options
+}), _.implement(IParams, {
+  params: params$2
+}), _.implement(IIntercept, {
+  intercept: intercept
+}), _.implement(IFunctor, {
+  fmap: fmap
+}));
+
+behave$2(Request);
+
+function Routed(requests) {
+  this.requests = requests;
+}
+var routed = _.constructs(Routed);
+
+function xform(xf) {
+  return function (self) {
+    var _$apply, _$mapa, _ref, _xf, _args, _$apply2, _ref2;
+
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    return _.edit(self, "requests", (_ref = _, _$mapa = _ref.mapa, _$apply = (_ref2 = _, _$apply2 = _ref2.apply, _xf = xf, _args = args, function apply(_argPlaceholder2) {
+      return _$apply2.call(_ref2, _xf, _argPlaceholder2, _args);
+    }), function mapa(_argPlaceholder) {
+      return _$mapa.call(_ref, _$apply, _argPlaceholder);
+    }));
+  };
+}
+
+function filled(self) {
+  var _param, _$test, _ref3;
+
+  return _.maybe(self, addr$2, (_ref3 = _, _$test = _ref3.test, _param = /\{[^{}]+\}/, function test(_argPlaceholder3) {
+    return _$test.call(_ref3, _param, _argPlaceholder3);
+  }), _.not);
+}
+
+function fork(self, reject, resolve) {
+  return _.fork(_.detect(filled, self.requests), reject, resolve);
+}
+
+function addr(self) {
+  return addr$2(_.detect(filled, self.requests));
+}
+
+function first(self) {
+  return _.first(self.requests);
+}
+
+function rest(self) {
+  return _.rest(self.requests);
+}
+
+var behave$1 = _.does(_.implement(_.ICoercible, {
+  toPromise: _.fromTask
+}), _.implement(_.IForkable, {
+  fork: fork
+}), _.implement(_.ISeq, {
+  first: first,
+  rest: rest
+}), _.implement(_.ITemplate, {
+  fill: xform(_.fill)
+}), _.implement(_.ICollection, {
+  conj: xform(_.conj)
+}), _.implement(_.IFunctor, {
+  fmap: xform(_.fmap)
+}), _.implement(_.IAssociative, {
+  assoc: xform(_.assoc)
+}), _.implement(_.IMap, {
+  dissoc: xform(_.dissoc)
+}), _.implement(IQueryable, {
+  query: query
+}), _.implement(IAddress, {
+  addr: addr
+}), _.implement(IIntercept, {
+  intercept: xform(intercept$1)
+}), _.implement(IParams, {
+  params: xform(params$3)
+}), _.implement(IOptions, {
+  options: xform(options$1)
+}));
+
+behave$1(Routed);
+
+function URL(url, xfq) {
+  this.url = url;
+  this.xfq = xfq;
+}
+
+URL.prototype.toString = function () {
+  return this.url;
+};
+
+function url1(url) {
+  return url2(url, _.identity);
+}
+
+var url2 = _.constructs(URL);
+
+var url = _.overload(null, url1, url2);
+
+function params$1(self, obj) {
+  var _obj, _$merge, _ref, _ref2, _self$url, _$split, _ref3, _ref4, _ref5, _ref6, _self$url2;
+
+  var f = _.isFunction(obj) ? obj : (_ref = _, _$merge = _ref.merge, _obj = obj, function merge(_argPlaceholder) {
+    return _$merge.call(_ref, _argPlaceholder, _obj);
+  });
+  return new self.constructor(_.str((_ref2 = (_self$url = self.url, (_ref3 = _, _$split = _ref3.split, function split(_argPlaceholder2) {
+    return _$split.call(_ref3, _argPlaceholder2, "?");
+  })(_self$url)), _.first(_ref2)), (_ref4 = (_ref5 = (_ref6 = (_self$url2 = self.url, _.fromQueryString(_self$url2)), f(_ref6)), self.xfq(_ref5)), _.toQueryString(_ref4))), self.xfq);
+}
+
+function fill(self, params) {
+  return _.fill(_.str(self), params);
+}
+
+var behave = _.does(_.implement(IParams, {
+  params: params$1
+}), _.implement(_.ITemplate, {
+  fill: fill
+}));
+
+behave(URL);
+
+function text(req) {
+  return _.fmap(req, function (resp) {
+    return resp.text();
+  });
+}
+function xml(req) {
+  var parser = new DOMParser();
+  return _.fmap(text(req), function (text) {
+    return parser.parseFromString(text, "text/xml");
+  });
+}
+function raise(req) {
+  return _.fmap(req, function (resp) {
+    return new Promise$1(function (resolve, reject) {
+      return resp.ok ? resolve(resp) : reject(resp);
+    });
+  });
+}
+function suppress(req, f) {
+  return _.fmap(req, function (resp) {
+    return new Promise$1(function (resolve, reject) {
+      return resp.ok ? resolve(resp) : resolve(f(resp));
+    });
+  });
+}
+
+function params(self, obj) {
+  var _obj, _$merge, _ref, _ref2, _self, _$split, _ref3, _ref4, _ref5, _self2;
+
+  var f = _.isFunction(obj) ? obj : (_ref = _, _$merge = _ref.merge, _obj = obj, function merge(_argPlaceholder) {
+    return _$merge.call(_ref, _argPlaceholder, _obj);
+  });
+  return _.str((_ref2 = (_self = self, (_ref3 = _, _$split = _ref3.split, function split(_argPlaceholder2) {
+    return _$split.call(_ref3, _argPlaceholder2, "?");
+  })(_self)), _.first(_ref2)), (_ref4 = (_ref5 = (_self2 = self, _.fromQueryString(_self2)), f(_ref5)), _.toQueryString(_ref4)));
+}
+
+_.implement(IParams, {
+  params: params
+}, String);
+
+export { IAddress, IIntercept, IOptions, IParams, IQueryable, Request, Routed, URL, addr$2 as addr, demand, intercept$1 as intercept, json, method, options$1 as options, params$3 as params, query$1 as query, raise, request, routed, suppress, text, url, xml };
