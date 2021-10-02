@@ -4,27 +4,21 @@ import * as _transducers from "atomic/transducers";
 import * as _transients from "atomic/transients";
 import * as _repos from "atomic/repos";
 import {parse} from "https://deno.land/x/ts_xml_parser/mod.ts"
-//import parse from "https://denopkg.com/nekobato/deno-xml-parser/index.ts";
 import {Html5Entities} from "https://raw.githubusercontent.com/matschik/deno_html_entities/master/mod.js";
 
 const core = Object.assign({}, _core);
 const _ = Object.assign(core.placeholder, core.impart(core, core.partly));
-const reactives = Object.assign({}, _reactives);
-const $ = core.impart(reactives, core.partly);
-const transducers = Object.assign({}, _transducers);
-const t = core.impart(transducers, core.partly)
-const transients = Object.assign({}, _transients);
-const mut = core.impart(transients, core.partly)
-const _repos_ = Object.assign({}, _repos);
-const repos = core.impart(_repos_, core.partly)
-
+const $ = _.impart(Object.assign({}, _reactives), _.partly);
+const t = _.impart(Object.assign({}, _transducers), _.partly);
+const mut = _.impart(Object.assign({}, _transients), _.partly);
+const repos = _.impart(Object.assign({}, _repos), _.partly);
 
 function unfold(json){
   return JSON.stringify(json, null, 2);
 }
 
 function unformat(text){
-  return _.just(text, _.replace(_, /\<br\/\>/g, "\n"), _.replace(_, /\<b\>|\<\/b\>|\<i\>|\<\/i\>/g, ""));
+  return _.just(text, _.replace(_, /\<br\/\>/g, "\n"), _.replace(_, /\<b\>|\<\/b\>|\<i\>|\<\/i\>|\[b\]|\[\/b\]|\[i\]|\[\/i\]/g, ""));
 }
 
 function minPlayingTime(text){
@@ -34,13 +28,15 @@ function minPlayingTime(text){
 const decode = _.pipe(Html5Entities.decode, _.trim, unformat);
 
 function request(url, options){
-  return new Promise(function(resolve, reject){
-    setTimeout(function retrieve(){
+  function retrieve(tries, resolve, reject){
+    reject = _.called(reject, "reject");
+    _.fork(_.fmap(fetch(url, options || {}), repos.text, parse), function(ex){
       setTimeout(function(){
-        _.fork(_.fmap(fetch(url, options || {}), repos.text, parse), retrieve, resolve);
-      }, 500)
-    }, 10);
-  })
+        tries < 10 ? retrieve(tries + 1, resolve, reject) : reject(ex);
+      }, tries * 1000);
+    }, resolve);
+  }
+  return new Promise(_.partial(retrieve, 1));
 }
 
 function thread(id){
@@ -102,14 +98,14 @@ function getMeta(gl){
         _.map(_.opt(_.get(_, "body"), _.reFind(/thing=(\d*)/, _), _.nth(_, 1), parseInt), _),
         _.compact,
         _.first);
-      const contents = _.toArray(_.cons(item.body, _.map(_.get(_, "body"), item.comments)));
+      const contents =_.mapa(decode, _.cons(item.body, _.map(_.get(_, "body"), item.comments)));
       const mpt = _.just(contents, _.map(minPlayingTime, _), _.compact, _.first);
       return {thread, thing, mpt, contents, item};
     } else {
       const found = _.reFind(/\[thread=(\d*)\]|thread\/(\d*)\//g, item.body);
       const thread = _.maybe(found[1] || found[2], _.blot ,parseInt);
       const thing = _.maybe(item.objectid, parseInt);
-      const contents = _.toArray(_.cons(item.body, _.mapcat(_.pipe(_.get(_, "body"), _.split(_, "\n")), item.comments)));
+      const contents = _.mapa(decode, _.cons(item.body, _.mapcat(_.pipe(_.get(_, "body"), _.split(_, /\n|\r/)), item.comments)));
       const mpt = _.just(contents, _.map(minPlayingTime, _), _.compact, _.first);
       return {thread, thing, mpt, contents, item};
     }
@@ -133,7 +129,7 @@ function explode(gl){
 }
 
 function less(path, limit){
-  return _.updateIn(_, path, _.pipe(_.take(limit, _), _.toArray));
+  return limit ? _.updateIn(_, path, _.pipe(_.take(limit, _), _.toArray)) : _.identity;
 }
 
 function perPlayBonus(eligibleList, min){
@@ -145,23 +141,6 @@ function perPlayBonus(eligibleList, min){
     }, data.items);
     return _.merge(data, {items});
   }
-}
-
-const gl = _.pipe(geeklist,
-  _.fmap(_,
-    getMeta,
-    perPlayBonus(_.eq(289680, _), 180),
-    select("thread", [2552978]),
-    //less(["items"], 3),
-    explode,
-    plays));
-
-function gls(id){ //geeklist of geeklists, per Solomode 2021
-  return _.fmap(
-    geeklist(id),
-    _.pipe(_.get(_, "items"),
-    _.mapa(_.pipe(_.get(_, "objectid"), gl), _)),
-    Promise.all.bind(Promise));
 }
 
 function plays(gl){
@@ -192,18 +171,45 @@ function score(ppb, plays){
     _.get(_, "plays"));
 }
 
- //TODO create article ranger
- //TODO add per play bonus for geeklist 289680 if mpt >= 180
-
-//const json = await _.fmap(geeklist(289682), getMeta, explode, unfold, _.tee(_.log));
-//const json = await _.fmap(gls(289676), _.mapcat(_.get(_, "items"), _), _.toArray, _.tee(_.log)); //Solomode 2021 line up
 function select(what, ids){
-  return function(gl){
+  return _.seq(ids) ? function(gl){
     const items = _.filtera(function(item){
       return _.includes(ids, _.get(item, what));
     }, gl.items);
     return _.merge(gl, {items});
-  }
+  } : _.identity;
 }
-//await _.fmap(thread(2554285), /*_.getIn(_, ["root", "children"]), _.mapcat(_.get(_, "children"), _), _.toArray,*/  _.tee(_.log));
-await _.fmap(gl(278904), _.get(_, "items"), _.mapa(_.get(_, "plays"), _), _.tee(_.log));
+
+const parseArgs = _.pipe(_.reduce(function({args, latest}, value){
+  if (_.startsWith(value, "-")) {
+    const word = _.replace(value, /^\-/, "");
+    return {args, latest: word};
+  } else {
+    return {args: _.update(args, latest, _.pipe(_.conj(_, value), _.toArray)), latest};
+  }
+}, {args: {}, latest: null}, _), _.get(_, "args"));
+
+const args = parseArgs(Deno.args);
+const year = _.maybe(args, _.get(_, "year"), _.first, parseInt);
+const ids = year ? _.get({2020: [278904], 2021: [289677, 289678, 289679, 289680, 289681, 289682]}, year) : _.just(args, _.get(_, "gl"), _.mapa(parseInt, _));
+const threads = _.maybe(args, _.get(_, "thread"), _.mapa(parseInt, _)) || [];
+const limit = _.maybe(args, _.get(_, "limit"), _.first, parseInt);
+ //TODO create article ranger
+
+ //-year 2020 -thread 2554285
+const lists = await _.just(ids,
+  _.mapa(
+    _.pipe(
+      geeklist,
+      _.fmap(_,
+        getMeta,
+        perPlayBonus(_.eq(289680, _), 180),
+        select("thread", threads),
+        less(["items"], limit),
+        explode,
+        plays)),
+  _),
+  Promise.all.bind(Promise),
+  _.fmap(_, unfold));
+
+_.log(lists);

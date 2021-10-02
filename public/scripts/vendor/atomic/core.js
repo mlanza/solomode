@@ -1511,6 +1511,8 @@ var behave$B = does(iequiv, implement(ISequential$1), implement(IBlankable, {
   reverse: emptyList
 }), implement(ICounted, {
   count: constantly(0)
+}), implement(IOmissible, {
+  omit: identity
 }), implement(IEmptyableCollection, {
   empty: identity
 }), implement(IInclusive, {
