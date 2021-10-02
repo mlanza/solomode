@@ -195,6 +195,16 @@ function select(what, ids){
   } : _.identity;
 }
 
+function flatten(gl){
+  const geeklist = {id: gl.id, title: gl.title};
+  return _.just(gl.items, _.mapcat(function(item){
+    const mpt = item.mpt;
+    const thread = _.merge(_.selectKeys(item.thread, ["id", "subject"]), {mpt});
+    const thing = item.thing;
+    return _.map(_.pipe(_.selectKeys(_, ["id", "link", "username", "postdate", "recorded", "points"]), _.merge({geeklist, thread, thing}, _)), item.plays);
+  }, _), _.toArray);
+}
+
 const parseArgs = _.pipe(_.reduce(function({args, latest}, value){
   if (_.startsWith(value, "-")) {
     const word = _.replace(value, /^\-/, "");
@@ -209,9 +219,10 @@ const year = _.maybe(args, _.get(_, "year"), _.first, parseInt);
 const ids = year ? _.get({2020: [278904], 2021: [289677, 289678, 289679, 289680, 289681, 289682]}, year) : _.just(args, _.get(_, "gl"), _.mapa(parseInt, _));
 const threads = _.maybe(args, _.get(_, "thread"), _.mapa(parseInt, _)) || [];
 const limit = _.maybe(args, _.get(_, "limit"), _.first, parseInt);
+const collapse = _.maybe(args, _.get(_, "collapse"), _.not, _.not)
 
  //-year 2020 -thread 2554285
-const lists = await _.just(ids,
+const played = await _.just(ids,
   _.mapa(
     _.pipe(
       geeklist,
@@ -226,6 +237,9 @@ const lists = await _.just(ids,
         plays)),
   _),
   Promise.all.bind(Promise),
-  _.fmap(_, unfold));
+  _.fmap(_,
+    _.mapcat(flatten, _),
+    _.sort(_.asc(_.get(_, "postdate")), _),
+    collapse ? _.identity: unfold));
 
-_.log(lists);
+_.log(played);
