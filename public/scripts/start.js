@@ -82,9 +82,9 @@ function geeklist(id){
     const title = _.just(children, _.detect(_.contains(_, "name", "title"), _), _.get(_, "content"));
     const items = _.just(children, _.filtera(_.contains(_, "name", "item"), _), _.mapa(function item(item){
       const attributes = _.just(item, _.get(_, "attributes"));
-      const body = _.just(item, _.get(_, "children"), _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"), _.trim, unformat);
+      const body = _.just(item, _.get(_, "children"), _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"), decode);
       const comments = _.just(item, _.get(_, "children"), _.filtera(_.contains(_, "name", "comment"), _), _.mapa(function(comment){
-        const body = _.just(comment.content, _.trim, unformat);
+        const body = _.just(comment.content, decode);
         return _.merge(comment.attributes, {body});
       }, _));
       return _.merge(attributes, {body, comments});
@@ -136,10 +136,22 @@ function less(path, limit){
   return _.updateIn(_, path, _.pipe(_.take(limit, _), _.toArray));
 }
 
+function perPlayBonus(eligibleList, min){
+  return function(data){
+    const id = data.id;
+    const eligible = eligibleList(id);
+    const items = _.mapa(function(item){
+      return _.merge(item, {ppb: item.mpt >= min ? 1 : 0});
+    }, data.items);
+    return _.merge(data, {items});
+  }
+}
+
 const gl = _.pipe(geeklist,
   _.fmap(_,
     getMeta,
-    select("thread", [2554285]),
+    perPlayBonus(_.eq(289680, _), 180),
+    select("thread", [2552978]),
     //less(["items"], 3),
     explode,
     plays));
@@ -159,16 +171,16 @@ function plays(gl){
     const plays = _.just(articles, _.filtera(_.pipe(_.get(_, "body"), play), _), _.mapa(function(article){
       const recorded = _.maybe(article.body, play);
       return _.merge(article, {recorded});
-    }, _), score);
+    }, _), _.partial(score, item.ppb || 0));
     return _.merge(item, {plays});
   }, gl.items);
   return _.merge(gl, {items});
 }
 
-function score(plays){
+function score(ppb, plays){
   const players = _.just(plays, _.map(_.get(_, "username"), _), _.unique);
   return _.just(plays,
-    _.map(_.assoc(_, "points", [1]), _), //base score per play
+    _.map(_.assoc(_, "points", [1 + ppb]), _), //base score per play
     _.reduce(function({players, bonus, plays}, play){
       const player = _.get(play, "username");
       const newblood = _.includes(players, player);
@@ -181,7 +193,7 @@ function score(plays){
 }
 
  //TODO create article ranger
- //TODO create score tabulator
+ //TODO add per play bonus for geeklist 289680 if mpt >= 180
 
 //const json = await _.fmap(geeklist(289682), getMeta, explode, unfold, _.tee(_.log));
 //const json = await _.fmap(gls(289676), _.mapcat(_.get(_, "items"), _), _.toArray, _.tee(_.log)); //Solomode 2021 line up
