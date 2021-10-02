@@ -1,7 +1,6 @@
 import * as _core from "atomic/core";
 import * as _reactives from "atomic/reactives";
 import * as _transducers from "atomic/transducers";
-import * as _transients from "atomic/transients";
 import * as _repos from "atomic/repos";
 import {parse} from "https://deno.land/x/ts_xml_parser/mod.ts"
 import {Html5Entities} from "https://raw.githubusercontent.com/matschik/deno_html_entities/master/mod.js";
@@ -10,7 +9,6 @@ const core = Object.assign({}, _core);
 const _ = Object.assign(core.placeholder, core.impart(core, core.partly));
 const $ = _.impart(Object.assign({}, _reactives), _.partly);
 const t = _.impart(Object.assign({}, _transducers), _.partly);
-const mut = _.impart(Object.assign({}, _transients), _.partly);
 const repos = _.impart(Object.assign({}, _repos), _.partly);
 
 function unfold(json){
@@ -46,10 +44,14 @@ function thread(id){
     const subject = _.just(children, _.detect(_.contains(_, "name", "subject"), _), _.get(_, "content"));
     const articles = _.just(children, _.detect(_.contains(_, "name", "articles"), _), _.get(_, "children"), _.mapa(function(article){
       const attributes = _.getIn(article, ["attributes"]);
+      const postdate = _.date(attributes.postdate);
+      const editdate = _.date(attributes.editdate);
       const children = _.getIn(article, ["children"]);
       const subject = _.just(children, _.detect(_.contains(_, "name", "subject"), _), _.get(_, "content"));
       const body = _.just(children, _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"), decode);
       return _.merge(attributes, {
+        postdate,
+        editdate,
         subject,
         body
       });
@@ -128,6 +130,19 @@ function explode(gl){
   }));
 }
 
+function timelyPlay(start, end){
+  return _.update(_, "items", _.mapa(_.updateIn(_, ["thread", "articles"], _.filtera(function(article){
+    return article.postdate > start && article.postdate < end;
+  }, _)), _));
+}
+
+const ignoreMine = _.update(_, "items", _.mapa(function(item){
+  const username = item.item.username;
+  return _.updateIn(item, ["thread", "articles"], _.filtera(function(article){
+    return article.username !== username;
+  }, _));
+}, _));
+
 function less(path, limit){
   return limit ? _.updateIn(_, path, _.pipe(_.take(limit, _), _.toArray)) : _.identity;
 }
@@ -194,7 +209,6 @@ const year = _.maybe(args, _.get(_, "year"), _.first, parseInt);
 const ids = year ? _.get({2020: [278904], 2021: [289677, 289678, 289679, 289680, 289681, 289682]}, year) : _.just(args, _.get(_, "gl"), _.mapa(parseInt, _));
 const threads = _.maybe(args, _.get(_, "thread"), _.mapa(parseInt, _)) || [];
 const limit = _.maybe(args, _.get(_, "limit"), _.first, parseInt);
- //TODO create article ranger
 
  //-year 2020 -thread 2554285
 const lists = await _.just(ids,
@@ -207,6 +221,8 @@ const lists = await _.just(ids,
         select("thread", threads),
         less(["items"], limit),
         explode,
+        ignoreMine,
+        timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
         plays)),
   _),
   Promise.all.bind(Promise),
