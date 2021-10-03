@@ -214,23 +214,29 @@ const parseArgs = _.pipe(_.reduce(function({args, latest}, value){
   }
 }, {args: {}, latest: null}, _), _.get(_, "args"));
 
-const args = parseArgs(Deno.args);
-const year = _.maybe(args, _.get(_, "year"), _.first, parseInt);
-const ids = year ? _.get({2020: [278904], 2021: [289677, 289678, 289679, 289680, 289681, 289682]}, year) : _.just(args, _.get(_, "gl"), _.mapa(parseInt, _));
-const threads = _.maybe(args, _.get(_, "thread"), _.mapa(parseInt, _)) || [];
-const limit = _.maybe(args, _.get(_, "limit"), _.first, parseInt);
-const collapse = _.maybe(args, _.get(_, "collapse"), _.not, _.not)
+function parameters(xs){
+  const args = parseArgs(xs);
+  const year = _.maybe(args, _.get(_, "year"), _.first, parseInt);
+  const ids = year ? _.get({2020: [278904], 2021: [289677, 289678, 289679, 289680, 289681, 289682]}, year) : _.just(args, _.get(_, "gl"), _.mapa(parseInt, _));
+  const threads = _.maybe(args, _.get(_, "thread"), _.mapa(parseInt, _)) || [];
+  const limit = _.maybe(args, _.get(_, "limit"), _.first, parseInt);
+  const collapse = _.maybe(args, _.get(_, "collapse"), _.not, _.not)
+  return {year, ids, threads, limit, collapse};
+}
+
+const params = parameters(Deno.args);
+const display = params.collapse ? _.identity : unfold;
 
  //-year 2020 -thread 2554285
-const played = await _.just(ids,
+const played = await _.just(params.ids,
   _.mapa(
     _.pipe(
       geeklist,
       _.fmap(_,
         getMeta,
         perPlayBonus(_.eq(289680, _), 180),
-        select("thread", threads),
-        less(["items"], limit),
+        select("thread", params.threads),
+        less(["items"], params.limit),
         explode,
         ignoreMine,
         timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
@@ -239,7 +245,60 @@ const played = await _.just(ids,
   Promise.all.bind(Promise),
   _.fmap(_,
     _.mapcat(flatten, _),
-    _.sort(_.asc(_.get(_, "postdate")), _),
-    collapse ? _.identity: unfold));
+    _.sort(_.asc(_.get(_, "postdate")), _)));
 
-_.log(played);
+function subgroup(f){
+  return _.reducekv(function(memo, key, items){
+    return _.assoc(memo, key, f(items));
+  }, {}, _);
+}
+
+const slots = _.reducekv(function(memo, key, value){
+  return _.conj(memo, _.toArray(_.cons(key, value)));
+}, [], _);
+
+const tally =
+  _.juxt(
+    _.pipe(_.mapcat(_.get(_, "points"), _), _.sum),
+    _.pipe(_.first, _.get(_, "postdate")),
+    _.count);
+
+const rank = _.pipe(
+  subgroup(tally),
+  slots,
+  _.sort(_.desc(_.nth(_, 1)), _.asc(_.nth(_, 2)), _));
+
+const findThread = _.just(played, _.index(_.getIn(_, ["thread", "id"]), _.get(_, "thread"), _), _.get(_, _));
+const findGeeklist = _.just(played, _.index(_.getIn(_, ["geeklist", "id"]), _.get(_, "geeklist"), _), _.get(_, _));
+
+const geeklists = _.just(
+  played,
+  _.groupBy(_.getIn(_, ["geeklist", "id"]), _));
+
+const threads = _.just(
+  geeklists,
+  subgroup(
+    _.pipe(
+      _.groupBy(_.getIn(_, ["thread", "id"]), _),
+      rank)),
+  _.reducekv(function(memo, key, items){
+    return _.conj(memo, [key, items]);
+  }, [], _),
+  _.mapa(function([geeklist, items]){
+    return [findGeeklist(geeklist), _.mapa(function([thread, ...rest]){
+      return [findThread(thread), ...rest];
+    }, items), _.get(geeklists, geeklist)];
+  }, _));
+
+const users = _.just(
+  played,
+  _.groupBy(_.getIn(_, ["username"]), _),
+  rank);
+
+/*
+_.just(params, display, _.log);
+_.just(played, display, _.log)
+_.just(geeklists, display, _.log);
+_.just(threads, display, _.log);
+_.just(users, display, _.log);
+*/
