@@ -11,6 +11,8 @@ const $ = _.impart(Object.assign({}, _reactives), _.partly);
 const t = _.impart(Object.assign({}, _transducers), _.partly);
 const repos = _.impart(Object.assign({}, _repos), _.partly);
 
+const parseDate = _.pipe(_.date, _.add(_, _.hours(-6)));
+
 function unfold(json){
   return JSON.stringify(json, null, 2);
 }
@@ -44,8 +46,8 @@ function thread(id){
     const subject = _.just(children, _.detect(_.contains(_, "name", "subject"), _), _.get(_, "content"));
     const articles = _.just(children, _.detect(_.contains(_, "name", "articles"), _), _.get(_, "children"), _.mapa(function(article){
       const attributes = _.getIn(article, ["attributes"]);
-      const postdate = _.date(attributes.postdate);
-      const editdate = _.date(attributes.editdate);
+      const postdate = parseDate(attributes.postdate);
+      const editdate = parseDate(attributes.editdate);
       const children = _.getIn(article, ["children"]);
       const subject = _.just(children, _.detect(_.contains(_, "name", "subject"), _), _.get(_, "content"));
       const body = _.just(children, _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"), decode);
@@ -199,9 +201,11 @@ function flatten(gl){
   const geeklist = {id: gl.id, title: gl.title};
   return _.just(gl.items, _.mapcat(function(item){
     const mpt = item.mpt;
-    const thread = _.merge(_.selectKeys(item.thread, ["id", "subject"]), {mpt});
+    const username = _.getIn(item, ["item", "username"]);
+    const players = _.just(item.plays, _.mapa(_.get(_, "username"), _), _.unique);
     const thing = item.thing;
-    return _.map(_.pipe(_.selectKeys(_, ["id", "link", "username", "postdate", "recorded", "points"]), _.merge({geeklist, thread, thing}, _)), item.plays);
+    const thread = _.merge(_.selectKeys(item.thread, ["id", "subject"]), {username, thing, mpt, players});
+    return _.map(_.pipe(_.selectKeys(_, ["id", "link", "username", "postdate", "recorded", "points"]), _.merge({geeklist, thread}, _)), item.plays);
   }, _), _.toArray);
 }
 
@@ -228,7 +232,7 @@ const params = parameters(Deno.args);
 const display = params.collapse ? _.identity : unfold;
 
  //-year 2020 -thread 2554285
-const played = await _.just(params.ids,
+const lists = await _.just(params.ids,
   _.mapa(
     _.pipe(
       geeklist,
@@ -242,10 +246,11 @@ const played = await _.just(params.ids,
         timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
         plays)),
   _),
-  Promise.all.bind(Promise),
-  _.fmap(_,
-    _.mapcat(flatten, _),
-    _.sort(_.asc(_.get(_, "postdate")), _)));
+  Promise.all.bind(Promise));
+
+const played = _.just(lists,
+  _.mapcat(flatten, _),
+  _.sort(_.asc(_.get(_, "postdate")), _));
 
 function subgroup(f){
   return _.reducekv(function(memo, key, items){
@@ -261,7 +266,8 @@ const tally =
   _.juxt(
     _.pipe(_.mapcat(_.get(_, "points"), _), _.sum),
     _.pipe(_.first, _.get(_, "postdate")),
-    _.count);
+    _.count,
+    _.pipe(_.countBy(_.getIn(_, ["thread", "id"]), _), _.keys, _.count));
 
 const rank = _.pipe(
   subgroup(tally),
@@ -286,7 +292,8 @@ const threads = _.just(
   }, [], _),
   _.mapa(function([geeklist, items]){
     return [findGeeklist(geeklist), _.mapa(function([thread, ...rest]){
-      return [findThread(thread), ...rest];
+      const t = findThread(thread);
+      return [t, ...rest, _.count(t.players)];
     }, items), _.get(geeklists, geeklist)];
   }, _));
 
@@ -295,10 +302,115 @@ const users = _.just(
   _.groupBy(_.getIn(_, ["username"]), _),
   rank);
 
-/*
-_.just(params, display, _.log);
-_.just(played, display, _.log)
-_.just(geeklists, display, _.log);
-_.just(threads, display, _.log);
-_.just(users, display, _.log);
-*/
+function trunc(n){
+  return function (txt){
+    const text = _.trim(txt);
+    return text.length > n ? text.slice(0, n - 1) + "…" : text;
+  }
+}
+
+var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 _]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
+    len = _.just(_, strip, _.get(_, "length"));
+
+function rpad(n){
+  return function(text){
+    return text + _.rpad("", n - len(text));
+  }
+}
+
+function lpad(n, text){
+  return _.lpad("", n - len(text)) + text;
+}
+
+var dt = _.fmt(_.pipe(_.month, _.inc, _.lpad(_, 2, "0")), "-", _.pipe(_.day, _.lpad(_, 2, "0")));
+
+function fmtGeeklist({id, title}){
+  return `[geeklist=${id}]${title}[/geeklist]`;
+}
+
+function fmtSubmission(width, thread){
+  const fmt = trunc(25);
+  const id = thread.thing.id;
+  const name = fmt(thread.thing.name);
+  const unformatted = `${name} (${thread.id})`;
+  const content = `[thing=${id}]${name}[/thing] ([thread=${thread.id}]${thread.id}[/thread])`;
+  return content + _.rpad("", width - unformatted.length);
+}
+
+function fmtUser(width, {username}){
+  const fmt = _.comp(rpad(width), trunc(width));
+  const content = fmt(username);
+  return `[user=${username}]${content}[/user]`;
+}
+
+function fmtRecorded(recorded, link){
+  return `[url=${link}]${recorded}[/url]`;
+}
+
+function line(contents){
+  return _.join("  ", contents) + "\n";
+}
+
+const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
+  return [
+    [_.str("[u]", fmtGeeklist(geeklist), "[/u]")],
+    [" #", "Creator        ", "Submission                         ", "Pts.", "Date ", "Plays", "Plyrs"],
+    ["--", "---------------", "-----------------------------------", "----", "-----", "-----", "-----"],
+    ..._.just(submissions, _.mapIndexed(function(idx, [thread, points, postdate, plays, x, players]){
+      return [
+        lpad(2, idx + 1),
+        fmtUser(15, thread),
+        fmtSubmission(35, thread),
+        lpad(4, points),
+        dt(postdate),
+        lpad(5, plays),
+        lpad(5, players),
+        players >= 10 ? "💵" : players >= 5 ? "🪙" : ""
+      ];
+    }, _), _.toArray),
+    ["    [b]legend:[/b]  💵 = 10+ players, 🪙 = 5+ players"],
+    [],
+    ["[u][b]PLAYS[/b][/u]"],
+    [" #", "Creator        ", "Submission                         ", "Pts.", "Date ", "Play", "Player         "],
+    ["--", "---------------", "-----------------------------------", "----", "-----", "----", "---------------"],
+    ..._.just(plays, _.mapIndexed(function(idx, play){
+      const {geeklist, thread, id, link, username, postdate, recorded, points} = play;
+      return [
+        lpad(2, idx + 1),
+        fmtUser(15, thread),
+        fmtSubmission(35, thread),
+        lpad(4, _.sum(points)),
+        dt(postdate),
+        fmtRecorded(recorded, link),
+        fmtUser(15, play)
+      ]
+    }, _), _.toArray)
+  ];
+}, _), _.mapcat(function(report){
+  return _.mapa(line, report);
+}, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]", "\n")));
+
+function fmtUsers(entries){
+  return _.just([
+    ["[u][b]PLAYERS' SCOREBOARD[/b][/u]"],
+    [" #", "Player         ", "Pts.", "Date ", "Plays", "Games"],
+    ["--", "---------------", "----", "-----", "-----", "-----"],
+    ..._.just(entries, _.mapIndexed(function(idx, [username, points, postdate, plays, submissions]){
+      return [
+        lpad(2, idx + 1),
+        fmtUser(15, {username}),
+        lpad(4, points),
+        dt(postdate),
+        lpad(5, plays),
+        lpad(5, submissions)
+      ]
+    }, _), _.toArray)
+  ], _.mapa(line, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]", "\n")));
+}
+
+//_.just(lists, display, _.log)
+//_.just(params, display, _.log);
+//_.just(played, display, _.log)
+//_.just(geeklists, display, _.log);
+_.just(users, fmtUsers, _.log);
+_.just(threads, fmtThreads, _.log);
