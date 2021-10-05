@@ -339,7 +339,10 @@ function fmtSubmission(width, thread){
 function fmtUser(width, {username}){
   const fmt = _.comp(rpad(width), trunc(width), _.trim);
   const content = fmt(username);
-  return `[user=${username}]${content}[/user]`;
+  const n = username.length;
+  const before = n == -1 ? content : content.slice(0, n);
+  const after = n == -1 ? "" : content.slice(n);
+  return `[user=${username}]${before}[/user]${after}`;
 }
 
 function fmtRecorded(recorded, link){
@@ -355,7 +358,7 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
     [_.str("[size=18][b]", fmtGeeklist(geeklist), "[/b][/size]")],
     [],
     ["[b]CREATORS' SCOREBOARD[/b]"],
-    ["[u][b]  #[/b][/u]", "[u][b]Creator        [/b][/u]", "[u][b]Submission                         [/b][/u]", "[u][b]Pts.[/b][/u]", "[u][b]Date [/b][/u]", "[u][b]Plays[/b][/u]", "[u][b]Plyrs[/b][/u]"],
+    ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Plyrs[/b][/u]"],
     ..._.just(submissions, _.mapIndexed(function(idx, [thread, points, postdate, plays, x, players]){
       return [
         lpad(3, idx + 1),
@@ -368,10 +371,10 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
         players >= 10 ? "💵" : players >= 5 ? "🪙" : ""
       ];
     }, _), _.toArray),
-    ["    [b]Legend:[/b]  💵 = 10+ Players, 🪙 = 5+ Players"],
+    ["     [b]Legend:[/b]  💵 = 10+ Players, 🪙 = 5+ Players"],
     [],
     ["[b]PLAYS[/b]"],
-    ["[u][b]  #[/b][/u]", "[u][b]Creator        [/b][/u]", "[u][b]Submission                         [/b][/u]", "[u][b]Pts.[/b][/u]", "[u][b]Date [/b][/u]", "[u][b]Play[/b][/u]", "[u][b]Player         [/b][/u]"],
+    ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts.[/b][/u]", "[u][b]When[/b][/u] ", "[u][b]Play[/b][/u]", "[u][b]Player[/b][/u]         "],
     ..._.just(plays, _.mapIndexed(function(idx, play){
       const {geeklist, thread, id, link, username, postdate, recorded, points} = play;
       return [
@@ -392,7 +395,7 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
 function fmtUsers(entries){
   return _.just([
     ["[b]PLAYERS' SCOREBOARD[/b]"],
-    ["[u][b]  #[/b][/u]", "[u][b]Player         [/b][/u]", "[u][b]Pts.[/b][/u]", "[u][b]Date [/b][/u]", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
+    ["  [u][b]#[/b][/u]", "[u][b]Player[/b][/u]         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
     ..._.just(entries, _.mapIndexed(function(idx, [username, points, postdate, plays, submissions]){
       return [
         lpad(3, idx + 1),
@@ -404,7 +407,7 @@ function fmtUsers(entries){
         submissions >= 10 ? "💵" : submissions >= 5 ? "🪙" : ""
       ]
     }, _), _.toArray),
-    ["    [b]Legend:[/b]  💵 = 10+ Submissions/Games, 🪙 = 5+ Submissions/Games"],
+    ["     [b]Legend:[/b]  💵 = 10+ Submissions/Games, 🪙 = 5+ Submissions/Games"],
     []
   ], _.mapa(line, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]", "\n")));
 }
