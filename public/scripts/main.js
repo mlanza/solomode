@@ -330,7 +330,7 @@ function fmtGeeklist({id, title}){
 function fmtSubmission(width, thread){
   const fmt = _.comp(trunc(25), _.trim);
   const id = _.getIn(thread, ["thing", "id"]);
-  const name = _.just(thread.thing.name, decode, fmt);
+  const name = _.just(thread, _.getIn(_, ["thing", "name"]), decode, fmt);
   const unformatted = `${name} (${thread.id})`;
   const content = `[thing=${id}]${name}[/thing] ([thread=${thread.id}]${thread.id}[/thread])`;
   return content + _.rpad("", width - unformatted.length);
@@ -416,5 +416,5 @@ function fmtUsers(entries){
 //_.just(params, display, _.log);
 //_.just(played, display, _.log)
 //_.just(geeklists, display, _.log);
-_.just(users, fmtUsers, _.log);
 _.just(threads, fmtThreads, _.log);
+_.just(users, fmtUsers, _.log);
