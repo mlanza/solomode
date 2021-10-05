@@ -2,220 +2,314 @@ import * as _core from "atomic/core";
 import * as _reactives from "atomic/reactives";
 import * as _transducers from "atomic/transducers";
 import * as _repos from "atomic/repos";
-import {parse} from "https://deno.land/x/ts_xml_parser@1.0.0/mod.ts";
+import {parse} from "https://deno.land/x/ts_xml_parser/mod.ts"
 import {Html5Entities} from "https://raw.githubusercontent.com/matschik/deno_html_entities/master/mod.js";
 
 const core = Object.assign({}, _core);
 const _ = Object.assign(core.placeholder, core.impart(core, core.partly));
-const reactives = Object.assign({}, _reactives);
-const $ = core.impart(reactives, core.partly);
-const transducers = Object.assign({}, _transducers);
-const t = core.impart(transducers, core.partly)
-const _repos_ = Object.assign({}, _repos);
-const repos = core.impart(_repos_, core.partly)
+const $ = _.impart(Object.assign({}, _reactives), _.partly);
+const t = _.impart(Object.assign({}, _transducers), _.partly);
+const repos = _.impart(Object.assign({}, _repos), _.partly);
 
-async function thr(id){
-  return _.fmap(
-    fetch(`https://boardgamegeek.com/xmlapi2/thread?id=${id}`),
-    repos.text,
-    parse,
-    function(data){
-      const id = _.getIn(data, ["root", "attributes", "id"]);
-      const children = _.getIn(data, ["root", "children"]);
-      const subject = _.just(children, _.detect(_.contains(_, "name", "subject"), _), _.get(_, "content"));
-      const articles = _.just(children, _.detect(_.contains(_, "name", "articles"), _), _.get(_, "children"), _.mapa(function(article){
-        const attributes = _.getIn(article, ["attributes"]);
-        const children = _.getIn(article, ["children"]);
-        const subject = _.just(children, _.detect(_.contains(_, "name", "subject"), _), _.get(_, "content"));
-        const body = _.just(children, _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"), Html5Entities.decode, _.trim); //, _.replace(_, /\<br\/\>/g, "\n"), _.split(_, "\n"));
-        //const play = _.just(body, _.reFind(/^(LIKE|LOVE|LUMP)/, _), _.nth(_, 1)) || null;
-        return _.merge(attributes, {
-          subject,
-          body
-        });
-      }, _), _.take(5, _), _.toArray);
-      return {
-        id,
-        subject,
-        articles
-      };
-    })
+const parseDate = _.pipe(_.date, _.add(_, _.hours(-6)));
+
+function unfold(json){
+  return JSON.stringify(json, null, 2);
 }
 
-const getThreads = _.pipe(
-  _.getIn(_, ["root", "children"]),
-  _.filtera(_.contains(_, "name", "item"), _),
-  _.mapcat(_.get(_, "children"), _),
-  _.filtera(_.contains(_, "name", "body"), _),
-  _.mapa(_.get(_, "content"), _),
-  _.mapa(_.reFind(/\[thread=(\d*)\]|thread\/(\d*)\//g, _), _),
-  _.mapa(function(match){
-    return match ? _.nth(match, 1) || _.nth(match, 2) : null;
-  }, _),
-  _.compact,
-  _.mapa(parseInt, _),
-  _.take(5, _),
-  _.mapa(thr, _),
-  Promise.all.bind(Promise));
-
-function it(item){
-  const attributes = _.just(item, _.get(_, "attributes"));
-  const body = _.just(item, _.get(_, "children"), _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"));
-  return _.merge(attributes, {body});
+function unformat(text){
+  return _.just(text, _.replace(_, /\<br\/\>/g, "\n"), _.replace(_, /\<b\>|\<\/b\>|\<i\>|\<\/i\>|\[b\]|\[\/b\]|\[i\]|\[\/i\]/g, ""));
 }
 
-async function gl(id){
-  return _.fmap(
-    fetch(`https://www.boardgamegeek.com/xmlapi/geeklist/${id}`),
-    repos.text,
-    parse,
-    function(data){
-      const type = "geeklist";
-      const attributes = _.getIn(data, ["root", "attributes"]);
-      const children = _.getIn(data, ["root", "children"]);
-      const title = _.just(children, _.detect(_.contains(_, "name", "title"), _), _.get(_, "content"));
-      const items = _.just(children, _.filtera(_.contains(_, "name", "item"), _), _.take(5, _), _.mapa(it, _), _.toArray);
-      return _.merge(attributes, {
-        type,
-        title,
-        items
-      });
-
-    });
+function minPlayingTime(text){
+  return _.maybe(text, _.reFind(/Playing Time: (\d*)(-\d*)|MINIMUM PLAYING TIME = (\d*)/i, _), _.drop(1, _), _.filter(_.isSome, _), _.first, parseInt);
 }
 
-
-//const json = await _.fmap(thr(2541022), _.log)
-
-
-//const json = await _.fmap(gl(289682), _.tee(_.log));
-const json = await _.fmap(gl(278904), _.tee(_.log));
-
-//const resp = await fetch("https://www.boardgamegeek.com/xmlapi/thread/381021"); //"https://www.boardgamegeek.com/xmlapi/geeklist/289682") ;//"https://www.boardgamegeek.com/xmlapi/thread/2548153");
-//const xml = await resp.text();
-
-
-throw new Error("Whoa!");
-
-/*
-  Comments which must be added to the submissions geeklist prior to processing:
-
-  DISQUALIFIED - rules violation
-  WITHDRAWN - no longer participating
-  MINIMUM PLAYING TIME = n - as determined by looking to the rules PDF
-
-*/
-
-
-var delay = 0, GAP = 700;
+const decode = _.pipe(Html5Entities.decode, _.trim, unformat);
 
 function request(url, options){
-  delay += GAP; //stagger to avoid overwhelming server
-  return new Promise(function(resolve, reject){
-    setTimeout(function retrieve(){
+  function retrieve(tries, resolve, reject){
+    reject = _.called(reject, "reject");
+    _.fork(_.fmap(fetch(url, options || {}), repos.text, parse), function(ex){
       setTimeout(function(){
-        _.fork(fetch(url, options || {}), retrieve, resolve);
-      }, GAP)
-    }, delay);
+        tries < 10 ? retrieve(tries + 1, resolve, reject) : reject(ex);
+      }, tries * 1000);
+    }, resolve);
+  }
+  return new Promise(_.partial(retrieve, 1));
+}
+
+function thread(id){
+  return _.fmap(request(`https://boardgamegeek.com/xmlapi2/thread?id=${id}`), function(data){
+    const id = _.getIn(data, ["root", "attributes", "id"]);
+    const children = _.getIn(data, ["root", "children"]);
+    const subject = _.just(children, _.detect(_.contains(_, "name", "subject"), _), _.get(_, "content"));
+    const articles = _.just(children, _.detect(_.contains(_, "name", "articles"), _), _.get(_, "children"), _.mapa(function(article){
+      const attributes = _.getIn(article, ["attributes"]);
+      const postdate = parseDate(attributes.postdate);
+      const editdate = parseDate(attributes.editdate);
+      const children = _.getIn(article, ["children"]);
+      const subject = _.just(children, _.detect(_.contains(_, "name", "subject"), _), _.get(_, "content"));
+      const body = _.just(children, _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"), decode);
+      return _.merge(attributes, {
+        postdate,
+        editdate,
+        subject,
+        body
+      });
+    }, _), _.toArray);
+    return {
+      id,
+      subject,
+      articles
+    };
   })
 }
 
-//get submissions
-function submissions(params){
-  return _.fmap(request("https://boardgamegeek.com/xmlapi/geeklist/" + params.id + "/?comments=1"), repos.xml);
-}
-
-function players(items){
-  return _.just(items, _.mapcat(_.get(_, "plays"), _), _.toArray, _.groupBy(_.get(_, "username"), _), _.reducekv(function(memo, player, plays){
-    return _.conj(memo, {username: player, plays: plays, score: _.just(plays, _.map(_.get(_, "score"), _), _.sum), solomodes: _.just(plays, _.map(_.getIn(_, ["topic", "id"]), _), _.unique), earliest: _.just(plays, _.map(_.get(_, "postdate"), _), _.sort, _.first)});
-  }, [], _));
-}
-
-function plays(items){
-  return _.just(items, _.mapcat(function(item){
-    return _.map(function(play){
-      return {id: item.id, game: {id: item.objectid, objectname: item.objectname}, username: item.username, tallyword: play.tallyword, player: play.username, postdate: play.postdate, edited: play.edited, score: play.score};
-    }, item.plays);
-  }, _), _.sort(_.asc(_.get(_, "postdate")), _), _.toArray);
-}
-
-function units(minutes){
-  return Math.round(minutes / 30);
-}
-
-/*function minplaytimes(ids){
-  return _.fmap(request("https://boardgamegeek.com/xmlapi2/thing?type=boardgame&id=" + _.join(",", ids)), repos.xml, function(el){
-    return _.reduce(function(memo, id){
-      var minutes = _.maybe(el, dom.sel1("item[id=\"" + id +"\"] minplaytime", _), dom.attr(_, "value"), _.blot, parseInt)
-      return _.assoc(memo, id, minutes);
-    }, {}, ids);
-  });
-}*/
-
-function addminplaytimes(items){
-  return _.fmap(_.just(items, _.mapa(_.get(_, "objectid"), _), _.unique, minplaytimes), function(times){
-    return _.mapa(function(item){
-      var minplaytime = item.minimum || times[item.objectid];
-      return _.merge(item, {minplaytime: minplaytime, playunits: units(minplaytime)});
-    }, items);
+function thing(id){
+  return _.fmap(request(`https://boardgamegeek.com/xmlapi2/thing?id=${id}`), function(data){
+    const item = _.first(data.root.children);
+    const name = _.just(item.children, _.detect(_.contains(_, "name", "name"), _), _.get(_, "attributes"), _.get(_, "value"));
+    return _.merge(item.attributes, {name});
   });
 }
 
-//tabulate results
-function tabulate(params){
-  return _.fmap(submissions(params), function(doc){
-    var title = _.just(doc, dom.sel1("title", _), dom.text),
-        username = _.just(doc, dom.sel1("username", _), dom.text);
-    return _.just(doc, dom.sel("item", _),
-      _.mapa(_.partial(item, params), _),
-      _.filter(function(item){
-        return params.selected(item.objectname);
-      }, _),
-      addminplaytimes,
-      //Promise.resolve.bind(Promise),
-      _.fmap(_, Promise.all.bind(Promise),
-      _.filtera(params.timelyRegistration, _),
-      params.unsifted ? _.identity : _.remove(_.get(_, "disqualified"), _),
-      params.unsifted ? _.identity : _.remove(_.get(_, "withdrawn"), _),
-    function(items){
-      var authors = _.sort(_.unique(_.mapa(_.get(_, "username"), items)));
-      return {
-        title: title,
-        host: username,
-        authors: authors,
-        items: items
-      }
-    },
-    function(data){
-      return _.fmap(Promise.all(_.mapa(_.partial(addthread, params, data.authors), data.items)),
-        _.assoc({}, "items", _),
-        _.merge(data, _));
-    },
-    function(data){
-      var _played = _.just(data.items, _.filter(_.getIn(_, ["plays", "length"]), _), _.sort(_.desc(_.get(_, "score")), _.desc(_.getIn(_, ["players", "length"])), _.desc(_.getIn(_, ["plays", "length"])), _.asc(_.get(_, "earliest")), _)),
-          _players = _.just(data.items, players, _.sort(_.desc(_.get(_, "score")), _.desc(_.getIn(_, ["solomodes", "length"])), _.desc(_.getIn(_, ["plays", "length"])), _.asc(_.get(_, "earliest")), _)),
-          _plays = plays(_played),
-          _unlinked = _.filtera(_.complement(_.get(_, "articles")), data.items),
-          _reportedPlayed = reportPlayed(_played),
-          _reportedPlayers = reportPlayers(_players),
-          _reportedPlays = reportPlays(_plays);
-      return _.merge(data, {
-        played: _played,
-        plays: _plays,
-        players: _players,
-        unlinked: _unlinked,
-        reports: [
-          _reportedPlayed,
-          _reportedPlayers,
-          _reportedPlays
-        ]
-      });
-    }));
+function geeklist(id){
+  return _.fmap(request(`https://www.boardgamegeek.com/xmlapi/geeklist/${id}?comments=1`), function(data){
+    const type = "geeklist";
+    const attributes = _.getIn(data, ["root", "attributes"]);
+    const children = _.getIn(data, ["root", "children"]);
+    const title = _.just(children, _.detect(_.contains(_, "name", "title"), _), _.get(_, "content"));
+    const items = _.just(children, _.filtera(_.contains(_, "name", "item"), _), _.mapa(function item(item){
+      const attributes = _.just(item, _.get(_, "attributes"));
+      const body = _.just(item, _.get(_, "children"), _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"), decode);
+      const comments = _.just(item, _.get(_, "children"), _.filtera(_.contains(_, "name", "comment"), _), _.mapa(function(comment){
+        const body = _.just(comment.content, decode);
+        return _.merge(comment.attributes, {body});
+      }, _));
+      return _.merge(attributes, {body, comments});
+    }, _));
+    return _.merge(attributes, {type, title, items});
   });
 }
 
-var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 _]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
-    len = _.just(_, strip, _.get(_, "length"));
+function getMeta(gl){
+  const items = _.just(gl, _.get(_, "items"), _.map(function(item){
+    if (item.objecttype == "thread") {
+      const thread = _.maybe(item.objectid, parseInt);
+      const thing = _.just(item.comments,
+        _.filter(_.contains(_, "username", "mlanza"), _),
+        _.map(_.opt(_.get(_, "body"), _.reFind(/thing=(\d*)/, _), _.nth(_, 1), parseInt), _),
+        _.compact,
+        _.first);
+      const contents =_.mapa(decode, _.cons(item.body, _.map(_.get(_, "body"), item.comments)));
+      const mpt = _.just(contents, _.map(minPlayingTime, _), _.compact, _.first);
+      return {thread, thing, mpt, contents, item};
+    } else {
+      const found = _.reFind(/\[thread=(\d*)\]|thread\/(\d*)\//g, item.body);
+      const thread = _.maybe(found[1] || found[2], _.blot ,parseInt);
+      const thing = _.maybe(item.objectid, parseInt);
+      const contents = _.mapa(decode, _.cons(item.body, _.mapcat(_.pipe(_.get(_, "body"), _.split(_, /\n|\r/)), item.comments)));
+      const mpt = _.just(contents, _.map(minPlayingTime, _), _.compact, _.first);
+      return {thread, thing, mpt, contents, item};
+    }
+  }, _), _.filtera(_.get(_, "mpt"), _));
+  return _.merge(gl, {items});
+}
+
+function explode(gl){
+  const threads = _.just(gl.items, _.mapa(_.get(_, "thread"), _), _.compact, _.mapa(thread, _), Promise.all.bind(Promise));
+  const things = _.just(gl.items, _.mapa(_.get(_, "thing"), _), _.compact, _.mapa(thing, _), Promise.all.bind(Promise));
+  return _.fmap(Promise.all([threads, things]), _.spread(function(threads, things){
+    const threadsIdx = _.index(_.get(_, "id"), _.identity, threads);
+    const thingsIdx = _.index(_.get(_, "id"), _.identity, things);
+    const items = _.mapa(function(item){
+      const thread = _.get(threadsIdx, item.thread);
+      const thing = _.get(thingsIdx, item.thing);
+      return _.merge(item, {thread, thing});
+    }, gl.items);
+    return _.merge(gl, {items});
+  }));
+}
+
+function timelyPlay(start, end){
+  return _.update(_, "items", _.mapa(_.updateIn(_, ["thread", "articles"], _.filtera(function(article){
+    return article.postdate > start && article.postdate < end;
+  }, _)), _));
+}
+
+const ignoreMine = _.update(_, "items", _.mapa(function(item){
+  const username = item.item.username;
+  return _.updateIn(item, ["thread", "articles"], _.filtera(function(article){
+    return article.username !== username;
+  }, _));
+}, _));
+
+function less(path, limit){
+  return limit ? _.updateIn(_, path, _.pipe(_.take(limit, _), _.toArray)) : _.identity;
+}
+
+function perPlayBonus(eligibleList, min){
+  return function(data){
+    const id = data.id;
+    const eligible = eligibleList(id);
+    const items = _.mapa(function(item){
+      return _.merge(item, {ppb: item.mpt >= min ? 1 : 0});
+    }, data.items);
+    return _.merge(data, {items});
+  }
+}
+
+function plays(gl){
+  const play = _.pipe(_.reFind(/^(LIKE|LOVE|LUMP)(\n|$)/, _), _.nth(_, 1));
+  const items = _.mapa(function(item){
+    const articles = item.thread.articles;
+    const plays = _.just(articles, _.filtera(_.pipe(_.get(_, "body"), play), _), _.mapa(function(article){
+      const recorded = _.maybe(article.body, play);
+      return _.merge(article, {recorded});
+    }, _), _.partial(score, item.ppb || 0));
+    return _.merge(item, {plays});
+  }, gl.items);
+  return _.merge(gl, {items});
+}
+
+function score(ppb, plays){
+  const players = _.just(plays, _.map(_.get(_, "username"), _), _.unique);
+  return _.just(plays,
+    _.map(_.assoc(_, "points", [1 + ppb]), _), //base score per play
+    _.reduce(function({players, bonus, plays}, play){
+      const player = _.get(play, "username");
+      const newblood = _.includes(players, player);
+      const _players = _.omit(players, player);
+      const _bonus = newblood && bonus > 4 ? bonus - 1 : bonus;
+      const _play = newblood ? _.update(play, "points", _.conj(_, bonus)) : play;
+      return {players: _players, bonus: _bonus, plays: _.conj(plays, _play)};
+    }, {players, bonus: 7, plays: []}, _),
+    _.get(_, "plays"));
+}
+
+function select(what, ids){
+  return _.seq(ids) ? function(gl){
+    const items = _.filtera(function(item){
+      return _.includes(ids, _.get(item, what));
+    }, gl.items);
+    return _.merge(gl, {items});
+  } : _.identity;
+}
+
+function flatten(gl){
+  const geeklist = {id: gl.id, title: gl.title};
+  return _.just(gl.items, _.mapcat(function(item){
+    const mpt = item.mpt;
+    const username = _.getIn(item, ["item", "username"]);
+    const players = _.just(item.plays, _.mapa(_.get(_, "username"), _), _.unique);
+    const thing = item.thing;
+    const thread = _.merge(_.selectKeys(item.thread, ["id", "subject"]), {username, thing, mpt, players});
+    return _.map(_.pipe(_.selectKeys(_, ["id", "link", "username", "postdate", "recorded", "points"]), _.merge({geeklist, thread}, _)), item.plays);
+  }, _), _.toArray);
+}
+
+const parseArgs = _.pipe(_.reduce(function({args, latest}, value){
+  if (_.startsWith(value, "-")) {
+    const word = _.replace(value, /^\-/, "");
+    return {args, latest: word};
+  } else {
+    return {args: _.update(args, latest, _.pipe(_.conj(_, value), _.toArray)), latest};
+  }
+}, {args: {}, latest: null}, _), _.get(_, "args"));
+
+function parameters(xs){
+  const args = parseArgs(xs);
+  const year = _.maybe(args, _.get(_, "year"), _.first, parseInt);
+  const ids = year ? _.get({2020: [278904], 2021: [289677, 289678, 289679, 289680, 289681, 289682]}, year) : _.just(args, _.get(_, "gl"), _.mapa(parseInt, _));
+  const threads = _.maybe(args, _.get(_, "thread"), _.mapa(parseInt, _)) || [];
+  const limit = _.maybe(args, _.get(_, "limit"), _.first, parseInt);
+  const collapse = _.maybe(args, _.get(_, "collapse"), _.not, _.not)
+  return {year, ids, threads, limit, collapse};
+}
+
+const params = parameters(Deno.args);
+const display = params.collapse ? _.identity : unfold;
+
+ //-year 2020 -thread 2554285
+const lists = await _.just(params.ids,
+  _.mapa(
+    _.pipe(
+      geeklist,
+      _.fmap(_,
+        getMeta,
+        perPlayBonus(_.eq(289680, _), 180),
+        select("thread", params.threads),
+        less(["items"], params.limit),
+        explode,
+        ignoreMine,
+        timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
+        plays)),
+  _),
+  Promise.all.bind(Promise));
+
+const played = _.just(lists,
+  _.mapcat(flatten, _),
+  _.sort(_.asc(_.get(_, "postdate")), _));
+
+function subgroup(f){
+  return _.reducekv(function(memo, key, items){
+    return _.assoc(memo, key, f(items));
+  }, {}, _);
+}
+
+const slots = _.reducekv(function(memo, key, value){
+  return _.conj(memo, _.toArray(_.cons(key, value)));
+}, [], _);
+
+const tally =
+  _.juxt(
+    _.pipe(_.mapcat(_.get(_, "points"), _), _.sum),
+    _.pipe(_.first, _.get(_, "postdate")),
+    _.count,
+    _.pipe(_.countBy(_.getIn(_, ["thread", "id"]), _), _.keys, _.count));
+
+const rank = _.pipe(
+  subgroup(tally),
+  slots,
+  _.sort(_.desc(_.nth(_, 1)), _.asc(_.nth(_, 2)), _));
+
+const findThread = _.just(played, _.index(_.getIn(_, ["thread", "id"]), _.get(_, "thread"), _), _.get(_, _));
+const findGeeklist = _.just(played, _.index(_.getIn(_, ["geeklist", "id"]), _.get(_, "geeklist"), _), _.get(_, _));
+
+const geeklists = _.just(
+  played,
+  _.groupBy(_.getIn(_, ["geeklist", "id"]), _));
+
+const threads = _.just(
+  geeklists,
+  subgroup(
+    _.pipe(
+      _.groupBy(_.getIn(_, ["thread", "id"]), _),
+      rank)),
+  _.reducekv(function(memo, key, items){
+    return _.conj(memo, [key, items]);
+  }, [], _),
+  _.mapa(function([geeklist, items]){
+    return [findGeeklist(geeklist), _.mapa(function([thread, ...rest]){
+      const t = findThread(thread);
+      return [t, ...rest, _.count(t.players)];
+    }, items), _.get(geeklists, geeklist)];
+  }, _));
+
+const users = _.just(
+  played,
+  _.groupBy(_.getIn(_, ["username"]), _),
+  rank);
+
+function trunc(n){
+  return function (txt){
+    const text = _.trim(txt);
+    return len(text) > n ? text.slice(0, n - 1) + "…" : text;
+  }
+}
+
+const len = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 _]+\|\[\/[a-z]+\]]/gi, ""), _.get(_, "length"));
 
 function rpad(n){
   return function(text){
@@ -223,262 +317,104 @@ function rpad(n){
   }
 }
 
-function lpad(n){
-  return function(text){
-    return _.lpad("", n - len(text)) + text;
-  }
-}
-
-function underline(len){
-  return _.lpad("", len, "-");
-}
-
-function tag(label){
-  return _.collapse(_.str("[", label, "]"), _, _.str("[/", label, "]"));
-}
-
-var u = tag("u"),
-    b = tag("b"),
-    c = tag("c");
-
-function render(title, columns){
-  return function(rows){
-    var cols = _.mapa(function(col){
-      return col(rows);
-    }, columns);
-    return _.just(rows, _.mapa(function(row){
-        return _.join("  ", _.map(function(col){
-          return col.justify(row);
-        }, cols));
-      }, _),
-      _.cons(_.just(cols, _.map(_.get(_, "underline"), _), _.join("  ", _)), _),
-      _.cons(_.just(cols, _.map(_.get(_, "heading"), _), _.join("  ", _)), _),
-      _.cons(_.just(title, b, u), _),
-      _.join("\n", _));
-  }
-}
-
-function column(key, heading, pad){
-  return function(rows){
-    var width = _.max(heading.length, _.just(rows, _.map(_.comp(len, _.str, _.get(_, key)), _), _.spread(_.max)));
-    var pads = pad(width);
-    return {
-      width: width,
-      heading: pads(heading),
-      underline: underline(width),
-      justify: _.pipe(_.get(_, key), pads)
-    }
-  }
+function lpad(n, text){
+  return _.lpad("", n - len(text)) + text;
 }
 
 var dt = _.fmt(_.pipe(_.month, _.inc, _.lpad(_, 2, "0")), "-", _.pipe(_.day, _.lpad(_, 2, "0")));
 
-var reportPlayed =
-  _.pipe(
-    _.mapIndexed(function(idx, item){
-      return {
-        pos: idx + 1,
-        username: "[user=" + item.username + "]" + item.username + "[/user]",
-        submission: item.objectid ? "[thing=" + item.objectid + "]" + item.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
-        plays: _.str(item.plays.length),
-        players: _.str(item.players.length),
-        score: _.str(item.score),
-        earliest: dt(item.earliest)
-      }
-    }, _),
-    render("SOLO MODE SCOREBOARD", [
-      column("pos", "#", lpad),
-      column("username", "Author", rpad),
-      column("submission", "Submission", rpad),
-      column("score", "VP", lpad),
-      column("players", "Peeps", lpad),
-      column("plays", "Plays", lpad),
-      column("earliest", "Date", rpad)]));
-
-var reportPlayers =
-  _.pipe(
-    _.mapIndexed(function(idx, item){
-      var score = _.just(item.plays, _.map(_.get(_, "score"), _), _.sum);
-      return {
-        pos: idx + 1,
-        username: "[user=" + item.username + "]" + item.username + "[/user]",
-        score: _.str(score),
-        solomodes: _.str(item.solomodes.length),
-        plays: _.str(item.plays.length),
-        earliest: dt(item.earliest)
-      }
-    }, _),
-    render("PLAYER SCOREBOARD", [
-      column("pos", "#", lpad),
-      column("username", "Player", rpad),
-      column("score", "VP", lpad),
-      column("solomodes", "Games", lpad),
-      column("plays", "Plays", lpad),
-      column("earliest", "Date", rpad)]));
-
-var reportPlays =
-  _.pipe(
-    _.map(function(item){
-      return {
-        username: "[user=" + item.username + "]" + item.username + "[/user]",
-        submission: item.game.id ? "[thing=" + item.game.id + "]" + item.game.objectname + "[/thing] ([thread=" + item.id + "]" + item.id + "[/thread])" : "",
-        player: "[user=" + item.player + "]" + item.player + "[/user]",
-        tallyword: item.tallyword,
-        score: _.str(item.score),
-        postdate: dt(item.postdate)
-      }
-    }, _),
-    render("REGISTERED PLAYS", [
-      column("username", "Author", rpad),
-      column("submission", "Submission", rpad),
-      column("player", "Player", rpad),
-      column("tallyword", "Vote", rpad),
-      column("score", "VP", lpad),
-      column("postdate", "Date", rpad)]));
-
-function minplaytimes(ids){
-  return _.fmap(request("https://boardgamegeek.com/xmlapi2/thing?type=boardgame&id=" + _.join(",", ids)), repos.xml, function(el){
-    return _.reduce(function(memo, id){
-      var minutes = _.maybe(el, dom.sel1("item[id=\"" + id +"\"] minplaytime", _), dom.attr(_, "value"), _.blot, parseInt)
-      return _.assoc(memo, id, minutes);
-    }, {}, ids);
-  });
+function fmtGeeklist({id, title}){
+  return `[geeklist=${id}]${title}[/geeklist]`;
 }
 
-function has(word){
-  return function(text){
-    return _.includes(_.split(text, "\n"), word);
-  }
+function fmtSubmission(width, thread){
+  const fmt = _.comp(trunc(25), _.trim);
+  const id = _.getIn(thread, ["thing", "id"]);
+  const name = _.just(thread.thing.name, decode, fmt);
+  const unformatted = `${name} (${thread.id})`;
+  const content = `[thing=${id}]${name}[/thing] ([thread=${thread.id}]${thread.id}[/thread])`;
+  return content + _.rpad("", width - unformatted.length);
 }
 
-//get the contest submission
-function item(params, el){
-  var subtype = dom.attr(el, "subtype"),
-      id = _.just(el, dom.attr(_ ,"id"), parseInt),
-      objectid = _.just(el, dom.attr(_ ,"objectid"), parseInt),
-      objectname = dom.attr(el, "objectname"),
-      username = dom.attr(el, "username"),
-      postdate = _.date(dom.attr(el, "postdate")),
-      body = _.just(el, dom.sel1("body", _), dom.text),
-      comments = _.reverse(_.mapa(dom.text, dom.sel("comment", el))),
-      minimum = _.maybe(comments, _.detect(_.includes(_, "MINIMUM PLAYING TIME"), _), _.reFind(/MINIMUM PLAYING TIME[ ]?=[ ]?(\d+)/, _), _.nth(_, 1), _.blot, parseInt),
-      disqualified = _.detect(has("DISQUALIFIED"), comments),
-      withdrawn = _.detect(has("WITHDRAWN"), comments);
-  return {
-    subtype: subtype,
-    id: id,
-    minimum: minimum,
-    withdrawn: !!withdrawn,
-    disqualified: !!disqualified,
-    objectid: objectid,
-    objectname: objectname,
-    username: username,
-    postdate: postdate,
-    body: body
-  };
+function fmtUser(width, {username}){
+  const fmt = _.comp(rpad(width), trunc(width), _.trim);
+  const content = fmt(username);
+  const n = username.length;
+  const before = n == -1 ? content : content.slice(0, n);
+  const after = n == -1 ? "" : content.slice(n);
+  return `[user=${username}]${before}[/user]${after}`;
 }
 
-function addthread(params, authors, item){
-  return _.fmap(_.just(item.body, _.reFind(/\[thread=(\d+)\]|\[.*url=.*\/thread\/(\d+)\/.+\]/, _), _.drop(1, _), _.compact, _.first, parseInt, _.partial(thread, params, item, authors)), _.merge({_game: item.objectname}, item, _));
+function fmtRecorded(recorded, link){
+  return `[url=${link}]${recorded}[/url]`;
 }
 
-function unbiased(username){
-  return function(article){
-    return article.username !== username;
-  }
+function line(contents){
+  return _.join("  ", contents) + "\n";
 }
 
-var tallyword = _.reFind(/^(LIKE|LOVE|LUMP)\s*$/m, _);
-var stripMarkup = _.just(_, _.replace(_, /\<br[\/]?\>/g, "\n"), _.replace(_, /(\<[a-z0-9]*\>|\<\/[a-z0-9]*\>)/g, ""));
+const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
+  return [
+    [_.str("[size=18][b]", fmtGeeklist(geeklist), "[/b][/size]")],
+    [],
+    ["[b]CREATORS' SCOREBOARD[/b]"],
+    ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Plyrs[/b][/u]"],
+    ..._.just(submissions, _.mapIndexed(function(idx, [thread, points, postdate, plays, x, players]){
+      return [
+        lpad(3, idx + 1),
+        fmtUser(15, thread),
+        fmtSubmission(35, thread),
+        lpad(4, points),
+        dt(postdate),
+        lpad(5, plays),
+        lpad(5, players),
+        players >= 10 ? "💵" : players >= 5 ? "🪙" : ""
+      ];
+    }, _), _.toArray),
+    ["     [b]Legend:[/b]  💵 = 10+ Players, 🪙 = 5+ Players"],
+    [],
+    ["[b]PLAYS[/b]"],
+    ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts.[/b][/u]", "[u][b]When[/b][/u] ", "[u][b]Play[/b][/u]", "[u][b]Player[/b][/u]         "],
+    ..._.just(plays, _.mapIndexed(function(idx, play){
+      const {geeklist, thread, id, link, username, postdate, recorded, points} = play;
+      return [
+        lpad(3, idx + 1),
+        fmtUser(15, thread),
+        fmtSubmission(35, thread),
+        lpad(4, _.sum(points)),
+        dt(postdate),
+        fmtRecorded(recorded, link),
+        fmtUser(15, play)
+      ]
+    }, _), _.toArray)
+  ];
+}, _), _.mapcat(function(report){
+  return _.mapa(line, report);
+}, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]", "\n")));
 
-function tally(plays){
-  var SCORE_PER_PLAY = 1, NEW_PLAYER_BONUS = 4, EARLY_ADOPTER_BONUS = NEW_PLAYER_BONUS - 1;
-  return _.reduce(function(memo, play){
-    var newPlayer = !_.includes(memo.players, play.username),
-        bonus = newPlayer ? NEW_PLAYER_BONUS + memo.earlyadopter : 0,
-        score = SCORE_PER_PLAY + bonus;
-    return _.just(memo, newPlayer ? _.update(_, "earlyadopter", _.comp(_.max(0, _), _.dec)) : _.identity, _.update(_, "plays", _.conj(_, _.merge(play, {score: score}))), newPlayer ? _.update(_, "players", _.conj(_, play.username)) : _.identity);
-  }, {earlyadopter: EARLY_ADOPTER_BONUS, plays: [], players: []}, plays);
+function fmtUsers(entries){
+  return _.just([
+    ["[b]PLAYERS' SCOREBOARD[/b]"],
+    ["  [u][b]#[/b][/u]", "[u][b]Player[/b][/u]         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
+    ..._.just(entries, _.mapIndexed(function(idx, [username, points, postdate, plays, submissions]){
+      return [
+        lpad(3, idx + 1),
+        fmtUser(15, {username}),
+        lpad(4, points),
+        dt(postdate),
+        lpad(5, plays),
+        lpad(5, submissions),
+        submissions >= 10 ? "💵" : submissions >= 5 ? "🪙" : ""
+      ]
+    }, _), _.toArray),
+    ["     [b]Legend:[/b]  💵 = 10+ Submissions/Games, 🪙 = 5+ Submissions/Games"],
+    []
+  ], _.mapa(line, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]", "\n")));
 }
 
-//get the votes for the submission
-function thread(params, topic, authors, id){
-  return id ? _.fmap(request("https://boardgamegeek.com/xmlapi2/thread?id=" + id), repos.xml, function(el){
-    var subject = _.just(el, dom.sel1("subject", _), dom.text),
-        articles = _.just(el, dom.sel("article", _), _.mapa(function(el){
-          var id = _.just(el, dom.attr(_, "id"), parseInt),
-              username = dom.attr(el, "username"),
-              postdate = _.maybe(el, dom.attr(_, "postdate"), _.blot, _.date),
-              editdate = _.maybe(el, dom.attr(_, "editdate"), _.blot, _.date),
-              body = _.just(el, dom.sel1("body", _), dom.text, stripMarkup);
-
-          var item = params.simulate({
-            id: id,
-            topic: topic,
-            subject: subject,
-            username: username,
-            postdate: postdate,
-            editdate: editdate,
-            body: body
-          });
-
-          var firstline = _.just(item.body, _.split(_, "\n"), _.first);
-
-          return _.merge(item, {
-            edited: _.eq(postdate, editdate) ? null : editdate,
-            firstline: firstline,
-            tallyword: _.nth(tallyword(firstline), 1) || null
-          });
-        }, _)),
-        tallied = _.just(
-          articles,
-          _.filtera(
-            _.and(
-              _.get(_, "tallyword"),
-              params.timelyPlay,
-              unbiased(topic.username)),
-          _),
-          tally),
-        plays = _.get(tallied, "plays"),
-        players = _.get(tallied, "players"),
-        score = _.just(plays, _.map(_.get(_, "score"), _), _.sum),
-        earliest = _.maybe(plays, _.first, _.get(_, "postdate"));
-    return {
-      id: id,
-      subject: subject,
-      articles: articles,
-      players: players,
-      plays: plays,
-      score: score,
-      earliest: earliest
-    };
-  }) : null;
-}
-
-function timelyPlay(start, end){
-  return function(item){
-    return item.postdate > start && item.postdate < end;
-  }
-}
-
-function timelyRegistration(end){
-  return function(item){
-    return item.postdate < end;
-  }
-}
-
-throw new Error("Doh!");
-
-
-_.fmap(tabulate({
-  unsifted: 0,
-  id: 278904,
-  simulate: _.identity,
-  selected: _.constantly(true), //_.includes(["Catan"], _),
-  timelyPlay: timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
-  timelyRegistration: timelyRegistration(_.date("2021-01-02T05:00:00.000Z"))
-}), function(data){
-  dom.html(document.body, _.just(data.reports, _.join("\n\n", _), c));
-  window.results = data;
-  _.log(data);
-});
+//_.just(lists, display, _.log)
+//_.just(params, display, _.log);
+//_.just(played, display, _.log)
+//_.just(geeklists, display, _.log);
+_.just(users, fmtUsers, _.log);
+_.just(threads, fmtThreads, _.log);
