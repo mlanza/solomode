@@ -39,7 +39,6 @@ var log = console.log.bind(console);
 var warn = console.warn.bind(console);
 var info = console.info.bind(console);
 var debug = console.debug.bind(console);
-info("CROSSFRAME", 0);
 function type(self) {
   return self == null ? Nil : self.constructor;
 }
