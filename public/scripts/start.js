@@ -305,12 +305,11 @@ const users = _.just(
 function trunc(n){
   return function (txt){
     const text = _.trim(txt);
-    return text.length > n ? text.slice(0, n - 1) + "…" : text;
+    return len(text) > n ? text.slice(0, n - 1) + "…" : text;
   }
 }
 
-var strip = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 _]+\]/gi, ""), _.replace(_, /\[\/[a-z]+\]/gi, "")),
-    len = _.just(_, strip, _.get(_, "length"));
+const len = _.just(_, _.replace(_, /\[[a-z]+\=[a-z0-9 _]+\|\[\/[a-z]+\]]/gi, ""), _.get(_, "length"));
 
 function rpad(n){
   return function(text){
@@ -329,16 +328,16 @@ function fmtGeeklist({id, title}){
 }
 
 function fmtSubmission(width, thread){
-  const fmt = trunc(25);
-  const id = thread.thing.id;
-  const name = fmt(thread.thing.name);
+  const fmt = _.comp(trunc(25), _.trim);
+  const id = _.getIn(thread, ["thing", "id"]);
+  const name = _.just(thread.thing.name, decode, fmt);
   const unformatted = `${name} (${thread.id})`;
   const content = `[thing=${id}]${name}[/thing] ([thread=${thread.id}]${thread.id}[/thread])`;
   return content + _.rpad("", width - unformatted.length);
 }
 
 function fmtUser(width, {username}){
-  const fmt = _.comp(rpad(width), trunc(width));
+  const fmt = _.comp(rpad(width), trunc(width), _.trim);
   const content = fmt(username);
   return `[user=${username}]${content}[/user]`;
 }
@@ -353,12 +352,13 @@ function line(contents){
 
 const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
   return [
-    [_.str("[u]", fmtGeeklist(geeklist), "[/u]")],
-    [" #", "Creator        ", "Submission                         ", "Pts.", "Date ", "Plays", "Plyrs"],
-    ["--", "---------------", "-----------------------------------", "----", "-----", "-----", "-----"],
+    [_.str("[size=18][b]", fmtGeeklist(geeklist), "[/b][/size]")],
+    [],
+    ["[b]CREATORS' SCOREBOARD[/b]"],
+    ["[u][b]  #[/b][/u]", "[u][b]Creator        [/b][/u]", "[u][b]Submission                         [/b][/u]", "[u][b]Pts.[/b][/u]", "[u][b]Date [/b][/u]", "[u][b]Plays[/b][/u]", "[u][b]Plyrs[/b][/u]"],
     ..._.just(submissions, _.mapIndexed(function(idx, [thread, points, postdate, plays, x, players]){
       return [
-        lpad(2, idx + 1),
+        lpad(3, idx + 1),
         fmtUser(15, thread),
         fmtSubmission(35, thread),
         lpad(4, points),
@@ -368,15 +368,14 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
         players >= 10 ? "💵" : players >= 5 ? "🪙" : ""
       ];
     }, _), _.toArray),
-    ["    [b]legend:[/b]  💵 = 10+ players, 🪙 = 5+ players"],
+    ["    [b]Legend:[/b]  💵 = 10+ Players, 🪙 = 5+ Players"],
     [],
-    ["[u][b]PLAYS[/b][/u]"],
-    [" #", "Creator        ", "Submission                         ", "Pts.", "Date ", "Play", "Player         "],
-    ["--", "---------------", "-----------------------------------", "----", "-----", "----", "---------------"],
+    ["[b]PLAYS[/b]"],
+    ["[u][b]  #[/b][/u]", "[u][b]Creator        [/b][/u]", "[u][b]Submission                         [/b][/u]", "[u][b]Pts.[/b][/u]", "[u][b]Date [/b][/u]", "[u][b]Play[/b][/u]", "[u][b]Player         [/b][/u]"],
     ..._.just(plays, _.mapIndexed(function(idx, play){
       const {geeklist, thread, id, link, username, postdate, recorded, points} = play;
       return [
-        lpad(2, idx + 1),
+        lpad(3, idx + 1),
         fmtUser(15, thread),
         fmtSubmission(35, thread),
         lpad(4, _.sum(points)),
@@ -392,19 +391,21 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
 
 function fmtUsers(entries){
   return _.just([
-    ["[u][b]PLAYERS' SCOREBOARD[/b][/u]"],
-    [" #", "Player         ", "Pts.", "Date ", "Plays", "Games"],
-    ["--", "---------------", "----", "-----", "-----", "-----"],
+    ["[b]PLAYERS' SCOREBOARD[/b]"],
+    ["[u][b]  #[/b][/u]", "[u][b]Player         [/b][/u]", "[u][b]Pts.[/b][/u]", "[u][b]Date [/b][/u]", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
     ..._.just(entries, _.mapIndexed(function(idx, [username, points, postdate, plays, submissions]){
       return [
-        lpad(2, idx + 1),
+        lpad(3, idx + 1),
         fmtUser(15, {username}),
         lpad(4, points),
         dt(postdate),
         lpad(5, plays),
-        lpad(5, submissions)
+        lpad(5, submissions),
+        submissions >= 10 ? "💵" : submissions >= 5 ? "🪙" : ""
       ]
-    }, _), _.toArray)
+    }, _), _.toArray),
+    ["    [b]Legend:[/b]  💵 = 10+ Submissions/Games, 🪙 = 5+ Submissions/Games"],
+    []
   ], _.mapa(line, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]", "\n")));
 }
 
