@@ -357,7 +357,7 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
   return [
     [_.str("[size=18][b]", fmtGeeklist(geeklist), "[/b][/size]")],
     [],
-    ["[b]CREATORS' SCOREBOARD[/b]"],
+    ["[b]CREATORS’ SCOREBOARD[/b]"],
     ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Plyrs[/b][/u]"],
     ..._.just(submissions, _.mapIndexed(function(idx, [thread, points, postdate, plays, x, players]){
       return [
@@ -394,7 +394,7 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
 
 function fmtUsers(entries){
   return _.just([
-    ["[b]PLAYERS' SCOREBOARD[/b]"],
+    ["[b]PLAYERS’ SCOREBOARD[/b]"],
     ["  [u][b]#[/b][/u]", "[u][b]Player[/b][/u]         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
     ..._.just(entries, _.mapIndexed(function(idx, [username, points, postdate, plays, submissions]){
       return [
