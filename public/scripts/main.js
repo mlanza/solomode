@@ -305,7 +305,7 @@ const users = _.just(
 function trunc(n){
   return function (txt){
     const text = _.trim(txt);
-    return len(text) > n ? text.slice(0, n - 1) + "…" : text;
+    return len(text) > n ? _.trim(text.slice(0, n - 1)) + "…" : text;
   }
 }
 
