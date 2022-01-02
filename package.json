@@ -1,0 +1,23 @@
+{
+  "name": "solomode",
+  "version": "1.0.0",
+  "description": "Compute results from user data",
+  "main": "./public/scripts/main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "snapshot": "deno run --import-map=./public/scripts/import-map.json --allow-all ./public/scripts/main.js -year 2021 | pbcopy",
+    "debug": "deno run --import-map=./public/scripts/import-map.json --allow-all --inspect-brk ./public/scripts/main.js -year 2021"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlanza/solomode.git"
+  },
+  "author": "Mario T. Lanza",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mlanza/solomode/issues"
+  },
+  "homepage": "https://github.com/mlanza/solomode#readme"
+}

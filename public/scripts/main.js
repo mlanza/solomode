@@ -22,7 +22,7 @@ function unformat(text){
 }
 
 function minPlayingTime(text){
-  return _.maybe(text, _.reFind(/Playing Time: (\d*)(-\d*)|MINIMUM PLAYING TIME = (\d*)/i, _), _.drop(1, _), _.filter(_.isSome, _), _.first, parseInt);
+  return _.maybe(text, _.reFind(/Playing Time: (\d*)(-\d*)?|MINIMUM PLAYING TIME = (\d*)/i, _), _.drop(1, _), _.filter(_.isSome, _), _.first, parseInt);
 }
 
 const decode = _.pipe(Html5Entities.decode, _.trim, unformat);
@@ -79,7 +79,7 @@ function geeklist(id){
     const type = "geeklist";
     const attributes = _.getIn(data, ["root", "attributes"]);
     const children = _.getIn(data, ["root", "children"]);
-    const title = _.just(children, _.detect(_.contains(_, "name", "title"), _), _.get(_, "content"));
+    const title = _.just(children, _.detect(_.contains(_, "name", "title"), _), _.get(_, "content"), _.replace(_, "&#039;", "’"));
     const items = _.just(children, _.filtera(_.contains(_, "name", "item"), _), _.mapa(function item(item){
       const attributes = _.just(item, _.get(_, "attributes"));
       const body = _.just(item, _.get(_, "children"), _.detect(_.contains(_, "name", "body"), _), _.get(_, "content"), decode);
@@ -149,19 +149,8 @@ function less(path, limit){
   return limit ? _.updateIn(_, path, _.pipe(_.take(limit, _), _.toArray)) : _.identity;
 }
 
-function perPlayBonus(eligibleList, min){
-  return function(data){
-    const id = data.id;
-    const eligible = eligibleList(id);
-    const items = _.mapa(function(item){
-      return _.merge(item, {ppb: item.mpt >= min ? 1 : 0});
-    }, data.items);
-    return _.merge(data, {items});
-  }
-}
-
 function plays(gl){
-  const play = _.pipe(_.reFind(/^(LIKE|LOVE|LUMP)(\n|$)/, _), _.nth(_, 1));
+  const play = _.pipe(_.reFind(/^(LIKE|LOVE|LUMP)(\s.?)(\n|$)/, _), _.nth(_, 1));
   const items = _.mapa(function(item){
     const articles = item.thread.articles;
     const plays = _.just(articles, _.filtera(_.pipe(_.get(_, "body"), play), _), _.mapa(function(article){
@@ -228,22 +217,21 @@ function parameters(xs){
   return {year, ids, threads, limit, collapse};
 }
 
+const args = parseArgs(Deno.args);
 const params = parameters(Deno.args);
 const display = params.collapse ? _.identity : unfold;
 
- //-year 2020 -thread 2554285
 const lists = await _.just(params.ids,
   _.mapa(
     _.pipe(
       geeklist,
       _.fmap(_,
         getMeta,
-        perPlayBonus(_.eq(289680, _), 180),
         select("thread", params.threads),
         less(["items"], params.limit),
         explode,
         ignoreMine,
-        timelyPlay(_.date("2021-02-01T05:00:00.000Z"), _.date("2021-03-01T05:00:00.000Z")),
+        timelyPlay(_.date("2022-01-01T05:00:00.000Z"), _.date("2022-01-31T05:00:00.000Z")),
         plays)),
   _),
   Promise.all.bind(Promise));
@@ -354,17 +342,17 @@ function line(contents){
 }
 
 const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
+  debugger
   return [
     [_.str("[size=18][b]", fmtGeeklist(geeklist), "[/b][/size]")],
-    [],
     ["[b]CREATORS’ SCOREBOARD[/b]"],
-    ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Plyrs[/b][/u]"],
+    ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Plyrs[/b][/u]"],
     ..._.just(submissions, _.mapIndexed(function(idx, [thread, points, postdate, plays, x, players]){
       return [
         lpad(3, idx + 1),
         fmtUser(15, thread),
         fmtSubmission(35, thread),
-        lpad(4, points),
+        lpad(3, points),
         dt(postdate),
         lpad(5, plays),
         lpad(5, players),
@@ -374,26 +362,29 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
     ["     [b]Legend:[/b]  💵 = 10+ Players, 🪙 = 5+ Players"],
     [],
     ["[b]PLAYS[/b]"],
-    ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts.[/b][/u]", "[u][b]When[/b][/u] ", "[u][b]Play[/b][/u]", "[u][b]Player[/b][/u]         "],
+    ["  [u][b]#[/b][/u]", "[u][b]Creator[/b][/u]        ", "[u][b]Submission[/b][/u]                         ", "[u][b]Pts[/b][/u]", "[u][b]When[/b][/u] ", "[u][b]Play[/b][/u]", "[u][b]Player[/b][/u]         "],
     ..._.just(plays, _.mapIndexed(function(idx, play){
       const {geeklist, thread, id, link, username, postdate, recorded, points} = play;
       return [
         lpad(3, idx + 1),
         fmtUser(15, thread),
         fmtSubmission(35, thread),
-        lpad(4, _.sum(points)),
+        lpad(3, _.sum(points)),
         dt(postdate),
         fmtRecorded(recorded, link),
         fmtUser(15, play)
       ]
-    }, _), _.toArray)
+    }, _), _.toArray),
+    []
   ];
 }, _), _.mapcat(function(report){
   return _.mapa(line, report);
-}, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]", "\n")));
+}, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]")));
 
 function fmtUsers(entries){
   return _.just([
+    ["[size=18][b][u]Derby[/u][/b][/size]"],
+    ["[size=8]A players-fueled solo mode contest.[/size]"],
     ["[b]PLAYERS’ SCOREBOARD[/b]"],
     ["  [u][b]#[/b][/u]", "[u][b]Player[/b][/u]         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
     ..._.just(entries, _.mapIndexed(function(idx, [username, points, postdate, plays, submissions]){
@@ -407,14 +398,16 @@ function fmtUsers(entries){
         submissions >= 10 ? "💵" : submissions >= 5 ? "🪙" : ""
       ]
     }, _), _.toArray),
-    ["     [b]Legend:[/b]  💵 = 10+ Submissions/Games, 🪙 = 5+ Submissions/Games"],
-    []
-  ], _.mapa(line, _), _.pipe(_.join("", _), _.str("[c]", _, "[/c]", "\n")));
+    ["     [b]Legend:[/b]  💵 = 10+ Submissions/Games, 🪙 = 5+ Submissions/Games"]
+  ], _.mapa(line, _), _.pipe(_.join("", _), _.trim, _.str("[c]", _, "[/c]")));
 }
 
-//_.just(lists, display, _.log)
 //_.just(params, display, _.log);
-//_.just(played, display, _.log)
+//_.just(lists, display, _.log);
+//_.just(threads, display, _.log);
 //_.just(geeklists, display, _.log);
-_.just(threads, fmtThreads, _.log);
+//_.just(played, display, _.log)
 _.just(users, fmtUsers, _.log);
+_.log("");
+_.just(threads, fmtThreads, _.log);
+_.log("[size=8]Only categories with at least one recorded play are reported.  Please report omissions or errors to the contest host via geekmail.  Until the race concludes, progress reports are subject to corrections.[/size]")
