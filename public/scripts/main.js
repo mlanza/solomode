@@ -386,12 +386,12 @@ function fmtUsers(entries){
     ["[size=18][b][u]Derby[/u][/b][/size]"],
     ["[size=8]A players-fueled solo mode contest.[/size]"],
     ["[b]PLAYERS’ SCOREBOARD[/b]"],
-    ["  [u][b]#[/b][/u]", "[u][b]Player[/b][/u]         ", "[u][b]Pts.[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
+    ["  [u][b]#[/b][/u]", "[u][b]Player[/b][/u]         ", "[u][b]Pts[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
     ..._.just(entries, _.mapIndexed(function(idx, [username, points, postdate, plays, submissions]){
       return [
         lpad(3, idx + 1),
         fmtUser(15, {username}),
-        lpad(4, points),
+        lpad(3, points),
         dt(postdate),
         lpad(5, plays),
         lpad(5, submissions),
