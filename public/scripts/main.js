@@ -410,4 +410,4 @@ function fmtUsers(entries){
 _.just(users, fmtUsers, _.log);
 _.log("");
 _.just(threads, fmtThreads, _.log);
-_.log("[size=8]Only categories with at least one recorded play are reported.  Please report omissions or errors to the contest host via geekmail.  Until the race concludes, progress reports are subject to corrections.[/size]")
+_.log("[size=8]See [thread=2733473]scoring details[/thread].  Only active categories are reported.  Please report errors and omissions to the contest host via geekmail.  Until the race concludes, progress reports are subject to corrections.[/size]")
