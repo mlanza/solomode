@@ -150,7 +150,7 @@ function less(path, limit){
 }
 
 function plays(gl){
-  const play = _.pipe(_.reFind(/^(LIKE|LOVE|LUMP)(\s.?)(\n|$)/, _), _.nth(_, 1));
+  const play = _.pipe(_.reFind(/^(LIKE|LOVE|LUMP)(\s.?)/, _), _.nth(_, 1));
   const items = _.mapa(function(item){
     const articles = item.thread.articles;
     const plays = _.just(articles, _.filtera(_.pipe(_.get(_, "body"), play), _), _.mapa(function(article){
@@ -384,7 +384,7 @@ const fmtThreads = _.just(_, _.mapa(function([geeklist, submissions, plays]){
 function fmtUsers(entries){
   return _.just([
     ["[size=18][b][u]Derby[/u][/b][/size]"],
-    ["[size=8]A players-fueled solo mode contest.[/size]"],
+    ["[size=8]A players-fueled solo mode race.[/size]"],
     ["[b]PLAYERS’ SCOREBOARD[/b]"],
     ["  [u][b]#[/b][/u]", "[u][b]Player[/b][/u]         ", "[u][b]Pts[/b][/u]", "[u][b]Ties[/b][/u] ", "[u][b]Plays[/b][/u]", "[u][b]Games[/b][/u]"],
     ..._.just(entries, _.mapIndexed(function(idx, [username, points, postdate, plays, submissions]){
