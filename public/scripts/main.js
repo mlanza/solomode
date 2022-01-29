@@ -134,7 +134,7 @@ function explode(gl){
 
 function timelyPlay(start, end){
   return _.update(_, "items", _.mapa(_.updateIn(_, ["thread", "articles"], _.filtera(function(article){
-    return article.postdate > start && article.postdate < end;
+    return article.postdate >= start && article.postdate < end;
   }, _)), _));
 }
 
@@ -231,7 +231,7 @@ const lists = await _.just(params.ids,
         less(["items"], params.limit),
         explode,
         ignoreMine,
-        timelyPlay(_.date("2022-01-01T05:00:00.000Z"), _.date("2022-01-31T05:00:00.000Z")),
+        timelyPlay(_.date("2022-01-01T05:00:00.000Z"), _.date("2022-02-01T05:00:00.000Z")),
         plays)),
   _),
   Promise.all.bind(Promise));
